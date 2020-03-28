@@ -81,7 +81,7 @@ MenuItem.propTypes = {
   classes: PropTypes.any,
   onClick: PropTypes.func,
   onSetOrder: PropTypes.func,
-  item: PropTypes.func,
+  item: PropTypes.any,
 }
 
 export default withStyles(styles)(MenuItem)

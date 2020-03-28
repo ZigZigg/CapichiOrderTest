@@ -181,7 +181,7 @@ class Restaurant extends Component {
               {dataMenu &&
                 dataMenu.length > 0 &&
                 dataMenu.map(value => {
-                  return <MenuItem onSetOrder={this.onSetOrder} item={value} />
+                  return <MenuItem key={value.id} onSetOrder={this.onSetOrder} item={value} />
                   // return (
                   //   <div
                   //     style={{
