@@ -8,7 +8,7 @@ export const validatePassword = value => {
 }
 
 export const validateEmail = value => {
-  if (!validator.isEmail(value)) {
+  if (!validator.isEmail(value) && value !== '') {
     return 'Định dạng Email không hợp lệ.'
   }
   return ''

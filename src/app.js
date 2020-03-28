@@ -19,47 +19,47 @@ import React from 'react'
 // import ReactDOM from "react-dom";
 import { createBrowserHistory } from 'history'
 // import PropTypes from 'prop-types'
-import { Router, Route, Switch, Redirect, BrowserRouter } from 'react-router-dom'
+import { Router, Route, Switch, BrowserRouter, Redirect } from 'react-router-dom'
 import { ToastProvider } from 'react-toast-notifications'
 
-import PrivateRoute from './components/PrivateRoute'
+import Category from './views/Category'
+import Restaurant from './views/Restaurant'
+import Order from './views/Order'
 // core components
-import Admin from './layouts/Admin'
-import Login from './layouts/Login'
 // import RTL from './layouts/RTL'
 // import * as serviceWorker from '../src1/serviceWorker';
 import './assets/css/material-dashboard-react.css'
-import { AUTHEN_TOKEN } from './constants/define'
+// import { AUTHEN_TOKEN } from './constants/define'
 
 const hist = createBrowserHistory()
 
 function App() {
-  const authenToken = localStorage.getItem(AUTHEN_TOKEN)
-  const defaultRedirect = routeProps => {
-    const { match, history } = routeProps
-    if (!authenToken) {
-      return <Redirect to={`${match.url}login`} />
-    }
-    if (history.location.pathname.slice(1) === 'login') {
-      return <Redirect to={`${match.url}admin/user`} />
-    }
-    if (history.location.pathname === '/') {
-      return !authenToken ? (
-        <Redirect to={`${match.url}login`} />
-      ) : (
-        <Redirect to={`${match.url}admin/user`} />
-      )
-    }
-    return history.location.pathname.slice(-1) === '/' ? (
-      <Redirect
-        to={`${history.location.pathname.slice(0, -1)}${history.location.search}${
-          history.location.hash
-        }`}
-      />
-    ) : (
-      <Redirect to={`${match.url}admin/user`} />
-    )
-  }
+  // const authenToken = localStorage.getItem(AUTHEN_TOKEN)
+  // const defaultRedirect = routeProps => {
+  //   const { match, history } = routeProps
+  //   if (!authenToken) {
+  //     return <Redirect to={`${match.url}login`} />
+  //   }
+  //   if (history.location.pathname.slice(1) === 'login') {
+  //     return <Redirect to={`${match.url}admin/user`} />
+  //   }
+  //   if (history.location.pathname === '/') {
+  //     return !authenToken ? (
+  //       <Redirect to={`${match.url}login`} />
+  //     ) : (
+  //       <Redirect to={`${match.url}admin/user`} />
+  //     )
+  //   }
+  //   return history.location.pathname.slice(-1) === '/' ? (
+  //     <Redirect
+  //       to={`${history.location.pathname.slice(0, -1)}${history.location.search}${
+  //         history.location.hash
+  //       }`}
+  //     />
+  //   ) : (
+  //     <Redirect to={`${match.url}admin/user`} />
+  //   )
+  // }
   return (
     <div className="App">
       <header className="App-header">
@@ -69,10 +69,11 @@ function App() {
               <div>
                 <Router history={hist}>
                   <Switch>
-                    <Route exact path="/login" component={Login} />
-                    <PrivateRoute path="/admin" component={Admin} />
-                    <Route render={defaultRedirect} />
+                    <Route path="/category" component={Category} />
+                    <Route exact path="/restaurant/:id" component={Restaurant} />
+                    <Route path="/orderDetail" component={Order} />
                     {/* {authenToken ? <Redirect from="/" to="/admin/dashboard" /> : <Redirect from="/" to="/login" />} */}
+                    <Redirect from="/" to="/category" />
                   </Switch>
                 </Router>
               </div>
