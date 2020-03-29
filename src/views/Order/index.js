@@ -38,6 +38,12 @@ class Index extends PureComponent {
       note: '',
       isOpenPopup: false,
       isOpenWarning: false,
+      isSuccess: false,
+      errorName: '',
+      errorPhone: '',
+      errorEmail: '',
+      errorAddress: '',
+      errorNote: '',
     }
   }
 
@@ -64,41 +70,31 @@ class Index extends PureComponent {
     if (name === 'email') {
       this.setState({
         [name]: value,
-        error: {
-          email: validateEmail(value),
-        },
+        errorEmail: validateEmail(value),
       })
     }
     if (name === 'name') {
       this.setState({
         [name]: value,
-        error: {
-          name: validateName(value),
-        },
+        errorName: validateName(value),
       })
     }
     if (name === 'phone') {
       this.setState({
         [name]: value.replace(/[\D]/g, ''),
-        error: {
-          phone: validatePhone(value.replace(/[\D]/g, '')),
-        },
+        errorPhone: validatePhone(value.replace(/[\D]/g, '')),
       })
     }
     if (name === 'address') {
       this.setState({
         [name]: value,
-        error: {
-          address: validateAddress(value),
-        },
+        errorAddress: validateAddress(value),
       })
     }
     if (name === 'note') {
       this.setState({
         [name]: value,
-        error: {
-          note: validateNote(value),
-        },
+        errorNote: validateNote(value),
       })
     }
   }
@@ -117,7 +113,7 @@ class Index extends PureComponent {
     })
     const rowTotalPrice = item.count * item.price
     return (
-      <Grid item xs={12} md={6} lg={3} className={classes.itemOrder}>
+      <Grid key={item.id} item xs={12} md={6} lg={3} className={classes.itemOrder}>
         <div style={{ width: '60px', height: '60px' }}>
           <img src={item.image} alt={item.name} className={classes.imgItem} />
         </div>
@@ -148,15 +144,25 @@ class Index extends PureComponent {
   }
 
   onSubmitForm = async () => {
-    const { name, phone, address } = this.state
+    const {
+      name,
+      phone,
+      address,
+      errorName,
+      errorAddress,
+      errorPhone,
+      errorEmail,
+      errorNote,
+    } = this.state
     if (address === '' || phone === '' || name === '') {
       this.setState({
-        error: {
-          name: name === '' ? 'お客様の名前を入力してください' : '',
-          phone: phone === '' ? '電話番号を入力してください' : '',
-          address: address === '' ? '住所を入力してください' : '',
-        },
+        errorName: name === '' ? 'お客様の名前を入力してください' : '',
+        errorPhone: phone === '' ? '電話番号を入力してください' : '',
+        errorAddress: address === '' ? '住所を入力してください' : '',
       })
+      return
+    }
+    if (errorAddress || errorPhone || errorName || errorEmail || errorNote) {
       return
     }
     this.onConfirmOrder()
@@ -233,19 +239,17 @@ class Index extends PureComponent {
   }
 
   handleClose = () => {
-    const { history } = this.props
     this.setState({
       isOpenPopup: false,
+      isSuccess: true,
     })
-    history.push('/category')
+    // history.push('/category')
   }
 
   handleCloseWarning = () => {
-    const { history } = this.props
     this.setState({
       isOpenWarning: false,
     })
-    history.push('/category')
   }
 
   render() {
@@ -254,7 +258,11 @@ class Index extends PureComponent {
       itemSelected,
       restaurant,
       isLoadingSubmit,
-      error,
+      errorName,
+      errorPhone,
+      errorAddress,
+      errorEmail,
+      errorNote,
       name,
       phone,
       address,
@@ -262,6 +270,7 @@ class Index extends PureComponent {
       note,
       isOpenPopup,
       isOpenWarning,
+      isSuccess,
     } = this.state
     const total = _.reduce(
       itemSelected,
@@ -320,14 +329,14 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={name}
-                    error={error && error.name}
+                    error={!!errorName}
                     onChange={this.onChangeText}
                     type="text"
                     name="name"
                     maxLength={3}
                     className={classes.input}
                   />
-                  {error && error.name && <span className={classes.error}>{error.name}</span>}
+                  {errorName && <span className={classes.error}>{errorName}</span>}
                 </div>
               </div>
               <div className={classes.inputBox}>
@@ -335,13 +344,13 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={phone}
-                    error={error && error.phone}
+                    error={!!errorPhone}
                     onChange={this.onChangeText}
                     type="text"
                     name="phone"
                     className={classes.input}
                   />
-                  {error && error.phone && <span className={classes.error}>{error.phone}</span>}
+                  {errorPhone && <span className={classes.error}>{errorPhone}</span>}
                 </div>
               </div>
               <div className={classes.inputBox}>
@@ -349,7 +358,7 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={address}
-                    error={error && error.address}
+                    error={!!errorAddress}
                     onChange={this.onChangeText}
                     type="text"
                     name="address"
@@ -357,21 +366,21 @@ class Index extends PureComponent {
                     rows={2}
                     className={classes.input}
                   />
-                  {error && error.address && <span className={classes.error}>{error.address}</span>}
+                  {errorAddress && <span className={classes.error}>{errorAddress}</span>}
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>メアド</span>
+                <span className={classes.textItem}>メールアドレス</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={email}
-                    error={error && error.email}
+                    error={!!errorEmail}
                     onChange={this.onChangeText}
                     type="email"
                     name="email"
                     className={classes.input}
                   />
-                  {error && error.email && <span className={classes.error}>{error.email}</span>}
+                  {errorEmail && <span className={classes.error}>{errorEmail}</span>}
                 </div>
               </div>
               <div className={classes.inputBox}>
@@ -382,7 +391,7 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={note}
-                    error={error && error.note}
+                    error={!!errorNote}
                     onChange={this.onChangeText}
                     type="text"
                     name="note"
@@ -390,6 +399,7 @@ class Index extends PureComponent {
                     rows={4}
                     className={classes.input}
                   />
+                  {errorNote && <span className={classes.error}>{errorNote}</span>}
                 </div>
               </div>
             </div>
@@ -402,15 +412,19 @@ class Index extends PureComponent {
           </div>
         )}
         <div className={classes.btnContainer}>
-          <Button
-            variant="contained"
-            color="primary"
-            className="btn-login"
-            onClick={this.onSubmitForm}
-            style={{ backgroundColor: '#F7941D' }}
-          >
-            {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `注文`}
-          </Button>
+          {isSuccess ? (
+            <span>注文は完了しました</span>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              className="btn-login"
+              onClick={this.onSubmitForm}
+              style={{ backgroundColor: '#F7941D' }}
+            >
+              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `注文`}
+            </Button>
+          )}
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
           <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
