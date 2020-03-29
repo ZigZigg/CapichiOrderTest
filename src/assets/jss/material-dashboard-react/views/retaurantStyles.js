@@ -85,6 +85,9 @@ const styles = {
     display: 'flex',
     // alignItems: 'center',
   },
+  closeText: {
+    color: 'red',
+  },
   action: {
     display: 'flex',
     postition: 'absolute',

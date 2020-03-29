@@ -8,25 +8,25 @@ export const validateEmail = value => {
 }
 export const validateName = value => {
   if (value.length > 150 && value !== '') {
-    return 'Customer name is limit at 150 characters'
+    return '顧客名は最大150文字で入力してください'
   }
   return ''
 }
 export const validatePhone = value => {
-  if (value.length < 10 && value.length > 15 && value !== '') {
-    return 'Phone number is limit at 10-15 characters'
+  if ((value.length < 10 || value.length > 15) && value !== '') {
+    return '電話番号は10〜15桁の数字で入力してください'
   }
   return ''
 }
 export const validateAddress = value => {
   if (value.length > 300 && value !== '') {
-    return 'Address is limit at 300 characters'
+    return '住所は最大300文字で入力してください'
   }
   return ''
 }
 export const validateNote = value => {
   if (value.length > 1024 && value !== '') {
-    return 'Note is limit at 1024 characters'
+    return '追記事項は最大1024文字で入力してください'
   }
   return ''
 }

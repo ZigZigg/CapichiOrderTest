@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid'
 import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import moment from 'moment'
+import classNames from 'classnames'
 import Dialog from '@material-ui/core/Dialog'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
 import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
@@ -30,6 +31,7 @@ class Restaurant extends Component {
       totalPage: 10,
       isOpenPopup: false,
       isOpenPopupInactive: false,
+      isOpenTime: false,
       inactiveOrder: [],
     }
   }
@@ -150,8 +152,7 @@ class Restaurant extends Component {
   }
 
   onSubmitForm = () => {
-    const { history } = this.props
-    const { listItemSelected, objectRestaurant, currentPage } = this.state
+    const { listItemSelected } = this.state
     const filterArray = _.filter(listItemSelected, value => value.count > 0)
     this.onCheckAvailable(filterArray)
     // history.push('/orderDetail', {
@@ -186,10 +187,25 @@ class Restaurant extends Component {
         })
 
         const filterSelected = _.filter(arraySelect, value => !value.active)
+        const dataRestaurant = await getRestaurantDetail({ restaurantId: objectRestaurant.id })
+        let isOpen = true
+        if (dataRestaurant.data) {
+          const currentTime = moment().format('HH:MM')
+          const convertCurrentTime = moment(currentTime, 'hh:mm')
+          const openTime = moment(dataRestaurant.data.open_time, 'hh:mm')
+          const closeTime = moment(dataRestaurant.data.closed_time, 'hh:mm')
+          isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
+        } else {
+          isOpen = false
+        }
         if (filterSelected.length > 0) {
           this.setState({
             inactiveOrder: filterSelected,
             isOpenPopupInactive: true,
+          })
+        } else if (!isOpen) {
+          this.setState({
+            isOpenTime: true,
           })
         } else {
           history.push('/orderDetail', {
@@ -210,6 +226,12 @@ class Restaurant extends Component {
     })
   }
 
+  handleCloseTime = () => {
+    this.setState({
+      isOpenTime: false,
+    })
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -222,9 +244,14 @@ class Restaurant extends Component {
       listItemSelected,
       isOpenPopupInactive,
       inactiveOrder,
+      isOpenTime,
     } = this.state
     const filterSelected = _.filter(listItemSelected, value => value.count > 0)
     const isHasMore = currentPage < totalPage && itemRestaurant && dataMenu.length > 0
+    const timeClass = classNames({
+      [classes.rightContentText]: true,
+      [classes.closeText]: !this.isRestaurantOpen(),
+    })
     return (
       <div id="restaurant" className={classes.wrapper}>
         <div className={classes.header}>
@@ -232,7 +259,7 @@ class Restaurant extends Component {
             onClick={this.onGoBack}
             style={{ fontSize: '40px', marginLeft: '5px' }}
           />
-          <span className={classes.headerLabel}>Restaurant detail</span>
+          <span className={classes.headerLabel}>レストランの詳細</span>
           <div style={{ marginRight: '24px', width: '30px' }} />
           {/* <ShoppingBasket style={{ fontSize: '30px', marginRight: '24px' }} /> */}
           {/* <div style={{ width: '30px' }} /> */}
@@ -287,7 +314,15 @@ class Restaurant extends Component {
                 {itemRestaurant.note && (
                   <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>
                 )}
-                <p style={{ fontSize: '16px', textAlign: 'center' }}>Menu</p>
+                <div style={{ fontSize: '15px' }}>
+                  <span className={classes.rightContentText}>Open time:</span>
+                  {itemRestaurant.open_time && itemRestaurant.closed_time && (
+                    <span
+                      className={timeClass}
+                    >{`${itemRestaurant.open_time} - ${itemRestaurant.closed_time}`}</span>
+                  )}
+                </div>
+                <p style={{ fontSize: '16px', textAlign: 'center' }}>メニュー一覧</p>
               </>
             )}
 
@@ -307,6 +342,11 @@ class Restaurant extends Component {
                   //   />
                   // )
                 })}
+              {itemRestaurant && dataMenu.length === 0 && (
+                <p style={{ width: '100%', textAlign: 'center', fontSize: '12px' }}>
+                  まだこの店舗にメニューが登録されていません
+                </p>
+              )}
               <div style={{ width: '100%', height: '60px', marginTop: '10px' }} />
             </Grid>
           </div>
@@ -327,30 +367,26 @@ class Restaurant extends Component {
             {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `確定`}
           </Button>
         </div>
-        <Dialog
-          onClose={this.handleClose}
-          style={{ width: '100%', padding: '10px' }}
-          open={isOpenPopup}
-        >
+        <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
           <p
             style={{
               textAlign: 'center',
-              fontSize: '18px',
+              fontSize: '16',
               fontWeight: 'bold',
               margin: '10px 20px',
             }}
           >
-            Restaurant is currently closed
+            この店舗は現在営業しておりません
           </p>
           <p
             style={{
               textAlign: 'center',
-              fontSize: '18px',
+              fontSize: '14px',
               fontWeight: 'bold',
               margin: '0px 20px',
             }}
           >
-            You can choose menu later
+            メニューはあとで選ぶことができます
           </p>
           <div className={classes.closeBtn}>
             <Button
@@ -365,18 +401,18 @@ class Restaurant extends Component {
         </Dialog>
         <Dialog
           onClose={this.handleCloseInactive}
-          style={{ width: '100%', padding: '10px' }}
+          style={{ width: '100%' }}
           open={isOpenPopupInactive}
         >
           <p
             style={{
               textAlign: 'center',
-              fontSize: '18px',
+              fontSize: '16px',
               fontWeight: 'bold',
               margin: '10px 20px',
             }}
           >
-            Sorry! Restaurant can't serve this Menu:
+            申し訳ありません。このメニューは売り切れました:
           </p>
           {inactiveOrder.length > 0 &&
             inactiveOrder.map(value => {
@@ -390,10 +426,36 @@ class Restaurant extends Component {
             <Button
               variant="contained"
               color="primary"
+              onClick={this.handleCloseInactive}
+              style={{ backgroundColor: '#F7941D' }}
+            >
+              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `閉める`}
+            </Button>
+          </div>
+        </Dialog>
+        <Dialog onClose={this.handleCloseTime} style={{ width: '100%' }} open={isOpenTime}>
+          <p
+            style={{
+              textAlign: 'center',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              margin: '10px 40px',
+            }}
+          >
+            注文に失敗しました
+          </p>
+          <span style={{ textAlign: 'center', fontSize: '12px' }}>もう一度試してください!</span>
+          <div
+            style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              className="btn-login"
               onClick={this.handleClose}
               style={{ backgroundColor: '#F7941D' }}
             >
-              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `Close`}
+              Ok
             </Button>
           </div>
         </Dialog>

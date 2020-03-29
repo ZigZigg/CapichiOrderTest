@@ -81,7 +81,7 @@ class Index extends PureComponent {
     if (name === 'phone') {
       this.setState({
         error: {
-          phone: validatePhone(value),
+          phone: validatePhone(value.replace(/[\D]/g, '')),
         },
       })
     }
@@ -146,7 +146,7 @@ class Index extends PureComponent {
   }
 
   onSubmitForm = async () => {
-    const { name, phone, email, address, note, itemSelected, restaurant } = this.state
+    const { name, phone, address } = this.state
     if (name === '') {
       this.setState({
         error: {
@@ -194,7 +194,18 @@ class Index extends PureComponent {
         })
 
         const filterSelected = _.filter(arraySelect, value => !value.active)
-        if (filterSelected.length > 0) {
+        const dataRestaurant = await getRestaurantDetail({ restaurantId: restaurant.id })
+        let isOpen = true
+        if (dataRestaurant.data) {
+          const currentTime = moment().format('HH:MM')
+          const convertCurrentTime = moment(currentTime, 'hh:mm')
+          const openTime = moment(dataRestaurant.data.open_time, 'hh:mm')
+          const closeTime = moment(dataRestaurant.data.closed_time, 'hh:mm')
+          isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
+        } else {
+          isOpen = false
+        }
+        if (filterSelected.length > 0 || !isOpen) {
           this.setState({
             isOpenWarning: true,
           })
@@ -317,7 +328,7 @@ class Index extends PureComponent {
               </p>
 
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>名前</span>
+                <span className={classes.textItem}>名前*</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={name}
@@ -332,7 +343,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>電話番号</span>
+                <span className={classes.textItem}>電話番号*</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={phone}
@@ -346,7 +357,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>住所</span>
+                <span className={classes.textItem}>住所*</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={address}
@@ -374,7 +385,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>Note</span>
+                <span className={classes.textItem}>注意</span>
 
                 <div className={classes.inputContainer}>
                   <Input
@@ -410,9 +421,14 @@ class Index extends PureComponent {
           </Button>
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
-          <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>Order success</p>
-          <span style={{ textAlign: 'center', margin: '0px 20px' }}>
-            Your order information will be sent to your email
+          <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
+            注文は成功しました
+          </p>
+          <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
+            あなたの注文情報はレストランに送信されます
+          </span>
+          <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
+            レストランの確認をお待ちください
           </span>
           <div
             style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
@@ -437,9 +453,9 @@ class Index extends PureComponent {
               margin: '10px 40px',
             }}
           >
-            Submit order failed
+            注文に失敗しました
           </p>
-          <span style={{ textAlign: 'center' }}>Please order again!</span>
+          <span style={{ textAlign: 'center', fontSize: '12px' }}>もう一度試してください!</span>
           <div
             style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
           >
