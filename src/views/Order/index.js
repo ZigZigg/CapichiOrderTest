@@ -403,11 +403,11 @@ class Index extends PureComponent {
                 </div>
               </div>
             </div>
-            <div style={{ width: '100%', height: '60px', marginTop: '10px' }}>
+            {/* <div style={{ width: '100%', height: '60px', marginTop: '10px' }}>
               <p style={{ fontSize: '9px' }}>
                 (メールアドレス〜届きます)→入力されたメールアドレス宛に注文の状況、配達状況などが随時確認のために送信されます)
               </p>
-            </div>
+            </div> */}
             <div style={{ width: '100%', height: '100px' }} />
           </div>
         )}
