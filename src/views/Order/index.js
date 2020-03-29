@@ -37,6 +37,7 @@ class Index extends PureComponent {
       email: '',
       note: '',
       isOpenPopup: false,
+      isOpenWarning: false,
     }
   }
 
@@ -170,24 +171,7 @@ class Index extends PureComponent {
       })
       return
     }
-    try {
-      const data = await confirmOrder({
-        name: name.trim(),
-        phone,
-        email: email.trim(),
-        address: address.trim(),
-        note: note.trim(),
-        restaurantId: restaurant.id,
-        items: itemSelected,
-      })
-      if (data.isSuccess) {
-        this.setState({
-          isOpenPopup: true,
-        })
-      }
-    } catch (e) {
-      console.warn(e)
-    }
+    this.onConfirmOrder()
 
     // this.setState({
     //   isOpenPopup: true,
@@ -211,7 +195,9 @@ class Index extends PureComponent {
 
         const filterSelected = _.filter(arraySelect, value => !value.active)
         if (filterSelected.length > 0) {
-          console.log('failed')
+          this.setState({
+            isOpenWarning: true,
+          })
         } else {
           const dataOrder = await confirmOrder({
             name: name.trim(),
@@ -255,6 +241,14 @@ class Index extends PureComponent {
     history.push('/category')
   }
 
+  handleCloseWarning = () => {
+    const { history } = this.props
+    this.setState({
+      isOpenWarning: false,
+    })
+    history.push('/category')
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -268,6 +262,7 @@ class Index extends PureComponent {
       email,
       note,
       isOpenPopup,
+      isOpenWarning,
     } = this.state
     const total = _.reduce(
       itemSelected,
@@ -400,6 +395,7 @@ class Index extends PureComponent {
                 (メールアドレスを入力すれば注文情報が確認としてメールに届きます)
               </p>
             </div>
+            <div style={{ width: '100%', height: '100px' }} />
           </div>
         )}
         <div className={classes.btnContainer}>
@@ -415,9 +411,35 @@ class Index extends PureComponent {
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
           <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>Order success</p>
-          <span style={{ textAlign: 'center' }}>
+          <span style={{ textAlign: 'center', margin: '0px 20px' }}>
             Your order information will be sent to your email
           </span>
+          <div
+            style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              className="btn-login"
+              onClick={this.handleClose}
+              style={{ backgroundColor: '#F7941D' }}
+            >
+              Ok
+            </Button>
+          </div>
+        </Dialog>
+        <Dialog onClose={this.handleCloseWarning} style={{ width: '100%' }} open={isOpenWarning}>
+          <p
+            style={{
+              textAlign: 'center',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              margin: '10px 40px',
+            }}
+          >
+            Submit order failed
+          </p>
+          <span style={{ textAlign: 'center' }}>Please order again!</span>
           <div
             style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
           >

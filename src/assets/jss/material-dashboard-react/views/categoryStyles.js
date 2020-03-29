@@ -27,7 +27,7 @@ const styles = {
   },
   righContent: {
     width: '100%',
-    padding: '20px',
+    padding: '10px 20px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -35,6 +35,8 @@ const styles = {
   rightContentText: {
     fontSize: '14px',
     lineHeight: '18px',
+    height: '35px',
+    overflow: 'hidden',
   },
   closeText: {
     color: 'red',
@@ -42,6 +44,9 @@ const styles = {
   rightTextName: {
     fontSize: '15px',
     fontWeight: 'bold',
+    height: '30px',
+    lineHeight: '16px',
+    overflow: 'hidden',
   },
 }
 

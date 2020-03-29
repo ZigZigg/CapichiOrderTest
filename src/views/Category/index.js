@@ -107,11 +107,19 @@ class Index extends PureComponent {
     const isHasMore = currentPage < totalPage && dataCategory.length > 0
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '20px',
+            padding: '0 24px',
+          }}
+        >
           <CustomInput
             //   onKeyPress={this.handlePressKey}
             placeholder="Search restaurant by name..."
             onChange={this.onChangeText}
+            style={{ width: '100%' }}
           />
         </div>
         {isLoading ? (
