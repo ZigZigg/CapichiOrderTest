@@ -8,11 +8,11 @@ import Grid from '@material-ui/core/Grid'
 import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import moment from 'moment'
+import Dialog from '@material-ui/core/Dialog'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
 import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
 import MenuItem from './MenuItem'
 import '../../assets/css/Restaurant/styles.css'
-import Dialog from '@material-ui/core/Dialog'
 
 class Restaurant extends Component {
   constructor(props) {
@@ -42,7 +42,7 @@ class Restaurant extends Component {
   isRestaurantOpen = () => {
     const { itemRestaurant } = this.state
     if (itemRestaurant) {
-      const currentTime = moment().format('hh:mm')
+      const currentTime = moment().format('HH:MM')
       const convertCurrentTime = moment(currentTime, 'hh:mm')
       const openTime = moment(itemRestaurant.open_time, 'hh:mm')
       const closeTime = moment(itemRestaurant.closed_time, 'hh:mm')
@@ -198,7 +198,6 @@ class Restaurant extends Component {
             pages: currentPage,
           })
         }
-        console.log({ filterSelected })
       }
     } catch (e) {
       console.warn(e)

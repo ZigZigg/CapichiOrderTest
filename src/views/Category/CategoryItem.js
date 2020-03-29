@@ -14,7 +14,7 @@ class CategoryItem extends PureComponent {
 
   render() {
     const { classes, item } = this.props
-    const currentTime = moment().format('hh:mm')
+    const currentTime = moment().format('HH:MM')
     const convertCurrentTime = moment(currentTime, 'hh:mm')
     const openTime = moment(item.open_time, 'hh:mm')
     const closeTime = moment(item.closed_time, 'hh:mm')

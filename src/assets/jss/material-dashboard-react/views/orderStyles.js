@@ -56,6 +56,13 @@ const styles = {
     fontSize: '12px',
     color: '#1E1F21',
   },
+  textContent: {
+    fontSize: '12px',
+    height: '30px',
+    overflow: 'hidden',
+    lineHeight: '16px',
+    display: 'flex',
+  },
   shippingBox: {
     width: '100%',
     display: 'flex',

@@ -7,12 +7,20 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import _ from 'lodash'
+import moment from 'moment'
 // import TextField from '@material-ui/core/TextField'
 import Input from '@material-ui/core/Input'
 import Dialog from '@material-ui/core/Dialog'
+import classNames from 'classnames'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
-import { getRestaurantDetail, confirmOrder } from '../../api'
-import { validateEmail } from '../../commons'
+import { getRestaurantDetail, confirmOrder, getListMenuByRestaurant } from '../../api'
+import {
+  validateEmail,
+  validateAddress,
+  validateName,
+  validateNote,
+  validatePhone,
+} from '../../commons'
 
 class Index extends PureComponent {
   constructor(props) {
@@ -55,11 +63,38 @@ class Index extends PureComponent {
     this.setState({
       [name]: value,
     })
-    console.log(value)
     if (name === 'email') {
       this.setState({
         error: {
           email: validateEmail(value),
+        },
+      })
+    }
+    if (name === 'name') {
+      this.setState({
+        error: {
+          name: validateName(value),
+        },
+      })
+    }
+    if (name === 'phone') {
+      this.setState({
+        error: {
+          phone: validatePhone(value),
+        },
+      })
+    }
+    if (name === 'address') {
+      this.setState({
+        error: {
+          address: validateAddress(value),
+        },
+      })
+    }
+    if (name === 'note') {
+      this.setState({
+        error: {
+          note: validateNote(value),
         },
       })
     }
@@ -73,6 +108,10 @@ class Index extends PureComponent {
   renderItem = item => {
     const { classes } = this.props
     // const { isLoadingSubmit } = this.state
+    const itemClass = classNames({
+      [classes.textItem]: true,
+      [classes.textContent]: true,
+    })
     const rowTotalPrice = item.count * item.price
     return (
       <Grid item xs={12} md={6} lg={3} className={classes.itemOrder}>
@@ -81,8 +120,10 @@ class Index extends PureComponent {
         </div>
         <div className={classes.itemContent}>
           <div className={classes.nameItem}>
-            <span className={classes.textItem}>{item.name}</span>
-            <span className={classes.textItem}>{`${this.convertPrice(item.price)}VND`}</span>
+            <span className={itemClass} style={{ marginTop: '10px' }}>
+              {item.name}
+            </span>
+            <span className={itemClass}>{`${this.convertPrice(item.price)}VND`}</span>
           </div>
           <span
             className={classes.textItem}
@@ -105,7 +146,30 @@ class Index extends PureComponent {
 
   onSubmitForm = async () => {
     const { name, phone, email, address, note, itemSelected, restaurant } = this.state
-
+    if (name === '') {
+      this.setState({
+        error: {
+          name: 'Please input Customer name',
+        },
+      })
+      return
+    }
+    if (phone === '') {
+      this.setState({
+        error: {
+          phone: 'Please input Phone number',
+        },
+      })
+      return
+    }
+    if (address === '') {
+      this.setState({
+        error: {
+          address: 'Please input Address',
+        },
+      })
+      return
+    }
     try {
       const data = await confirmOrder({
         name: name.trim(),
@@ -128,6 +192,59 @@ class Index extends PureComponent {
     // this.setState({
     //   isOpenPopup: true,
     // })
+  }
+
+  onConfirmOrder = async () => {
+    const { restaurant, pages, itemSelected, name, phone, email, address, note } = this.state
+    try {
+      const data = await getListMenuByRestaurant({
+        page: 1,
+        limit: pages * 10,
+        restaurantId: restaurant.id,
+      })
+      if (data.isSuccess) {
+        const arraySelect = []
+        _.map(itemSelected, value => {
+          const selectValue = _.find(data.data, { id: value.id })
+          arraySelect.push(selectValue)
+        })
+
+        const filterSelected = _.filter(arraySelect, value => !value.active)
+        if (filterSelected.length > 0) {
+          console.log('failed')
+        } else {
+          const dataOrder = await confirmOrder({
+            name: name.trim(),
+            phone,
+            email: email.trim(),
+            address: address.trim(),
+            note: note.trim(),
+            restaurantId: restaurant.id,
+            items: itemSelected,
+          })
+          if (dataOrder.isSuccess) {
+            this.setState({
+              isOpenPopup: true,
+            })
+          }
+        }
+      }
+    } catch (e) {
+      console.warn(e)
+    }
+  }
+
+  isRestaurantOpen = () => {
+    const { restaurant } = this.state
+    if (restaurant) {
+      const currentTime = moment().format('HH:MM')
+      const convertCurrentTime = moment(currentTime, 'hh:mm')
+      const openTime = moment(restaurant.open_time, 'hh:mm')
+      const closeTime = moment(restaurant.closed_time, 'hh:mm')
+      const isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
+      return isOpen
+    }
+    return null
   }
 
   handleClose = () => {
@@ -209,6 +326,7 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={name}
+                    error={error && error.name}
                     onChange={this.onChangeText}
                     type="text"
                     name="name"
@@ -223,6 +341,7 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={phone}
+                    error={error && error.phone}
                     onChange={this.onChangeText}
                     type="number"
                     name="phone"
@@ -236,6 +355,7 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={address}
+                    error={error && error.address}
                     onChange={this.onChangeText}
                     type="text"
                     name="address"
@@ -249,6 +369,7 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={email}
+                    error={error && error.email}
                     onChange={this.onChangeText}
                     type="email"
                     name="email"
@@ -263,6 +384,7 @@ class Index extends PureComponent {
                 <div className={classes.inputContainer}>
                   <Input
                     value={note}
+                    error={error && error.note}
                     onChange={this.onChangeText}
                     type="text"
                     name="note"
@@ -273,7 +395,11 @@ class Index extends PureComponent {
                 </div>
               </div>
             </div>
-            <div style={{ width: '100%', height: '60px', marginTop: '10px' }} />
+            <div style={{ width: '100%', height: '60px', marginTop: '10px' }}>
+              <p style={{ fontSize: '9px' }}>
+                (メールアドレスを入力すれば注文情報が確認としてメールに届きます)
+              </p>
+            </div>
           </div>
         )}
         <div className={classes.btnContainer}>
@@ -288,14 +414,23 @@ class Index extends PureComponent {
           </Button>
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
-          {/* <DialogTitle
-            id="simple-dialog-title"
-            style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}
+          <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>Order success</p>
+          <span style={{ textAlign: 'center' }}>
+            Your order information will be sent to your email
+          </span>
+          <div
+            style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
           >
-            Your order is waiting to confirm
-          </DialogTitle> */}
-          <p style={{ textAlign: 'center', fontSize: '17px', fontWeight: 'bold' }}>Order success</p>
-          <p style={{ textAlign: 'center' }}>Your order information will be sent to your email</p>
+            <Button
+              variant="contained"
+              color="primary"
+              className="btn-login"
+              onClick={this.handleClose}
+              style={{ backgroundColor: '#F7941D' }}
+            >
+              Ok
+            </Button>
+          </div>
         </Dialog>
       </div>
     )

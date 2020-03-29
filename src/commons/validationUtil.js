@@ -1,15 +1,32 @@
 import validator from 'validator'
 
-export const validatePassword = value => {
-  if (value.length < 8 || value.length > 25) {
-    return 'Mật khẩu ít nhất phải từ 8 ký tự và không vượt quá 25 ký tự.'
+export const validateEmail = value => {
+  if (!validator.isEmail(value) && value !== '') {
+    return '正しいフォーマットでメールアドレスを入力してください'
   }
   return ''
 }
-
-export const validateEmail = value => {
-  if (!validator.isEmail(value) && value !== '') {
-    return 'Định dạng Email không hợp lệ.'
+export const validateName = value => {
+  if (value.length > 150 && value !== '') {
+    return 'Customer name is limit at 150 characters'
+  }
+  return ''
+}
+export const validatePhone = value => {
+  if (value.length < 10 && value.length > 15 && value !== '') {
+    return 'Phone number is limit at 10-15 characters'
+  }
+  return ''
+}
+export const validateAddress = value => {
+  if (value.length > 300 && value !== '') {
+    return 'Address is limit at 300 characters'
+  }
+  return ''
+}
+export const validateNote = value => {
+  if (value.length > 1024 && value !== '') {
+    return 'Note is limit at 1024 characters'
   }
   return ''
 }

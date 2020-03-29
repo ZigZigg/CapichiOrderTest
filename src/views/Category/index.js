@@ -125,15 +125,15 @@ class Index extends PureComponent {
             // threshold={300}
             next={this.onLoadMore}
             hasMore={isHasMore}
-            loader={
-              isHasMore && (
-                <CircularProgress
-                  size={30}
-                  color="primary"
-                  style={{ marginTop: '10px', margin: 'auto' }}
-                />
-              )
-            }
+            // loader={
+            //   isHasMore && (
+            //     <CircularProgress
+            //       size={30}
+            //       color="primary"
+            //       style={{ marginTop: '10px', margin: 'auto' }}
+            //     />
+            //   )
+            // }
             style={{
               marginTop: '20px',
             }}
