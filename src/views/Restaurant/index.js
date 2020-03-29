@@ -315,7 +315,7 @@ class Restaurant extends Component {
                   <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>
                 )}
                 <div style={{ fontSize: '15px' }}>
-                  <span className={classes.rightContentText}>Open time:</span>
+                  <span className={classes.rightContentText}>オープンタイム:</span>
                   {itemRestaurant.open_time && itemRestaurant.closed_time && (
                     <span
                       className={timeClass}

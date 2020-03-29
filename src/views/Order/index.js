@@ -147,26 +147,12 @@ class Index extends PureComponent {
 
   onSubmitForm = async () => {
     const { name, phone, address } = this.state
-    if (name === '') {
+    if (address === '' || phone === '' || name === '') {
       this.setState({
         error: {
-          name: 'Please input Customer name',
-        },
-      })
-      return
-    }
-    if (phone === '') {
-      this.setState({
-        error: {
-          phone: 'Please input Phone number',
-        },
-      })
-      return
-    }
-    if (address === '') {
-      this.setState({
-        error: {
-          address: 'Please input Address',
+          name: name === '' ? 'お客様の名前を入力してください' : '',
+          phone: phone === '' ? '電話番号を入力してください' : '',
+          address: address === '' ? '住所を入力してください' : '',
         },
       })
       return
