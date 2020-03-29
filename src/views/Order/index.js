@@ -335,7 +335,7 @@ class Index extends PureComponent {
                     value={phone}
                     error={error && error.phone}
                     onChange={this.onChangeText}
-                    type="number"
+                    type="text"
                     name="phone"
                     className={classes.input}
                   />
@@ -351,6 +351,8 @@ class Index extends PureComponent {
                     onChange={this.onChangeText}
                     type="text"
                     name="address"
+                    multiline
+                    rows={2}
                     className={classes.input}
                   />
                   {error && error.address && <span className={classes.error}>{error.address}</span>}
@@ -371,7 +373,9 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>注意</span>
+                <span className={classes.textItem} style={{ maxWidth: '35%' }}>
+                  追記事項(特定の食材抜き、配達時間の指定などの特別な注文はこちらに記入してください
+                </span>
 
                 <div className={classes.inputContainer}>
                   <Input
@@ -381,7 +385,7 @@ class Index extends PureComponent {
                     type="text"
                     name="note"
                     multiline
-                    rows={3}
+                    rows={4}
                     className={classes.input}
                   />
                 </div>
@@ -389,7 +393,7 @@ class Index extends PureComponent {
             </div>
             <div style={{ width: '100%', height: '60px', marginTop: '10px' }}>
               <p style={{ fontSize: '9px' }}>
-                (メールアドレスを入力すれば注文情報が確認としてメールに届きます)
+                (メールアドレス〜届きます)→入力されたメールアドレス宛に注文の状況、配達状況などが随時確認のために送信されます)
               </p>
             </div>
             <div style={{ width: '100%', height: '100px' }} />
@@ -408,10 +412,10 @@ class Index extends PureComponent {
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
           <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-            注文は成功しました
+            注文は完了しました
           </p>
           <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-            あなたの注文情報はレストランに送信されます
+            あなたの注文情報はレストランに送信されました
           </span>
           <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
             レストランの確認をお待ちください

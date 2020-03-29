@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import { KeyboardArrowLeft, LocationOn } from '@material-ui/icons'
+import { KeyboardArrowLeft, LocationOn, Phone } from '@material-ui/icons'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
@@ -20,7 +20,7 @@ class Restaurant extends Component {
     super(props)
     const { location } = props
     this.state = {
-      objectRestaurant: location.state ? location.state.item : null,
+      // objectRestaurant: location.state ? location.state.item : null,
       itemRestaurant: null,
       prevPages: location.state && location.state.pages ? location.state.pages : null,
       prevItemSelected:
@@ -63,9 +63,11 @@ class Restaurant extends Component {
   }
 
   onGetRestaurantDetail = async () => {
-    const { objectRestaurant } = this.state
+    const { match } = this.props
+    const { id } = match.params
+    console.log({ id })
     try {
-      const data = await getRestaurantDetail({ restaurantId: objectRestaurant.id })
+      const data = await getRestaurantDetail({ restaurantId: id })
       if (data.isSuccess) {
         this.setState(
           {
@@ -82,14 +84,9 @@ class Restaurant extends Component {
 
   onGetListMenu = async (page = 1, isLoadMore) => {
     try {
-      const {
-        totalPage,
-        dataMenu,
-        objectRestaurant,
-        prevPages,
-        prevItemSelected,
-        listItemSelected,
-      } = this.state
+      const { totalPage, dataMenu, prevPages, prevItemSelected, listItemSelected } = this.state
+      const { match } = this.props
+      const { id } = match.params
       if (!isLoadMore) {
         this.setState({
           // isLoading: true,
@@ -100,7 +97,7 @@ class Restaurant extends Component {
         const data = await getListMenuByRestaurant({
           page,
           limit: prevPages ? prevPages * 10 : 10,
-          restaurantId: objectRestaurant.id,
+          restaurantId: id,
         })
         let dataFormat = []
         if (prevPages) {
@@ -171,13 +168,14 @@ class Restaurant extends Component {
   }
 
   onCheckAvailable = async filterArray => {
-    const { currentPage, objectRestaurant } = this.state
-    const { history } = this.props
+    const { currentPage, itemRestaurant } = this.state
+    const { history, match } = this.props
+    const { id } = match.params
     try {
       const data = await getListMenuByRestaurant({
         page: 1,
         limit: currentPage * 10,
-        restaurantId: objectRestaurant.id,
+        restaurantId: id,
       })
       if (data.isSuccess) {
         const arraySelect = []
@@ -187,7 +185,7 @@ class Restaurant extends Component {
         })
 
         const filterSelected = _.filter(arraySelect, value => !value.active)
-        const dataRestaurant = await getRestaurantDetail({ restaurantId: objectRestaurant.id })
+        const dataRestaurant = await getRestaurantDetail({ restaurantId: id })
         let isOpen = true
         if (dataRestaurant.data) {
           const currentTime = moment().format('HH:MM')
@@ -210,7 +208,7 @@ class Restaurant extends Component {
         } else {
           history.push('/orderDetail', {
             listItemSelected: filterArray,
-            objectRestaurant,
+            objectRestaurant: itemRestaurant,
             pages: currentPage,
           })
         }
@@ -311,11 +309,17 @@ class Restaurant extends Component {
                     {itemRestaurant && itemRestaurant.address}
                   </span>
                 </div>
+                <div>
+                  <Phone style={{ fontSize: '17px', marginBottom: '-3px' }} />
+                  <a href={`tel:${itemRestaurant.phone}`} className={classes.address}>
+                    {itemRestaurant.phone}
+                  </a>
+                </div>
                 {itemRestaurant.note && (
                   <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>
                 )}
                 <div style={{ fontSize: '15px' }}>
-                  <span className={classes.rightContentText}>オープンタイム:</span>
+                  <span className={classes.rightContentText}>営業時間:</span>
                   {itemRestaurant.open_time && itemRestaurant.closed_time && (
                     <span
                       className={timeClass}
@@ -395,7 +399,7 @@ class Restaurant extends Component {
               onClick={this.handleClose}
               style={{ backgroundColor: '#F7941D' }}
             >
-              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `Close`}
+              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `閉じる`}
             </Button>
           </div>
         </Dialog>
@@ -468,6 +472,7 @@ Restaurant.propTypes = {
   history: PropTypes.any,
   location: PropTypes.any,
   classes: PropTypes.any,
+  match: PropTypes.any,
 }
 
 export default withStyles(styles)(Restaurant)

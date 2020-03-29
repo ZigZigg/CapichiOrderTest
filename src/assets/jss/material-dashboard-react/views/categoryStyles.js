@@ -44,7 +44,7 @@ const styles = {
   rightTextName: {
     fontSize: '15px',
     fontWeight: 'bold',
-    height: '30px',
+    height: '32px',
     lineHeight: '16px',
     overflow: 'hidden',
   },

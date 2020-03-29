@@ -34,7 +34,7 @@ class CategoryItem extends PureComponent {
             <span className={classes.rightTextName}>{item.name}</span>
             <span className={classes.rightContentText}>{item.address}</span>
             <p style={{ margin: 0 }}>
-              <span className={classes.rightContentText}>オープンタイム:</span>
+              <span className={classes.rightContentText}>営業時間:</span>
               {item.open_time && item.closed_time && (
                 <span className={timeClass}>{`${item.open_time} - ${item.closed_time}`}</span>
               )}

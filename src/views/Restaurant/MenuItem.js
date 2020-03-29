@@ -39,7 +39,7 @@ class MenuItem extends PureComponent {
     this.setState({
       count: countSet <= 99 ? countSet : 99,
     })
-    const itemSelected = { ...item, count: countSet }
+    const itemSelected = { ...item, count: countSet <= 99 ? countSet : 99 }
     if (onSetOrder) onSetOrder(itemSelected)
   }
 

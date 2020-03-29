@@ -117,7 +117,7 @@ class Index extends PureComponent {
         >
           <CustomInput
             //   onKeyPress={this.handlePressKey}
-            placeholder="Search restaurant by name..."
+            placeholder="名前で店舗を探す..."
             onChange={this.onChangeText}
             style={{ width: '100%' }}
           />
@@ -158,7 +158,7 @@ class Index extends PureComponent {
           </InfiniteScroll>
         ) : (
           <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-            Can not found any Restaurant
+            店舗が見つかりません
           </p>
         )}
       </div>
