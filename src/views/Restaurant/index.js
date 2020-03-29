@@ -65,7 +65,6 @@ class Restaurant extends Component {
   onGetRestaurantDetail = async () => {
     const { match } = this.props
     const { id } = match.params
-    console.log({ id })
     try {
       const data = await getRestaurantDetail({ restaurantId: id })
       if (data.isSuccess) {
@@ -196,14 +195,14 @@ class Restaurant extends Component {
         } else {
           isOpen = false
         }
-        if (filterSelected.length > 0) {
+        if (!isOpen) {
+          this.setState({
+            isOpenTime: true,
+          })
+        } else if (filterSelected.length > 0) {
           this.setState({
             inactiveOrder: filterSelected,
             isOpenPopupInactive: true,
-          })
-        } else if (!isOpen) {
-          this.setState({
-            isOpenTime: true,
           })
         } else {
           history.push('/orderDetail', {
@@ -315,9 +314,6 @@ class Restaurant extends Component {
                     {itemRestaurant.phone}
                   </a>
                 </div>
-                {itemRestaurant.note && (
-                  <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>
-                )}
                 <div style={{ fontSize: '15px' }}>
                   <span className={classes.rightContentText}>営業時間:</span>
                   {itemRestaurant.open_time && itemRestaurant.closed_time && (
@@ -326,6 +322,10 @@ class Restaurant extends Component {
                     >{`${itemRestaurant.open_time} - ${itemRestaurant.closed_time}`}</span>
                   )}
                 </div>
+                {itemRestaurant.note && (
+                  <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>
+                )}
+
                 <p style={{ fontSize: '16px', textAlign: 'center' }}>メニュー一覧</p>
               </>
             )}
@@ -335,16 +335,6 @@ class Restaurant extends Component {
                 dataMenu.length > 0 &&
                 dataMenu.map(value => {
                   return <MenuItem key={value.id} onSetOrder={this.onSetOrder} item={value} />
-                  // return (
-                  //   <div
-                  //     style={{
-                  //       width: '100%',
-                  //       height: 100,
-                  //       margin: '10px 0',
-                  //       backgroundColor: 'red',
-                  //     }}
-                  //   />
-                  // )
                 })}
               {itemRestaurant && dataMenu.length === 0 && (
                 <p style={{ width: '100%', textAlign: 'center', fontSize: '12px' }}>
@@ -456,7 +446,7 @@ class Restaurant extends Component {
               variant="contained"
               color="primary"
               className="btn-login"
-              onClick={this.handleClose}
+              onClick={this.handleCloseTime}
               style={{ backgroundColor: '#F7941D' }}
             >
               Ok

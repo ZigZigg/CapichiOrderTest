@@ -61,11 +61,9 @@ class Index extends PureComponent {
 
   onChangeText = event => {
     const { name, value } = event.target
-    this.setState({
-      [name]: value,
-    })
     if (name === 'email') {
       this.setState({
+        [name]: value,
         error: {
           email: validateEmail(value),
         },
@@ -73,6 +71,7 @@ class Index extends PureComponent {
     }
     if (name === 'name') {
       this.setState({
+        [name]: value,
         error: {
           name: validateName(value),
         },
@@ -80,6 +79,7 @@ class Index extends PureComponent {
     }
     if (name === 'phone') {
       this.setState({
+        [name]: value.replace(/[\D]/g, ''),
         error: {
           phone: validatePhone(value.replace(/[\D]/g, '')),
         },
@@ -87,6 +87,7 @@ class Index extends PureComponent {
     }
     if (name === 'address') {
       this.setState({
+        [name]: value,
         error: {
           address: validateAddress(value),
         },
@@ -94,6 +95,7 @@ class Index extends PureComponent {
     }
     if (name === 'note') {
       this.setState({
+        [name]: value,
         error: {
           note: validateNote(value),
         },
