@@ -4,10 +4,11 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
+import { AddCircle, RemoveCircle } from '@material-ui/icons'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
-import circlePlus from '../../assets/img/circle-plus.png'
-import circleMinus from '../../assets/img/circle-minus.png'
-import circleMinusInactive from '../../assets/img/circle-plus-inactive.png'
+// import circlePlus from '../../assets/img/circle-plus.png'
+// import circleMinus from '../../assets/img/circle-minus.png'
+// import circleMinusInactive from '../../assets/img/circle-plus-inactive.png'
 
 class MenuItem extends PureComponent {
   constructor(props) {
@@ -70,23 +71,32 @@ class MenuItem extends PureComponent {
         <div className={classes.action}>
           {/* <img /> */}
           {count > 0 && (
-            <img
-              src={circleMinus}
-              alt="minus"
+            // <img
+            //   src={circleMinus}
+            //   alt="minus"
+            //   onClick={() => this.onSetCount(false)}
+            //   className={classes.imgIcon}
+            // />
+            <RemoveCircle
               onClick={() => this.onSetCount(false)}
-              className={classes.imgIcon}
+              style={{ fontSize: '28px', color: '#F7941C' }}
             />
           )}
           {count > 0 && <span style={{ margin: '0 10px' }}>{count}</span>}
           {item.active ? (
-            <img
-              src={circlePlus}
-              alt="plus"
+            <AddCircle
               onClick={() => this.onSetCount(true)}
-              className={classes.imgIcon}
+              style={{ fontSize: '28px', color: '#F7941C' }}
             />
           ) : (
-            <img src={circleMinusInactive} alt="plus" className={classes.imgIcon} />
+            // <img
+            //   src={circlePlus}
+            //   alt="plus"
+            //   onClick={() => this.onSetCount(true)}
+            //   className={classes.imgIcon}
+            // />
+            <AddCircle style={{ fontSize: '28px', color: '#898988' }} />
+            // <img src={circleMinusInactive} alt="plus" className={classes.imgIcon} />
           )}
         </div>
       </Grid>
