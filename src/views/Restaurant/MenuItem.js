@@ -11,10 +11,20 @@ import circleMinus from '../../assets/img/circle-minus.png'
 class MenuItem extends PureComponent {
   constructor(props) {
     super(props)
+    const { item } = props
     this.state = {
-      count: 0,
+      count: item && item.count ? item.count : 0,
     }
   }
+
+  // componentDidMount() {
+  //   const { item, onSetOrder } = this.props
+
+  //   if (item && item.count && onSetOrder) {
+  //     console.log({ item })
+  //     onSetOrder(item)
+  //   }
+  // }
 
   onClickItem = () => {
     const { onClick, item } = this.props

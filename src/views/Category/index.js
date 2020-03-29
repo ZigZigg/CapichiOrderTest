@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { PureComponent } from 'react'
 import { withStyles, fade } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
@@ -61,11 +62,11 @@ class Index extends PureComponent {
       {
         keyword: text,
       },
-      () => this.onGetListCategory()
+      () => this.onGetListCategory(1, false, true)
     )
   }
 
-  onGetListCategory = async (page = 1, isLoadMore) => {
+  onGetListCategory = async (page = 1, isLoadMore, isSearch) => {
     try {
       const { keyword, totalPage, dataCategory } = this.state
       if (!isLoadMore) {
@@ -74,11 +75,11 @@ class Index extends PureComponent {
         })
       }
 
-      if (page <= totalPage) {
+      if (page <= totalPage || isSearch) {
         const data = await getListCategory({ page, limit: 10, keyword })
         if (data.isSuccess) {
           this.setState({
-            dataCategory: dataCategory.concat(data.data),
+            dataCategory: isSearch ? data.data : dataCategory.concat(data.data),
             currentPage: page,
             totalPage: data.paging.total_page,
             isLoading: false,
@@ -103,9 +104,9 @@ class Index extends PureComponent {
   render() {
     // const { classes } = this.props
     const { dataCategory, isLoading, totalPage, currentPage } = this.state
-    const isHasMore = currentPage < totalPage
+    const isHasMore = currentPage < totalPage && dataCategory.length > 0
     return (
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
           <CustomInput
             //   onKeyPress={this.handlePressKey}
@@ -117,11 +118,11 @@ class Index extends PureComponent {
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
             <CircularProgress size={30} color="primary" />
           </div>
-        ) : (
+        ) : dataCategory.length > 0 ? (
           <InfiniteScroll
             dataLength={dataCategory.length}
-            throttle={100}
-            threshold={300}
+            // throttle={100}
+            // threshold={300}
             next={this.onLoadMore}
             hasMore={isHasMore}
             loader={
@@ -134,8 +135,7 @@ class Index extends PureComponent {
               )
             }
             style={{
-              flexWrap: 'wrap',
-              display: 'flex',
+              marginTop: '20px',
             }}
           >
             <Grid container>
@@ -148,6 +148,10 @@ class Index extends PureComponent {
                 })}
             </Grid>
           </InfiniteScroll>
+        ) : (
+          <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
+            Can not found any Restaurant
+          </p>
         )}
       </div>
     )

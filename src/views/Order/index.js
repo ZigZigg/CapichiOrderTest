@@ -9,10 +9,9 @@ import Button from '@material-ui/core/Button'
 import _ from 'lodash'
 // import TextField from '@material-ui/core/TextField'
 import Input from '@material-ui/core/Input'
-import DialogTitle from '@material-ui/core/DialogTitle'
 import Dialog from '@material-ui/core/Dialog'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
-import { getRestaurantDetail } from '../../api'
+import { getRestaurantDetail, confirmOrder } from '../../api'
 import { validateEmail } from '../../commons'
 
 class Index extends PureComponent {
@@ -54,7 +53,7 @@ class Index extends PureComponent {
   onChangeText = event => {
     const { name, value } = event.target
     this.setState({
-      [name]: value.trim(),
+      [name]: value,
     })
     console.log(value)
     if (name === 'email') {
@@ -104,16 +103,39 @@ class Index extends PureComponent {
     history.push(`/restaurant/${restaurant.id}`, { item: restaurant, pages, itemSelected })
   }
 
-  onSubmitForm = () => {
-    this.setState({
-      isOpenPopup: true,
-    })
+  onSubmitForm = async () => {
+    const { name, phone, email, address, note, itemSelected, restaurant } = this.state
+
+    try {
+      const data = await confirmOrder({
+        name: name.trim(),
+        phone,
+        email: email.trim(),
+        address: address.trim(),
+        note: note.trim(),
+        restaurantId: restaurant.id,
+        items: itemSelected,
+      })
+      if (data.isSuccess) {
+        this.setState({
+          isOpenPopup: true,
+        })
+      }
+    } catch (e) {
+      console.warn(e)
+    }
+
+    // this.setState({
+    //   isOpenPopup: true,
+    // })
   }
 
   handleClose = () => {
+    const { history } = this.props
     this.setState({
       isOpenPopup: false,
     })
+    history.push('/category')
   }
 
   render() {
@@ -144,7 +166,7 @@ class Index extends PureComponent {
             onClick={this.onGoBack}
             style={{ fontSize: '40px', marginLeft: '10px' }}
           />
-          <span className={classes.headerLabel}>Order Detail</span>
+          <span className={classes.headerLabel}>注文内容確認</span>
           <div style={{ marginRight: '24px', width: '30px' }} />
         </div>
         {restaurant && (
@@ -166,37 +188,38 @@ class Index extends PureComponent {
             <div className={classes.shippingBox}>
               <div style={{ width: '95px' }} />
               <div className={classes.shippingContent}>
-                <span>Shipping fee</span>
+                <span>配送代</span>
                 <span>{`${this.convertPrice(parseInt(restaurant.fee))} VND`}</span>
               </div>
             </div>
             <div className={classes.totalBox}>
               <div style={{ width: '40px' }} />
               <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
-                <span>Grand total</span>
+                <span>合計</span>
                 <span>{`${this.convertPrice(total + parseInt(restaurant.fee))} VND`}</span>
               </div>
             </div>
             <div style={{ marginTop: '20px' }}>
               <p className={classes.textItem} style={{ textAlign: 'center' }}>
-                Confirm order information
+                注文者情報入力
               </p>
 
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>Name</span>
+                <span className={classes.textItem}>名前</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={name}
                     onChange={this.onChangeText}
                     type="text"
                     name="name"
+                    maxLength={3}
                     className={classes.input}
                   />
                   {error && error.name && <span className={classes.error}>{error.name}</span>}
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>Phone number</span>
+                <span className={classes.textItem}>電話番号</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={phone}
@@ -209,7 +232,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>Address</span>
+                <span className={classes.textItem}>住所</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={address}
@@ -222,7 +245,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>Email</span>
+                <span className={classes.textItem}>メアド</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={email}
@@ -261,11 +284,18 @@ class Index extends PureComponent {
             onClick={this.onSubmitForm}
             style={{ backgroundColor: '#F7941D' }}
           >
-            {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `Submit order`}
+            {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `注文`}
           </Button>
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
-          <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
+          {/* <DialogTitle
+            id="simple-dialog-title"
+            style={{ textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}
+          >
+            Your order is waiting to confirm
+          </DialogTitle> */}
+          <p style={{ textAlign: 'center', fontSize: '17px', fontWeight: 'bold' }}>Order success</p>
+          <p style={{ textAlign: 'center' }}>Your order information will be sent to your email</p>
         </Dialog>
       </div>
     )

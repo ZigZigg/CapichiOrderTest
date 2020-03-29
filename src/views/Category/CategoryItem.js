@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
+import moment from 'moment'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 
 class CategoryItem extends PureComponent {
@@ -12,6 +13,7 @@ class CategoryItem extends PureComponent {
 
   render() {
     const { classes, item } = this.props
+    const currentTime = moment().format('hh:mm')
     return (
       <Grid onClick={this.onClickItem} item xs={12} md={6} lg={3} className={classes.itemCategory}>
         <div className={classes.itemContentCategory}>

@@ -2,7 +2,7 @@ import request from './request'
 import { categoryApi } from './config'
 import { getMessageErrorFormServer } from '../commons'
 
-export const testCategory = () => {}
+export const test = () => {}
 
 export const getListMenuByRestaurant = async ({ page = 1, limit = 10, restaurantId }) => {
   try {

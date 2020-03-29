@@ -18,10 +18,12 @@ class Restaurant extends Component {
     this.state = {
       objectRestaurant: location.state ? location.state.item : null,
       itemRestaurant: null,
-      // prevPages: location.state && location.state.pages ? location.state.pages : null,
+      prevPages: location.state && location.state.pages ? location.state.pages : null,
+      prevItemSelected:
+        location.state && location.state.itemSelected ? location.state.itemSelected : [],
       dataMenu: [],
       listItemSelected: [],
-      currentPage: 1,
+      currentPage: location.state && location.state.pages ? location.state.pages : 1,
       totalPage: 10,
     }
   }
@@ -48,7 +50,14 @@ class Restaurant extends Component {
 
   onGetListMenu = async (page = 1, isLoadMore) => {
     try {
-      const { totalPage, dataMenu, objectRestaurant } = this.state
+      const {
+        totalPage,
+        dataMenu,
+        objectRestaurant,
+        prevPages,
+        prevItemSelected,
+        listItemSelected,
+      } = this.state
       if (!isLoadMore) {
         this.setState({
           // isLoading: true,
@@ -58,14 +67,24 @@ class Restaurant extends Component {
       if (page <= totalPage) {
         const data = await getListMenuByRestaurant({
           page,
-          limit: 10,
+          limit: prevPages ? prevPages * 10 : 10,
           restaurantId: objectRestaurant.id,
         })
+        let dataFormat = []
+        if (prevPages) {
+          dataFormat = [...data.data]
+          prevItemSelected.map(value => {
+            listItemSelected.push(value)
+            return dataFormat.splice(_.findIndex(dataFormat, { id: value.id }), 1, { ...value })
+          })
+          console.log({ dataFormat })
+        }
         if (data.isSuccess) {
           this.setState({
-            dataMenu: dataMenu.concat(data.data),
+            dataMenu: prevPages ? dataFormat : dataMenu.concat(data.data),
             currentPage: page,
             totalPage: data.paging.total_page,
+            prevPages: null,
             // isLoading: false,
           })
         }
@@ -104,13 +123,27 @@ class Restaurant extends Component {
   onSubmitForm = () => {
     const { history } = this.props
     const { listItemSelected, objectRestaurant, currentPage } = this.state
-    history.push('/orderDetail', { listItemSelected, objectRestaurant, pages: currentPage })
+    console.log({ listItemSelected })
+    const filterArray = _.filter(listItemSelected, value => value.count > 0)
+    history.push('/orderDetail', {
+      listItemSelected: filterArray,
+      objectRestaurant,
+      pages: currentPage,
+    })
   }
 
   render() {
     const { classes } = this.props
-    const { itemRestaurant, dataMenu, isLoadingSubmit, currentPage, totalPage } = this.state
+    const {
+      itemRestaurant,
+      dataMenu,
+      isLoadingSubmit,
+      currentPage,
+      totalPage,
+      prevPages,
+    } = this.state
     const isHasMore = currentPage < totalPage && itemRestaurant
+    console.log({ prevPages })
     return (
       <div className={classes.wrapper}>
         <div className={classes.header}>
@@ -205,7 +238,7 @@ class Restaurant extends Component {
             onClick={this.onSubmitForm}
             style={{ backgroundColor: '#F7941D' }}
           >
-            {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `Submit`}
+            {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `確定`}
           </Button>
         </div>
       </div>
