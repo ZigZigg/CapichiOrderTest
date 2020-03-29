@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
 import circlePlus from '../../assets/img/circle-plus.png'
 import circleMinus from '../../assets/img/circle-minus.png'
+import circleMinusInactive from '../../assets/img/circle-plus-inactive.png'
 
 class MenuItem extends PureComponent {
   constructor(props) {
@@ -36,7 +37,7 @@ class MenuItem extends PureComponent {
     const { onSetOrder, item } = this.props
     const countSet = type ? count + 1 : count - 1
     this.setState({
-      count: countSet,
+      count: countSet <= 99 ? countSet : 99,
     })
     const itemSelected = { ...item, count: countSet }
     if (onSetOrder) onSetOrder(itemSelected)
@@ -61,7 +62,9 @@ class MenuItem extends PureComponent {
         </div>
 
         <div className={classes.content}>
-          <span className={classes.textContent}>{item.name}</span>
+          <span className={classes.textContent} style={{ marginTop: '10px' }}>
+            {item.name}
+          </span>
           <span className={classes.textContent}>{this.converCurrency(item.price)}</span>
         </div>
         <div className={classes.action}>
@@ -75,12 +78,16 @@ class MenuItem extends PureComponent {
             />
           )}
           {count > 0 && <span style={{ margin: '0 10px' }}>{count}</span>}
-          <img
-            src={circlePlus}
-            alt="plus"
-            onClick={() => this.onSetCount(true)}
-            className={classes.imgIcon}
-          />
+          {item.active ? (
+            <img
+              src={circlePlus}
+              alt="plus"
+              onClick={() => this.onSetCount(true)}
+              className={classes.imgIcon}
+            />
+          ) : (
+            <img src={circleMinusInactive} alt="plus" className={classes.imgIcon} />
+          )}
         </div>
       </Grid>
     )

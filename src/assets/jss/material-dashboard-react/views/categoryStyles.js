@@ -36,6 +36,9 @@ const styles = {
     fontSize: '14px',
     lineHeight: '18px',
   },
+  closeText: {
+    color: 'red',
+  },
   rightTextName: {
     fontSize: '15px',
     fontWeight: 'bold',

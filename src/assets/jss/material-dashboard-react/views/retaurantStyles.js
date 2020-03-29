@@ -19,6 +19,7 @@ const styles = {
     position: 'fixed',
     width: '100%',
     backgroundColor: '#fff',
+    zIndex: '10',
   },
   headerLabel: {
     fontSize: '18px',
@@ -78,6 +79,11 @@ const styles = {
   },
   textContent: {
     fontSize: '12px',
+    height: '30px',
+    overflow: 'hidden',
+    lineHeight: '16px',
+    display: 'flex',
+    // alignItems: 'center',
   },
   action: {
     display: 'flex',
@@ -89,6 +95,12 @@ const styles = {
   iconAdd: {
     width: '20px',
     height: '20px',
+  },
+  closeBtn: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    margin: '20px 0px',
   },
 }
 
