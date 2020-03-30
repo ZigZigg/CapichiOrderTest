@@ -14,10 +14,10 @@ class CategoryItem extends PureComponent {
 
   render() {
     const { classes, item } = this.props
-    const currentTime = moment().format('HH:MM')
-    const convertCurrentTime = moment(currentTime, 'hh:mm')
-    const openTime = moment(item.open_time, 'hh:mm')
-    const closeTime = moment(item.closed_time, 'hh:mm')
+    const currentTime = moment().format('HH:mm')
+    const convertCurrentTime = moment(currentTime, 'HH:mm')
+    const openTime = moment(item.open_time, 'HH:mm')
+    const closeTime = moment(item.closed_time, 'HH:mm')
     const isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
     const timeClass = classNames({
       [classes.rightContentText]: true,
