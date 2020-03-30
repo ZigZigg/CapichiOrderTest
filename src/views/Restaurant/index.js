@@ -44,10 +44,10 @@ class Restaurant extends Component {
   isRestaurantOpen = () => {
     const { itemRestaurant } = this.state
     if (itemRestaurant) {
-      const currentTime = moment().format('HH:MM')
-      const convertCurrentTime = moment(currentTime, 'hh:mm')
-      const openTime = moment(itemRestaurant.open_time, 'hh:mm')
-      const closeTime = moment(itemRestaurant.closed_time, 'hh:mm')
+      const currentTime = moment().format('HH:mm')
+      const convertCurrentTime = moment(currentTime, 'HH:mm')
+      const openTime = moment(itemRestaurant.open_time, 'HH:mm')
+      const closeTime = moment(itemRestaurant.closed_time, 'HH:mm')
       const isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
       return isOpen
     }
@@ -187,10 +187,10 @@ class Restaurant extends Component {
         const dataRestaurant = await getRestaurantDetail({ restaurantId: id })
         let isOpen = true
         if (dataRestaurant.data) {
-          const currentTime = moment().format('HH:MM')
-          const convertCurrentTime = moment(currentTime, 'hh:mm')
-          const openTime = moment(dataRestaurant.data.open_time, 'hh:mm')
-          const closeTime = moment(dataRestaurant.data.closed_time, 'hh:mm')
+          const currentTime = moment().format('HH:mm')
+          const convertCurrentTime = moment(currentTime, 'HH:mm')
+          const openTime = moment(dataRestaurant.data.open_time, 'HH:mm')
+          const closeTime = moment(dataRestaurant.data.closed_time, 'HH:mm')
           isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
         } else {
           isOpen = false
