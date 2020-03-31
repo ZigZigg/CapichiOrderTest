@@ -184,10 +184,17 @@ class Index extends PureComponent {
         const arraySelect = []
         _.map(itemSelected, value => {
           const selectValue = _.find(data.data, { id: value.id })
-          arraySelect.push(selectValue)
+          if (!selectValue) {
+            arraySelect.push({ ...value, isShow: false })
+          } else {
+            arraySelect.push(selectValue)
+          }
         })
 
-        const filterSelected = _.filter(arraySelect, value => !value.active)
+        const filterSelected = _.filter(
+          arraySelect,
+          value => !value.active || value.isShow === false
+        )
         const dataRestaurant = await getRestaurantDetail({ restaurantId: restaurant.id })
         let isOpen = true
         if (dataRestaurant.data) {
@@ -404,8 +411,8 @@ class Index extends PureComponent {
               </div>
             </div>
             <div style={{ width: '100%', height: '60px', marginTop: '10px' }}>
-              <p style={{ fontSize: '9px', lineHeight:'15px' }}>
-              入力していたいただいたメールアドレス宛に注文状況、配達状況などをメールでリアルタイムに共有します。
+              <p style={{ fontSize: '9px', lineHeight: '15px' }}>
+                入力していたいただいたメールアドレス宛に注文状況、配達状況などをメールでリアルタイムに共有します。
               </p>
             </div>
             <div style={{ width: '100%', height: '100px' }} />
@@ -469,7 +476,7 @@ class Index extends PureComponent {
               variant="contained"
               color="primary"
               className="btn-login"
-              onClick={this.handleClose}
+              onClick={this.handleCloseWarning}
               style={{ backgroundColor: '#F7941D' }}
             >
               Ok

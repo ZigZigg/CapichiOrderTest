@@ -102,7 +102,11 @@ class Restaurant extends Component {
         if (prevPages) {
           dataFormat = [...data.data]
           prevItemSelected.map(value => {
-            listItemSelected.push(value)
+            const findItem = _.find(dataFormat, { id: value.id })
+            if (findItem) {
+              listItemSelected.push(value)
+            }
+
             return dataFormat.splice(_.findIndex(dataFormat, { id: value.id }), 1, { ...value })
           })
         }
@@ -180,10 +184,16 @@ class Restaurant extends Component {
         const arraySelect = []
         _.map(filterArray, value => {
           const selectValue = _.find(data.data, { id: value.id })
-          arraySelect.push(selectValue)
+          if (!selectValue) {
+            arraySelect.push({ ...value, isShow: false })
+          } else {
+            arraySelect.push(selectValue)
+          }
         })
-
-        const filterSelected = _.filter(arraySelect, value => !value.active)
+        const filterSelected = _.filter(
+          arraySelect,
+          value => !value.active || value.isShow === false
+        )
         const dataRestaurant = await getRestaurantDetail({ restaurantId: id })
         let isOpen = true
         if (dataRestaurant.data) {

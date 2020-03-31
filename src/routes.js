@@ -20,7 +20,7 @@ import Person from '@material-ui/icons/Person'
 // import LibraryBooks from '@material-ui/icons/LibraryBooks'
 // core components/views for Admin layout
 // import DashboardPage from './views/Dashboard/Dashboard'
-import UserProfile from './views/UserProfile/UserProfile'
+// import UserProfile from './views/UserProfile/UserProfile'
 // import Typography from './views/Typography/Typography'
 // core components/views for RTL layout
 // import VoucherList from './views/History/VoucherList'

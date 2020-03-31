@@ -19,7 +19,6 @@ import Person from '@material-ui/icons/Person'
 // import Dashboard from '@material-ui/icons/Dashboard'
 // import Search from '@material-ui/icons/Search'
 import { withRouter } from 'react-router-dom'
-import { logOutApi } from '../../api'
 import { AUTHEN_TOKEN } from '../../constants/define'
 // core components
 // import CustomInput from '../CustomInput/CustomInput'
