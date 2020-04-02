@@ -48,11 +48,11 @@ class Index extends PureComponent {
       totalPage: 10,
       keyword: '',
       isLoading: false,
-      currentTab: 190,
+      currentTab: 3,
       category: [
-        { id: 190, label: 'ハノイ', data: null },
-        { id: 192, label: 'ホーチミン', data: null },
-        { id: 191, label: 'ハイフォン', data: null },
+        { id: 3, label: 'ハノイ', data: null },
+        { id: 5, label: 'ホーチミン', data: null },
+        { id: 4, label: 'ハイフォン', data: null },
       ],
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
