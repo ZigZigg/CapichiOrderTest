@@ -154,11 +154,13 @@ class Index extends PureComponent {
       errorEmail,
       errorNote,
     } = this.state
-    if (address === '' || phone === '' || name === '') {
+    if (address.trim().length === 0 || phone.length === 0 || name.trim().length === 0) {
       this.setState({
-        errorName: name === '' ? 'お客様の名前を入力してください' : '',
-        errorPhone: phone === '' ? '電話番号を入力してください' : '',
-        errorAddress: address === '' ? '住所を入力してください' : '',
+        errorName: name.trim().length === 0 ? 'お客様の名前を入力してください' : '',
+        errorPhone: phone.length === 0 ? '電話番号を入力してください' : '',
+        errorAddress: address.trim().length === 0 ? '住所を入力してください' : '',
+        name:name.trim().length === 0 ? '' : name,
+        address:address.trim().length === 0 ? '' : address
       })
       return
     }
