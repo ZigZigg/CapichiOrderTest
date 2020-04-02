@@ -7,7 +7,6 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import _ from 'lodash'
-import moment from 'moment'
 // import TextField from '@material-ui/core/TextField'
 import Input from '@material-ui/core/Input'
 import Dialog from '@material-ui/core/Dialog'
@@ -20,8 +19,8 @@ import {
   validateName,
   validateNote,
   validatePhone,
+  getTimeRange,
 } from '../../commons'
-import {getTimeRange} from '../../commons'
 
 class Index extends PureComponent {
   constructor(props) {
@@ -233,15 +232,14 @@ class Index extends PureComponent {
     }
   }
 
-  isRestaurantOpen = (dataItem) => {
+  isRestaurantOpen = dataItem => {
     if (dataItem) {
       const timeRange = getTimeRange(dataItem.active_time_csv)
-      const findOpen = _.find(timeRange, {isOpen:true})
-      if(findOpen){
+      const findOpen = _.find(timeRange, { isOpen: true })
+      if (findOpen) {
         return true
-      }else{
-        return false
       }
+      return false
     }
     return null
   }

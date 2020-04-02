@@ -7,13 +7,12 @@ import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import moment from 'moment'
 import classNames from 'classnames'
 import Dialog from '@material-ui/core/Dialog'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
 import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
 import MenuItem from './MenuItem'
-import {getTimeRange} from '../../commons'
+import { getTimeRange } from '../../commons'
 import '../../assets/css/Restaurant/styles.css'
 
 class Restaurant extends Component {
@@ -42,17 +41,16 @@ class Restaurant extends Component {
     this.onGetRestaurantDetail()
   }
 
-  isRestaurantOpen = (dataItem) => {
+  isRestaurantOpen = dataItem => {
     const { itemRestaurant } = this.state
     const itemRestaurantData = dataItem || itemRestaurant
     if (itemRestaurantData) {
       const timeRange = getTimeRange(itemRestaurantData.active_time_csv)
-      const findOpen = _.find(timeRange, {isOpen:true})
-      if(findOpen){
+      const findOpen = _.find(timeRange, { isOpen: true })
+      if (findOpen) {
         return true
-      }else{
-        return false
       }
+      return false
     }
     return null
   }
@@ -200,7 +198,6 @@ class Restaurant extends Component {
         const dataRestaurant = await getRestaurantDetail({ restaurantId: id })
         let isOpen = true
         if (dataRestaurant.data) {
-
           // const currentTime = moment().format('HH:mm')
           // const convertCurrentTime = moment(currentTime, 'HH:mm')
           // const openTime = moment(dataRestaurant.data.open_time, 'HH:mm')
@@ -259,11 +256,7 @@ class Restaurant extends Component {
     } = this.state
     const filterSelected = _.filter(listItemSelected, value => value.count > 0)
     const isHasMore = currentPage < totalPage && itemRestaurant && dataMenu.length > 0
-    const timeClass = classNames({
-      [classes.rightContentText]: true,
-      [classes.closeText]: !this.isRestaurantOpen(),
-    })
-    const timeRange = itemRestaurant ?  getTimeRange(itemRestaurant.active_time_csv) : []
+    const timeRange = itemRestaurant ? getTimeRange(itemRestaurant.active_time_csv) : []
     return (
       <div id="restaurant" className={classes.wrapper}>
         <div className={classes.header}>
@@ -329,18 +322,27 @@ class Restaurant extends Component {
                     {itemRestaurant.phone}
                   </a>
                 </div>
-                <div style={{ fontSize: '15px', display:'flex', flexDirection:'column' }}>
+                <div style={{ fontSize: '15px', display: 'flex', flexDirection: 'column' }}>
                   <span className={classes.rightContentText}>営業時間:</span>
                   {/* {itemRestaurant.open_time && itemRestaurant.closed_time && (
                     <span
                       className={timeClass}
                     >{`${itemRestaurant.open_time} - ${itemRestaurant.closed_time}`}</span>
                   )} */}
-                                <div style={{display:'flex', flexDirection:'row',}}>
-                {timeRange.map((value, index) =>{
-                    return <span className={classNames({[classes.itemTimeRange]:true, [classes.itemTimeClose]:value.isOpen ? false : true })}>{value.time}</span>
-                })}
-              </div>
+                  <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    {timeRange.map(value => {
+                      return (
+                        <span
+                          className={classNames({
+                            [classes.itemTimeRange]: true,
+                            [classes.itemTimeClose]: !value.isOpen,
+                          })}
+                        >
+                          {value.time}
+                        </span>
+                      )
+                    })}
+                  </div>
                 </div>
                 {itemRestaurant.note && (
                   <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>

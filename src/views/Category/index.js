@@ -7,14 +7,12 @@ import Grid from '@material-ui/core/Grid'
 import InputBase from '@material-ui/core/InputBase'
 import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import classNames from 'classnames'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 import { getListCategory } from '../../api'
 import CategoryItem from './CategoryItem'
-import classNames from 'classnames'
-import Screens from './Screens'
 import logoHeader from '../../assets/img/logo-order.png'
 // const category = [{id:0, label:'Ha Noi'}, {id:1, label:'HCM'}, {id:2, label:'Hai Phong'}]
-
 
 const CustomInput = withStyles(theme => ({
   root: {
@@ -28,7 +26,7 @@ const CustomInput = withStyles(theme => ({
     position: 'relative',
     backgroundColor: theme.palette.common.white,
     border: '1px solid #ced4da',
-    fontSize: 16,
+    fontSize: '14px',
     // minWidth: '250px',
 
     padding: '10px 12px',
@@ -50,8 +48,12 @@ class Index extends PureComponent {
       totalPage: 10,
       keyword: '',
       isLoading: false,
-      currentTab:190,
-      category:[{id:190, label:'Ha Noi', data:null}, {id:192, label:'HCM', data:null}, {id:191, label:'Hai Phong', data:null}]
+      currentTab: 190,
+      category: [
+        { id: 190, label: 'ハノイ', data: null },
+        { id: 192, label: 'ホーチミン', data: null },
+        { id: 191, label: 'ハイフォン', data: null },
+      ],
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
     this.listRef = {}
@@ -59,7 +61,7 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    this.onGetListCategory({page:1})
+    this.onGetListCategory({ page: 1 })
   }
 
   onChangeText = event => {
@@ -71,11 +73,11 @@ class Index extends PureComponent {
       {
         keyword: text,
       },
-      () => this.onGetListCategory({page:1, isLoadMore:false, isSearch:true})
+      () => this.onGetListCategory({ page: 1, isLoadMore: false, isSearch: true })
     )
   }
 
-  onGetListCategory = async ({page = 1, isLoadMore, isSearch, isChangeTab}) => {
+  onGetListCategory = async ({ page = 1, isLoadMore, isSearch, isChangeTab }) => {
     try {
       const { keyword, totalPage, dataCategory, currentTab } = this.state
       if (!isLoadMore) {
@@ -85,10 +87,10 @@ class Index extends PureComponent {
       }
 
       if (page <= totalPage || isSearch || isChangeTab) {
-        const data = await getListCategory({ page, limit: 10, keyword, provinceId:currentTab })
+        const data = await getListCategory({ page, limit: 10, keyword, provinceId: currentTab })
         if (data.isSuccess) {
           this.setState({
-            dataCategory: (isSearch || isChangeTab) ? data.data : dataCategory.concat(data.data),
+            dataCategory: isSearch || isChangeTab ? data.data : dataCategory.concat(data.data),
             currentPage: page,
             totalPage: data.paging.total_page,
             isLoading: false,
@@ -102,7 +104,7 @@ class Index extends PureComponent {
 
   onLoadMore = () => {
     const { currentPage } = this.state
-    this.onGetListCategory({page: currentPage + 1, isLoadMore:true})
+    this.onGetListCategory({ page: currentPage + 1, isLoadMore: true })
   }
 
   onGoToRestaurant = restaurantItem => {
@@ -110,78 +112,90 @@ class Index extends PureComponent {
     history.push(`/restaurant/${restaurantItem.id}`, { item: restaurantItem })
   }
 
-
-
-  onChangeTab = id =>{
-    this.setState({
-      currentTab:id
-    }, () =>this.onGetListCategory({isChangeTab:true, page:1}))
+  onChangeTab = id => {
+    this.setState(
+      {
+        currentTab: id,
+      },
+      () => this.onGetListCategory({ isChangeTab: true, page: 1 })
+    )
   }
-
-
 
   render() {
     const { classes } = this.props
     const { dataCategory, isLoading, totalPage, currentPage, currentTab, category } = this.state
     const isHasMore = currentPage < totalPage && dataCategory.length > 0
     return (
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
-        <div
-          className={classes.header}
-        >
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className={classes.header}>
           <div className={classes.inputContainer}>
-            <a style={{display:'flex'}} href='https://mycapichi.page.link/order'>
-            <img alt='logo-header' src={logoHeader} style={{height:'35px'}} />
+            <a style={{ display: 'flex' }} href="https://mycapichi.page.link/order">
+              <img alt="logo-header" src={logoHeader} style={{ height: '35px' }} />
             </a>
 
-          <CustomInput
-            //   onKeyPress={this.handlePressKey}
-            placeholder="名前で店舗を探す..."
-            onChange={this.onChangeText}
-            style={{ width: '60%' }}
-          />
+            <CustomInput
+              //   onKeyPress={this.handlePressKey}
+              placeholder="名前で店舗を探す..."
+              onChange={this.onChangeText}
+              style={{ width: '60%' }}
+            />
           </div>
-          <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between', margin:'15px 0'}}>
-            {category.map(value =>{
-              return <div onClick={() => this.onChangeTab(value.id)} className={classNames({[classes.tabButton]:true, [classes.isActive]: currentTab === value.id})}>{value.label}</div>
-            })}
-          </div>
-
-        </div>
-        <div style={{marginTop:'90px'}}>
-        {isLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-            <CircularProgress size={30} color="primary" />
-          </div>
-        ) : dataCategory.length > 0 ? (
-          <InfiniteScroll
-            dataLength={dataCategory.length}
-            // throttle={100}
-            // threshold={300}
-            next={this.onLoadMore}
-            hasMore={isHasMore}
+          <div
             style={{
-              marginTop: '20px',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: '15px 0',
             }}
           >
-            <Grid container>
-              {dataCategory &&
-                dataCategory.length > 0 &&
-                dataCategory.map(value => {
-                  return (
-                    <CategoryItem onClick={this.onGoToRestaurant} key={value.id} item={value} />
-                  )
-                  // return <div style={{width:'100%',height:'100px', margin:'20px 0', backgroundColor:'red'}}></div>
-                })}
-            </Grid>
-          </InfiniteScroll>
-        ) : (
-          <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-            店舗が見つかりません
-          </p>
-        )}
+            {category.map(value => {
+              return (
+                <div
+                  onClick={() => this.onChangeTab(value.id)}
+                  className={classNames({
+                    [classes.tabButton]: true,
+                    [classes.isActive]: currentTab === value.id,
+                  })}
+                >
+                  {value.label}
+                </div>
+              )
+            })}
+          </div>
         </div>
-
+        <div style={{ marginTop: '100px' }}>
+          {isLoading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <CircularProgress size={30} color="primary" />
+            </div>
+          ) : dataCategory.length > 0 ? (
+            <InfiniteScroll
+              dataLength={dataCategory.length}
+              // throttle={100}
+              // threshold={300}
+              next={this.onLoadMore}
+              hasMore={isHasMore}
+              style={{
+                marginTop: '20px',
+              }}
+            >
+              <Grid container>
+                {dataCategory &&
+                  dataCategory.length > 0 &&
+                  dataCategory.map(value => {
+                    return (
+                      <CategoryItem onClick={this.onGoToRestaurant} key={value.id} item={value} />
+                    )
+                    // return <div style={{width:'100%',height:'100px', margin:'20px 0', backgroundColor:'red'}}></div>
+                  })}
+              </Grid>
+            </InfiniteScroll>
+          ) : (
+            <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
+              店舗が見つかりません
+            </p>
+          )}
+        </div>
       </div>
     )
   }
@@ -189,7 +203,7 @@ class Index extends PureComponent {
 
 Index.propTypes = {
   history: PropTypes.any,
-  // classes: PropTypes.any,
+  classes: PropTypes.any,
 }
 
 export default withStyles(styles)(Index)

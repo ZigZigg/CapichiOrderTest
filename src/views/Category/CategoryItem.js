@@ -2,18 +2,14 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
-import moment from 'moment'
 import classNames from 'classnames'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
-import _ from 'lodash'
-import {getTimeRange} from '../../commons'
-class CategoryItem extends PureComponent {
+import { getTimeRange } from '../../commons'
 
-  constructor(props){
+class CategoryItem extends PureComponent {
+  constructor(props) {
     super(props)
-    this.state = {
-      timeRange:[]
-    }
+    this.state = {}
   }
 
   onClickItem = () => {
@@ -24,10 +20,6 @@ class CategoryItem extends PureComponent {
   render() {
     const { classes, item } = this.props
 
-    const timeClass = classNames({
-      [classes.rightContentText]: true,
-      // [classes.closeText]: !isOpen,
-    })
     // let restaurantTimeRange = []
     // const timeRange = "08:11-10:11,11:00-15:00,16:00-20:00"
     const timeRange = getTimeRange(item.active_time_csv)
@@ -41,16 +33,25 @@ class CategoryItem extends PureComponent {
           <div className={classes.righContent}>
             <span className={classes.rightTextName}>{item.name}</span>
             <span className={classes.rightContentText}>{item.address}</span>
-            <div style={{ margin: 0, display:'flex', flexDirection:'column' }}>
-              <span  style={{fontSize:'12px'}}>営業時間:</span>
-              <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-                {timeRange.map((value, index) =>{
-                  if(index <=1){
-                    return <span className={classNames({[classes.itemTimeRange]:true, [classes.itemTimeClose]:value.isOpen ? false : true })}>{value.time}</span>
-                  }else{
-                    return <span className={classes.expandTime}>...</span>
+            <div style={{ margin: 0, display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '12px' }}>営業時間:</span>
+              <div
+                style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+              >
+                {timeRange.map((value, index) => {
+                  if (index <= 1) {
+                    return (
+                      <span
+                        className={classNames({
+                          [classes.itemTimeRange]: true,
+                          [classes.itemTimeClose]: !value.isOpen,
+                        })}
+                      >
+                        {value.time}
+                      </span>
+                    )
                   }
-                  
+                  return <span className={classes.expandTime}>...</span>
                 })}
               </div>
               {/* {item.open_time && item.closed_time && (

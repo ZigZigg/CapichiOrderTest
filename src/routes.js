@@ -49,13 +49,13 @@ const brandRouters = [
 ]
 
 const dashboardRoutes = [
-  {
-    path: '/user',
-    name: 'Thông tin nhà hàng',
-    icon: Person,
-    component: UserProfile,
-    layout: '/admin',
-  },
+  // {
+  //   path: '/user',
+  //   name: 'Thông tin nhà hàng',
+  //   icon: Person,
+  //   component: UserProfile,
+  //   layout: '/admin',
+  // },
   // {
   //   path: '/voucher',
   //   name: 'Voucher',

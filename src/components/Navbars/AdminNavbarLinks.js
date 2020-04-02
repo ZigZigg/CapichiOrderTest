@@ -19,7 +19,7 @@ import Person from '@material-ui/icons/Person'
 // import Dashboard from '@material-ui/icons/Dashboard'
 // import Search from '@material-ui/icons/Search'
 import { withRouter } from 'react-router-dom'
-import { AUTHEN_TOKEN } from '../../constants/define'
+// import { AUTHEN_TOKEN } from '../../constants/define'
 // core components
 // import CustomInput from '../CustomInput/CustomInput'
 import Button from '../CustomButtons/Button'
@@ -54,14 +54,14 @@ function AdminNavbarLinks(props) {
   }
 
   const handleLogOut = async () => {
-    const { history } = props
-    const authenToken = localStorage.getItem(AUTHEN_TOKEN)
-    const data = await logOutApi(authenToken)
-    if (data.status === 'success') {
-      localStorage.removeItem(AUTHEN_TOKEN)
-      history.push('/login')
-      setOpenProfile(null)
-    }
+    // const { history } = props
+    // const authenToken = localStorage.getItem(AUTHEN_TOKEN)
+    // const data = await logOutApi(authenToken)
+    // if (data.status === 'success') {
+    //   localStorage.removeItem(AUTHEN_TOKEN)
+    //   history.push('/login')
+    //   setOpenProfile(null)
+    // }
   }
 
   const onGoToProfile = () => {

@@ -105,22 +105,22 @@ const styles = {
     justifyContent: 'center',
     margin: '20px 0px',
   },
-  itemTimeRange:{
-    backgroundColor:'#4287f5',
-    padding:'0px 5px',
-    borderRadius:'5px',
-    margin:'0 10px 0 0',
-    color:'#fff',
-    fontSize:'11px'
+  itemTimeRange: {
+    backgroundColor: '#4287f5',
+    padding: '0px 5px',
+    borderRadius: '5px',
+    margin: '0 10px 0 0',
+    color: '#fff',
+    fontSize: '11px',
   },
-  itemTimeClose:{
-    backgroundColor:'#c2c2c2',
-    color:'red'
+  itemTimeClose: {
+    backgroundColor: '#c2c2c2',
+    color: 'red',
   },
-  rightContentText:{
-    fontSize:'14px',
-    marginBottom:'5px'
-  }
+  rightContentText: {
+    fontSize: '14px',
+    marginBottom: '5px',
+  },
 }
 
 export default styles

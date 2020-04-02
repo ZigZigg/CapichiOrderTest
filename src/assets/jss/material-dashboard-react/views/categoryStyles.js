@@ -7,34 +7,33 @@ const styles = {
   itemCategory: {
     padding: '0 15px',
   },
-  inputContainer:{
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center'
+  inputContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  tabButton:{
-    backgroundColor:'#fff',
-    borderRadius:'20px',
-    padding:'1px 20px',
-    border:'1px solid #7d7d7d'
+  tabButton: {
+    backgroundColor: '#fff',
+    borderRadius: '20px',
+    padding: '1px 20px',
+    border: '1px solid #7d7d7d',
   },
-  isActive:{
-    backgroundColor:'#F7941D',
-    border:'none',
-    color:'#fff',
-    border:'1px solid #fff'
+  isActive: {
+    backgroundColor: '#F7941D',
+    color: '#fff',
+    border: '1px solid #fff',
   },
-  header:{
+  header: {
     display: 'flex',
     justifyContent: 'center',
     padding: '15px 15px 0 15px',
-    position:'fixed',
-    width:'100%',
-    boxSizing:'border-box',
-    backgroundColor:'#fff',
-    flexDirection:'column',
-    zIndex:'10'
+    position: 'fixed',
+    width: '100%',
+    boxSizing: 'border-box',
+    backgroundColor: '#fff',
+    flexDirection: 'column',
+    zIndex: '10',
   },
   itemContentCategory: {
     width: '100%',
@@ -56,7 +55,7 @@ const styles = {
   },
   righContent: {
     width: '100%',
-    padding: '10px 20px',
+    padding: '10px 15px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -77,22 +76,22 @@ const styles = {
     lineHeight: '16px',
     overflow: 'hidden',
   },
-  itemTimeRange:{
-    backgroundColor:'#4287f5',
-    padding:'0px 5px',
-    borderRadius:'5px',
-    color:'#fff',
-    fontSize:'11px'
+  itemTimeRange: {
+    backgroundColor: '#4287f5',
+    padding: '0px 4px',
+    borderRadius: '5px',
+    color: '#fff',
+    fontSize: '11px',
   },
-  itemTimeClose:{
-    backgroundColor:'#c2c2c2',
-    color:'red'
+  itemTimeClose: {
+    backgroundColor: '#c2c2c2',
+    color: 'red',
   },
-  expandTime:{
-    fontSize:'20px',
-    fontWeight:'bold',
-    marginTop:'-5px'
-  }
+  expandTime: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+    marginTop: '-5px',
+  },
 }
 
 export default styles
