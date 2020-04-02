@@ -10,7 +10,7 @@ export const getTimeRange = timeRange =>{
           const openTime = moment(timeSplit[0], 'HH:mm')
           const closeTime = moment(timeSplit[1], 'HH:mm')
           const isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
-            return {time:value, isOpen}
+            return {time:`${timeSplit[0]} - ${timeSplit[1]}`, isOpen}
         })
         return restaurantTimeRange
     }

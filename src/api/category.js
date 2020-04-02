@@ -4,10 +4,10 @@ import { getMessageErrorFormServer } from '../commons'
 
 export const testCategory = () => {}
 
-export const getListCategory = async ({ page = 1, limit = 10, keyword = '' }) => {
+export const getListCategory = async ({ page = 1, limit = 10, keyword = '', provinceId='' }) => {
   try {
     const result = await request('', null).get(
-      `${categoryApi}?page=${page}&limit=${limit}&keyword=${keyword}`
+      `${categoryApi}?page=${page}&limit=${limit}&keyword=${keyword}&province_id=${provinceId}`
     )
     const { data, status } = result
     if (status === 200)

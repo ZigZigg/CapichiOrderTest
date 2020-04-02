@@ -106,7 +106,7 @@ const styles = {
     margin: '20px 0px',
   },
   itemTimeRange:{
-    backgroundColor:'#852032',
+    backgroundColor:'#4287f5',
     padding:'0px 5px',
     borderRadius:'5px',
     margin:'0 10px 0 0',

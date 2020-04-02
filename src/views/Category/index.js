@@ -50,8 +50,8 @@ class Index extends PureComponent {
       totalPage: 10,
       keyword: '',
       isLoading: false,
-      currentTab:1,
-      category:[{id:1, label:'Ha Noi', data:null}, {id:2, label:'HCM', data:null}, {id:3, label:'Hai Phong', data:null}]
+      currentTab:190,
+      category:[{id:190, label:'Ha Noi', data:null}, {id:192, label:'HCM', data:null}, {id:191, label:'Hai Phong', data:null}]
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
     this.listRef = {}
@@ -59,7 +59,7 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
-    this.onGetListCategory()
+    this.onGetListCategory({page:1})
   }
 
   onChangeText = event => {
@@ -71,24 +71,24 @@ class Index extends PureComponent {
       {
         keyword: text,
       },
-      () => this.onGetListCategory(1, false, true)
+      () => this.onGetListCategory({page:1, isLoadMore:false, isSearch:true})
     )
   }
 
-  onGetListCategory = async (page = 1, isLoadMore, isSearch) => {
+  onGetListCategory = async ({page = 1, isLoadMore, isSearch, isChangeTab}) => {
     try {
-      const { keyword, totalPage, dataCategory } = this.state
+      const { keyword, totalPage, dataCategory, currentTab } = this.state
       if (!isLoadMore) {
         this.setState({
           isLoading: true,
         })
       }
 
-      if (page <= totalPage || isSearch) {
-        const data = await getListCategory({ page, limit: 10, keyword })
+      if (page <= totalPage || isSearch || isChangeTab) {
+        const data = await getListCategory({ page, limit: 10, keyword, provinceId:currentTab })
         if (data.isSuccess) {
           this.setState({
-            dataCategory: isSearch ? data.data : dataCategory.concat(data.data),
+            dataCategory: (isSearch || isChangeTab) ? data.data : dataCategory.concat(data.data),
             currentPage: page,
             totalPage: data.paging.total_page,
             isLoading: false,
@@ -102,7 +102,7 @@ class Index extends PureComponent {
 
   onLoadMore = () => {
     const { currentPage } = this.state
-    this.onGetListCategory(currentPage + 1, true)
+    this.onGetListCategory({page: currentPage + 1, isLoadMore:true})
   }
 
   onGoToRestaurant = restaurantItem => {
@@ -115,7 +115,7 @@ class Index extends PureComponent {
   onChangeTab = id =>{
     this.setState({
       currentTab:id
-    }, () =>this.onGetListCategory())
+    }, () =>this.onGetListCategory({isChangeTab:true, page:1}))
   }
 
 
