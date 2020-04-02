@@ -5,8 +5,17 @@ import { withStyles } from '@material-ui/core/styles'
 import moment from 'moment'
 import classNames from 'classnames'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
-
+import _ from 'lodash'
+import {getTimeRange} from '../../commons'
 class CategoryItem extends PureComponent {
+
+  constructor(props){
+    super(props)
+    this.state = {
+      timeRange:[]
+    }
+  }
+
   onClickItem = () => {
     const { onClick, item } = this.props
     if (onClick) onClick(item)
@@ -14,31 +23,40 @@ class CategoryItem extends PureComponent {
 
   render() {
     const { classes, item } = this.props
-    const currentTime = moment().format('HH:mm')
-    const convertCurrentTime = moment(currentTime, 'HH:mm')
-    const openTime = moment(item.open_time, 'HH:mm')
-    const closeTime = moment(item.closed_time, 'HH:mm')
-    const isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
+
     const timeClass = classNames({
       [classes.rightContentText]: true,
-      [classes.closeText]: !isOpen,
+      // [classes.closeText]: !isOpen,
     })
+    // let restaurantTimeRange = []
+    // const timeRange = "08:11-10:11,11:00-15:00,16:00-20:00"
+    const timeRange = getTimeRange(item.active_time_csv)
     return (
       <Grid onClick={this.onClickItem} item xs={12} md={6} lg={3} className={classes.itemCategory}>
         <div className={classes.itemContentCategory}>
-          <div style={{ width: '130px', height: '130px' }}>
+          <div style={{ width: '135px', height: '135px' }}>
             <img className={classes.image} src={item.image} alt={item.name} />
           </div>
 
           <div className={classes.righContent}>
             <span className={classes.rightTextName}>{item.name}</span>
             <span className={classes.rightContentText}>{item.address}</span>
-            <p style={{ margin: 0 }}>
-              <span className={classes.rightContentText}>営業時間:</span>
-              {item.open_time && item.closed_time && (
+            <div style={{ margin: 0, display:'flex', flexDirection:'column' }}>
+              <span  style={{fontSize:'12px'}}>営業時間:</span>
+              <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
+                {timeRange.map((value, index) =>{
+                  if(index <=1){
+                    return <span className={classNames({[classes.itemTimeRange]:true, [classes.itemTimeClose]:value.isOpen ? false : true })}>{value.time}</span>
+                  }else{
+                    return <span className={classes.expandTime}>...</span>
+                  }
+                  
+                })}
+              </div>
+              {/* {item.open_time && item.closed_time && (
                 <span className={timeClass}>{`${item.open_time} - ${item.closed_time}`}</span>
-              )}
-            </p>
+              )} */}
+            </div>
           </div>
         </div>
       </Grid>

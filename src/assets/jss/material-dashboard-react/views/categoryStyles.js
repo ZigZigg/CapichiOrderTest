@@ -5,11 +5,40 @@ const styles = {
     backgroundColor: '#fff',
   },
   itemCategory: {
-    padding: '0 24px',
+    padding: '0 15px',
+  },
+  inputContainer:{
+    display:'flex',
+    flexDirection:'row',
+    justifyContent:'space-between',
+    alignItems:'center'
+  },
+  tabButton:{
+    backgroundColor:'#fff',
+    borderRadius:'20px',
+    padding:'1px 20px',
+    border:'1px solid #7d7d7d'
+  },
+  isActive:{
+    backgroundColor:'#F7941D',
+    border:'none',
+    color:'#fff',
+    border:'1px solid #fff'
+  },
+  header:{
+    display: 'flex',
+    justifyContent: 'center',
+    padding: '15px 15px 0 15px',
+    position:'fixed',
+    width:'100%',
+    boxSizing:'border-box',
+    backgroundColor:'#fff',
+    flexDirection:'column',
+    zIndex:'10'
   },
   itemContentCategory: {
     width: '100%',
-    height: '130px',
+    height: '135px',
     display: 'flex',
     flexDirection: 'row',
     margin: '10px 0',
@@ -19,9 +48,9 @@ const styles = {
       '0px 3px 3px -2px rgba(0,0,0,0.2), 0px 3px 4px 0px rgba(0,0,0,0.14), 0px 1px 8px 0px rgba(0,0,0,0.12)',
   },
   image: {
-    width: '130px',
+    width: '135px',
     height: '100%',
-    objectFit: 'inherit',
+    objectFit: 'cover',
     borderTopLeftRadius: '7px',
     borderBottomLeftRadius: '7px',
   },
@@ -33,8 +62,8 @@ const styles = {
     justifyContent: 'space-between',
   },
   rightContentText: {
-    fontSize: '14px',
-    lineHeight: '18px',
+    fontSize: '12px',
+    lineHeight: '16px',
     height: '35px',
     overflow: 'hidden',
   },
@@ -48,6 +77,22 @@ const styles = {
     lineHeight: '16px',
     overflow: 'hidden',
   },
+  itemTimeRange:{
+    backgroundColor:'#852032',
+    padding:'0px 5px',
+    borderRadius:'5px',
+    color:'#fff',
+    fontSize:'11px'
+  },
+  itemTimeClose:{
+    backgroundColor:'#c2c2c2',
+    color:'red'
+  },
+  expandTime:{
+    fontSize:'20px',
+    fontWeight:'bold',
+    marginTop:'-5px'
+  }
 }
 
 export default styles

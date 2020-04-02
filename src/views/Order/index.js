@@ -21,6 +21,7 @@ import {
   validateNote,
   validatePhone,
 } from '../../commons'
+import {getTimeRange} from '../../commons'
 
 class Index extends PureComponent {
   constructor(props) {
@@ -198,11 +199,11 @@ class Index extends PureComponent {
         const dataRestaurant = await getRestaurantDetail({ restaurantId: restaurant.id })
         let isOpen = true
         if (dataRestaurant.data) {
-          const currentTime = moment().format('HH:mm')
-          const convertCurrentTime = moment(currentTime, 'HH:mm')
-          const openTime = moment(dataRestaurant.data.open_time, 'HH:mm')
-          const closeTime = moment(dataRestaurant.data.closed_time, 'HH:mm')
-          isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
+          // const currentTime = moment().format('HH:mm')
+          // const convertCurrentTime = moment(currentTime, 'HH:mm')
+          // const openTime = moment(dataRestaurant.data.open_time, 'HH:mm')
+          // const closeTime = moment(dataRestaurant.data.closed_time, 'HH:mm')
+          isOpen = this.isRestaurantOpen(dataRestaurant.data)
         } else {
           isOpen = false
         }
@@ -232,15 +233,15 @@ class Index extends PureComponent {
     }
   }
 
-  isRestaurantOpen = () => {
-    const { restaurant } = this.state
-    if (restaurant) {
-      const currentTime = moment().format('HH:mm')
-      const convertCurrentTime = moment(currentTime, 'HH:mm')
-      const openTime = moment(restaurant.open_time, 'HH:mm')
-      const closeTime = moment(restaurant.closed_time, 'HH:mm')
-      const isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
-      return isOpen
+  isRestaurantOpen = (dataItem) => {
+    if (dataItem) {
+      const timeRange = getTimeRange(dataItem.active_time_csv)
+      const findOpen = _.find(timeRange, {isOpen:true})
+      if(findOpen){
+        return true
+      }else{
+        return false
+      }
     }
     return null
   }

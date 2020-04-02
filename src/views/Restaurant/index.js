@@ -13,6 +13,7 @@ import Dialog from '@material-ui/core/Dialog'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
 import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
 import MenuItem from './MenuItem'
+import {getTimeRange} from '../../commons'
 import '../../assets/css/Restaurant/styles.css'
 
 class Restaurant extends Component {
@@ -41,15 +42,17 @@ class Restaurant extends Component {
     this.onGetRestaurantDetail()
   }
 
-  isRestaurantOpen = () => {
+  isRestaurantOpen = (dataItem) => {
     const { itemRestaurant } = this.state
-    if (itemRestaurant) {
-      const currentTime = moment().format('HH:mm')
-      const convertCurrentTime = moment(currentTime, 'HH:mm')
-      const openTime = moment(itemRestaurant.open_time, 'HH:mm')
-      const closeTime = moment(itemRestaurant.closed_time, 'HH:mm')
-      const isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
-      return isOpen
+    const itemRestaurantData = dataItem || itemRestaurant
+    if (itemRestaurantData) {
+      const timeRange = getTimeRange(itemRestaurantData.active_time_csv)
+      const findOpen = _.find(timeRange, {isOpen:true})
+      if(findOpen){
+        return true
+      }else{
+        return false
+      }
     }
     return null
   }
@@ -197,11 +200,12 @@ class Restaurant extends Component {
         const dataRestaurant = await getRestaurantDetail({ restaurantId: id })
         let isOpen = true
         if (dataRestaurant.data) {
-          const currentTime = moment().format('HH:mm')
-          const convertCurrentTime = moment(currentTime, 'HH:mm')
-          const openTime = moment(dataRestaurant.data.open_time, 'HH:mm')
-          const closeTime = moment(dataRestaurant.data.closed_time, 'HH:mm')
-          isOpen = convertCurrentTime.isBefore(closeTime) && convertCurrentTime.isAfter(openTime)
+
+          // const currentTime = moment().format('HH:mm')
+          // const convertCurrentTime = moment(currentTime, 'HH:mm')
+          // const openTime = moment(dataRestaurant.data.open_time, 'HH:mm')
+          // const closeTime = moment(dataRestaurant.data.closed_time, 'HH:mm')
+          isOpen = this.isRestaurantOpen(dataRestaurant.data)
         } else {
           isOpen = false
         }
@@ -259,6 +263,7 @@ class Restaurant extends Component {
       [classes.rightContentText]: true,
       [classes.closeText]: !this.isRestaurantOpen(),
     })
+    const timeRange = itemRestaurant ?  getTimeRange(itemRestaurant.active_time_csv) : []
     return (
       <div id="restaurant" className={classes.wrapper}>
         <div className={classes.header}>
@@ -324,13 +329,18 @@ class Restaurant extends Component {
                     {itemRestaurant.phone}
                   </a>
                 </div>
-                <div style={{ fontSize: '15px' }}>
+                <div style={{ fontSize: '15px', display:'flex', flexDirection:'column' }}>
                   <span className={classes.rightContentText}>営業時間:</span>
-                  {itemRestaurant.open_time && itemRestaurant.closed_time && (
+                  {/* {itemRestaurant.open_time && itemRestaurant.closed_time && (
                     <span
                       className={timeClass}
                     >{`${itemRestaurant.open_time} - ${itemRestaurant.closed_time}`}</span>
-                  )}
+                  )} */}
+                                <div style={{display:'flex', flexDirection:'row',}}>
+                {timeRange.map((value, index) =>{
+                    return <span className={classNames({[classes.itemTimeRange]:true, [classes.itemTimeClose]:value.isOpen ? false : true })}>{value.time}</span>
+                })}
+              </div>
                 </div>
                 {itemRestaurant.note && (
                   <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>

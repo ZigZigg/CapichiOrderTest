@@ -10,13 +10,18 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 import { getListCategory } from '../../api'
 import CategoryItem from './CategoryItem'
+import classNames from 'classnames'
+import Screens from './Screens'
+import logoHeader from '../../assets/img/logo-order.png'
+// const category = [{id:0, label:'Ha Noi'}, {id:1, label:'HCM'}, {id:2, label:'Hai Phong'}]
+
 
 const CustomInput = withStyles(theme => ({
   root: {
     'label + &': {
       marginTop: theme.spacing(3),
     },
-    margin: 'auto',
+    margin: '0',
   },
   input: {
     borderRadius: 4,
@@ -24,7 +29,7 @@ const CustomInput = withStyles(theme => ({
     backgroundColor: theme.palette.common.white,
     border: '1px solid #ced4da',
     fontSize: 16,
-    minWidth: '250px',
+    // minWidth: '250px',
 
     padding: '10px 12px',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
@@ -45,8 +50,12 @@ class Index extends PureComponent {
       totalPage: 10,
       keyword: '',
       isLoading: false,
+      currentTab:1,
+      category:[{id:1, label:'Ha Noi', data:null}, {id:2, label:'HCM', data:null}, {id:3, label:'Hai Phong', data:null}]
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
+    this.listRef = {}
+    this.currentType = 1
   }
 
   componentDidMount() {
@@ -101,27 +110,45 @@ class Index extends PureComponent {
     history.push(`/restaurant/${restaurantItem.id}`, { item: restaurantItem })
   }
 
+
+
+  onChangeTab = id =>{
+    this.setState({
+      currentTab:id
+    }, () =>this.onGetListCategory())
+  }
+
+
+
   render() {
-    // const { classes } = this.props
-    const { dataCategory, isLoading, totalPage, currentPage } = this.state
+    const { classes } = this.props
+    const { dataCategory, isLoading, totalPage, currentPage, currentTab, category } = this.state
     const isHasMore = currentPage < totalPage && dataCategory.length > 0
     return (
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', flexDirection: 'column'}}>
         <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '20px',
-            padding: '0 24px',
-          }}
+          className={classes.header}
         >
+          <div className={classes.inputContainer}>
+            <a style={{display:'flex'}} href='https://mycapichi.page.link/order'>
+            <img alt='logo-header' src={logoHeader} style={{height:'35px'}} />
+            </a>
+
           <CustomInput
             //   onKeyPress={this.handlePressKey}
             placeholder="名前で店舗を探す..."
             onChange={this.onChangeText}
-            style={{ width: '100%' }}
+            style={{ width: '60%' }}
           />
+          </div>
+          <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between', margin:'15px 0'}}>
+            {category.map(value =>{
+              return <div onClick={() => this.onChangeTab(value.id)} className={classNames({[classes.tabButton]:true, [classes.isActive]: currentTab === value.id})}>{value.label}</div>
+            })}
+          </div>
+
         </div>
+        <div style={{marginTop:'90px'}}>
         {isLoading ? (
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
             <CircularProgress size={30} color="primary" />
@@ -133,15 +160,6 @@ class Index extends PureComponent {
             // threshold={300}
             next={this.onLoadMore}
             hasMore={isHasMore}
-            // loader={
-            //   isHasMore && (
-            //     <CircularProgress
-            //       size={30}
-            //       color="primary"
-            //       style={{ marginTop: '10px', margin: 'auto' }}
-            //     />
-            //   )
-            // }
             style={{
               marginTop: '20px',
             }}
@@ -153,6 +171,7 @@ class Index extends PureComponent {
                   return (
                     <CategoryItem onClick={this.onGoToRestaurant} key={value.id} item={value} />
                   )
+                  // return <div style={{width:'100%',height:'100px', margin:'20px 0', backgroundColor:'red'}}></div>
                 })}
             </Grid>
           </InfiniteScroll>
@@ -161,6 +180,8 @@ class Index extends PureComponent {
             店舗が見つかりません
           </p>
         )}
+        </div>
+
       </div>
     )
   }
