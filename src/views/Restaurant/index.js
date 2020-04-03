@@ -47,7 +47,7 @@ class Restaurant extends Component {
     if (itemRestaurantData) {
       const timeRange = getTimeRange(itemRestaurantData.active_time_csv)
       const findOpen = _.find(timeRange, { isOpen: true })
-      if (findOpen) {
+      if (findOpen && itemRestaurantData.active) {
         return true
       }
       return false

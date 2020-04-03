@@ -238,7 +238,7 @@ class Index extends PureComponent {
     if (dataItem) {
       const timeRange = getTimeRange(dataItem.active_time_csv)
       const findOpen = _.find(timeRange, { isOpen: true })
-      if (findOpen) {
+      if (findOpen && dataItem.active) {
         return true
       }
       return false
