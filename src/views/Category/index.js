@@ -12,7 +12,21 @@ import styles from '../../assets/jss/material-dashboard-react/views/categoryStyl
 import { getListCategory } from '../../api'
 import CategoryItem from './CategoryItem'
 import logoHeader from '../../assets/img/logo-order.png'
-// const category = [{id:0, label:'Ha Noi'}, {id:1, label:'HCM'}, {id:2, label:'Hai Phong'}]
+import {isDevelopEnvironment} from '../../commons'
+
+
+// Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
+const dataDev = [
+  { id: 190, label: 'ハノイ', data: null },
+  { id: 192, label: 'ホーチミン', data: null },
+  { id: 191, label: 'ハイフォン', data: null },
+]
+
+const dataProduct = [
+  { id: 3, label: 'ハノイ', data: null },
+  { id: 5, label: 'ホーチミン', data: null },
+  { id: 4, label: 'ハイフォン', data: null },
+]
 
 const CustomInput = withStyles(theme => ({
   root: {
@@ -49,16 +63,7 @@ class Index extends PureComponent {
       keyword: '',
       isLoading: false,
       currentTab: 190,
-      // category: [
-      //   { id: 3, label: 'ハノイ', data: null },
-      //   { id: 5, label: 'ホーチミン', data: null },
-      //   { id: 4, label: 'ハイフォン', data: null },
-      // ],
-      category: [
-        { id: 190, label: 'ハノイ', data: null },
-        { id: 192, label: 'ホーチミン', data: null },
-        { id: 191, label: 'ハイフォン', data: null },
-      ],
+      category: isDevelopEnvironment() ? dataDev : dataProduct,
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
     this.listRef = {}
