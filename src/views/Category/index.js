@@ -61,7 +61,7 @@ class Index extends PureComponent {
       totalPage: 10,
       keyword: '',
       isLoading: false,
-      currentTab: 190,
+      currentTab: isDevelopEnvironment() ? 190 : 3,
       category: isDevelopEnvironment() ? dataDev : dataProduct,
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
