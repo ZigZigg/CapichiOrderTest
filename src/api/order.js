@@ -7,10 +7,10 @@ export const testOrder = () => {}
 export const confirmOrder = async ({ name, email, address, phone, note, restaurantId, items }) => {
   try {
     const formData = new FormData()
-    items.map((value, key) => {
-      formData.append(`order[order_items_attributes][${key}][food_item_id]`, value.id)
-      formData.append(`order[order_items_attributes][${key}][quantity]`, value.count)
-    })
+    // items.map((value, key) => {
+    //   formData.append(`order[order_items_attributes][${key}][food_item_id]`, value.id)
+    //   formData.append(`order[order_items_attributes][${key}][quantity]`, value.count)
+    // })
     formData.append('order[name]', name)
     formData.append('order[phone]', phone)
     formData.append('order[address]', address)
