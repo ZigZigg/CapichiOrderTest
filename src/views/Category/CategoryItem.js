@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
 import classNames from 'classnames'
+import _ from 'lodash'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 import { getTimeRange } from '../../commons'
-import _ from 'lodash'
+
 class CategoryItem extends PureComponent {
   constructor(props) {
     super(props)
@@ -23,8 +24,8 @@ class CategoryItem extends PureComponent {
     // let restaurantTimeRange = []
     // const timeRange = "08:11-10:11,11:00-15:00,16:00-20:00"
     const timeRange = getTimeRange(item.active_time_csv)
-    _.orderBy(timeRange,['sort'],['desc'])
-    const sortTime = _.orderBy(timeRange,['sort'],['desc'])
+    _.orderBy(timeRange, ['sort'], ['desc'])
+    const sortTime = _.orderBy(timeRange, ['sort'], ['desc'])
     return (
       <Grid onClick={this.onClickItem} item xs={12} md={6} lg={3} className={classes.itemCategory}>
         <div className={classes.itemContentCategory}>
@@ -44,6 +45,7 @@ class CategoryItem extends PureComponent {
                   if (index <= 1) {
                     return (
                       <span
+                        key={index}
                         className={classNames({
                           [classes.itemTimeRange]: true,
                           [classes.itemTimeClose]: !value.isOpen,
@@ -53,7 +55,11 @@ class CategoryItem extends PureComponent {
                       </span>
                     )
                   }
-                  return <span className={classes.expandTime}>...</span>
+                  return (
+                    <span key={index} className={classes.expandTime}>
+                      ...
+                    </span>
+                  )
                 })}
               </div>
               {/* {item.open_time && item.closed_time && (

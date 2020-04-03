@@ -1,7 +1,8 @@
+import _ from 'lodash'
 import request from './request'
 import { categoryApi } from './config'
 import { getMessageErrorFormServer } from '../commons'
-import _ from 'lodash'
+
 export const testOrder = () => {}
 
 export const confirmOrder = async ({ name, email, address, phone, note, restaurantId, items }) => {

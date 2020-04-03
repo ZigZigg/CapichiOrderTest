@@ -330,9 +330,10 @@ class Restaurant extends Component {
                     >{`${itemRestaurant.open_time} - ${itemRestaurant.closed_time}`}</span>
                   )} */}
                   <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    {timeRange.map(value => {
+                    {timeRange.map((value, index) => {
                       return (
                         <span
+                          key={index}
                           className={classNames({
                             [classes.itemTimeRange]: true,
                             [classes.itemTimeClose]: !value.isOpen,

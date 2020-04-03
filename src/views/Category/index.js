@@ -12,8 +12,7 @@ import styles from '../../assets/jss/material-dashboard-react/views/categoryStyl
 import { getListCategory } from '../../api'
 import CategoryItem from './CategoryItem'
 import logoHeader from '../../assets/img/logo-order.png'
-import {isDevelopEnvironment} from '../../commons'
-
+import { isDevelopEnvironment } from '../../commons'
 
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
 const dataDev = [
@@ -158,9 +157,10 @@ class Index extends PureComponent {
               margin: '15px 0',
             }}
           >
-            {category.map(value => {
+            {category.map((value, index) => {
               return (
                 <div
+                  key={index}
                   onClick={() => this.onChangeTab(value.id)}
                   className={classNames({
                     [classes.tabButton]: true,
@@ -192,9 +192,14 @@ class Index extends PureComponent {
               <Grid container>
                 {dataCategory &&
                   dataCategory.length > 0 &&
-                  dataCategory.map(value => {
+                  dataCategory.map((value, index) => {
                     return (
-                      <CategoryItem onClick={this.onGoToRestaurant} key={value.id} item={value} />
+                      <CategoryItem
+                        key={index}
+                        onClick={this.onGoToRestaurant}
+                        key={value.id}
+                        item={value}
+                      />
                     )
                     // return <div style={{width:'100%',height:'100px', margin:'20px 0', backgroundColor:'red'}}></div>
                   })}

@@ -159,8 +159,8 @@ class Index extends PureComponent {
         errorName: name.trim().length === 0 ? 'お客様の名前を入力してください' : '',
         errorPhone: phone.length === 0 ? '電話番号を入力してください' : '',
         errorAddress: address.trim().length === 0 ? '住所を入力してください' : '',
-        name:name.trim().length === 0 ? '' : name,
-        address:address.trim().length === 0 ? '' : address
+        name: name.trim().length === 0 ? '' : name,
+        address: address.trim().length === 0 ? '' : address,
       })
       return
     }

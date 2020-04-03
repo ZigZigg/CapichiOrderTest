@@ -1,8 +1,7 @@
-
-export const isDevelopEnvironment = () =>{
-    if(!process.env.NODE_ENV || process.env.NODE_ENV === 'development'){
-        return true
-    }else{
-        return false
-    }
+export const isDevelopEnvironment = () => {
+    console.log(process.env.NODE_ENV)
+  if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    return true
+  }
+  return false
 }
