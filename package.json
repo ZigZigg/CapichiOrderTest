@@ -33,7 +33,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "aws s3 sync build/  s3://capichicustomercms",
+    "deploy": "aws s3 sync build/  s3://order.capichiapp.com",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "down:prod": "docker-compose -f docker-compose-prod.yml down -v --rmi local",
