@@ -63,6 +63,7 @@ class Index extends PureComponent {
       isLoading: false,
       currentTab: isDevelopEnvironment() ? 190 : 3,
       category: isDevelopEnvironment() ? dataDev : dataProduct,
+      firstSeed:null
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
     this.listRef = {}
@@ -88,15 +89,16 @@ class Index extends PureComponent {
 
   onGetListCategory = async ({ page = 1, isLoadMore, isSearch, isChangeTab }) => {
     try {
-      const { keyword, totalPage, dataCategory, currentTab } = this.state
+      const { keyword, totalPage, dataCategory, currentTab, firstSeed } = this.state
+      const seedFormat = Math.round(Math.random() * 1000)
       if (!isLoadMore) {
         this.setState({
           isLoading: true,
+          firstSeed: page === 1 ? seedFormat: firstSeed
         })
       }
-
       if (page <= totalPage || isSearch || isChangeTab) {
-        const data = await getListCategory({ page, limit: 10, keyword, provinceId: currentTab })
+        const data = await getListCategory({ page, limit: 10, keyword, provinceId: currentTab, seed:page === 1 ? seedFormat: firstSeed })
         if (data.isSuccess) {
           this.setState({
             dataCategory: isSearch || isChangeTab ? data.data : dataCategory.concat(data.data),
@@ -195,7 +197,6 @@ class Index extends PureComponent {
                   dataCategory.map((value, index) => {
                     return (
                       <CategoryItem
-                        key={index}
                         onClick={this.onGoToRestaurant}
                         key={value.id}
                         item={value}
