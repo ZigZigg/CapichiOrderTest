@@ -13,7 +13,10 @@ import { getListCategory } from '../../api'
 import CategoryItem from './CategoryItem'
 import logoHeader from '../../assets/img/logo-order.png'
 import { isDevelopEnvironment } from '../../commons'
-
+import {
+  isMobileOnly,
+  isTablet
+} from "react-device-detect";
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
 const dataDev = [
   { id: 190, label: 'ハノイ', data: null },
@@ -98,7 +101,7 @@ class Index extends PureComponent {
         })
       }
       if (page <= totalPage || isSearch || isChangeTab) {
-        const data = await getListCategory({ page, limit: 10, keyword, provinceId: currentTab, seed:page === 1 ? seedFormat: firstSeed })
+        const data = await getListCategory({ page, limit: isMobileOnly ? 10 : isTablet ? 20 : 30, keyword, provinceId: currentTab, seed:page === 1 ? seedFormat: firstSeed })
         if (data.isSuccess) {
           this.setState({
             dataCategory: isSearch || isChangeTab ? data.data : dataCategory.concat(data.data),
@@ -202,7 +205,6 @@ class Index extends PureComponent {
                         item={value}
                       />
                     )
-                    // return <div style={{width:'100%',height:'100px', margin:'20px 0', backgroundColor:'red'}}></div>
                   })}
               </Grid>
             </InfiniteScroll>

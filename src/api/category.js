@@ -23,6 +23,7 @@ export const getListCategory = async ({ page = 1, limit = 10, keyword = '', prov
       message: 'a',
     }
   } catch (e) {
+
     return {
       isSuccess: false,
       message: getMessageErrorFormServer(e),
