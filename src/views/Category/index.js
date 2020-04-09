@@ -8,15 +8,12 @@ import InputBase from '@material-ui/core/InputBase'
 import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import classNames from 'classnames'
+import { isMobileOnly, isTablet } from 'react-device-detect'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 import { getListCategory } from '../../api'
 import CategoryItem from './CategoryItem'
 import logoHeader from '../../assets/img/logo-order.png'
 import { isDevelopEnvironment } from '../../commons'
-import {
-  isMobileOnly,
-  isTablet
-} from "react-device-detect";
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
 const dataDev = [
   { id: 190, label: 'ハノイ', data: null },
@@ -66,7 +63,7 @@ class Index extends PureComponent {
       isLoading: false,
       currentTab: isDevelopEnvironment() ? 190 : 3,
       category: isDevelopEnvironment() ? dataDev : dataProduct,
-      firstSeed:null
+      firstSeed: null,
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
     this.listRef = {}
@@ -97,11 +94,17 @@ class Index extends PureComponent {
       if (!isLoadMore) {
         this.setState({
           isLoading: true,
-          firstSeed: page === 1 ? seedFormat: firstSeed
+          firstSeed: page === 1 ? seedFormat : firstSeed,
         })
       }
       if (page <= totalPage || isSearch || isChangeTab) {
-        const data = await getListCategory({ page, limit: isMobileOnly ? 10 : isTablet ? 20 : 30, keyword, provinceId: currentTab, seed:page === 1 ? seedFormat: firstSeed })
+        const data = await getListCategory({
+          page,
+          limit: isMobileOnly ? 10 : isTablet ? 20 : 30,
+          keyword,
+          provinceId: currentTab,
+          seed: page === 1 ? seedFormat : firstSeed,
+        })
         if (data.isSuccess) {
           this.setState({
             dataCategory: isSearch || isChangeTab ? data.data : dataCategory.concat(data.data),
@@ -199,11 +202,7 @@ class Index extends PureComponent {
                   dataCategory.length > 0 &&
                   dataCategory.map((value, index) => {
                     return (
-                      <CategoryItem
-                        onClick={this.onGoToRestaurant}
-                        key={value.id}
-                        item={value}
-                      />
+                      <CategoryItem onClick={this.onGoToRestaurant} key={value.id} item={value} />
                     )
                   })}
               </Grid>

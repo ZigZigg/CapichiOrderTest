@@ -39,6 +39,7 @@ class Index extends PureComponent {
       isOpenPopup: false,
       isOpenWarning: false,
       isSuccess: false,
+      isHideShip: false,
       errorName: '',
       errorPhone: '',
       errorEmail: '',
@@ -58,6 +59,7 @@ class Index extends PureComponent {
       if (data.isSuccess) {
         this.setState({
           restaurant: data.data,
+          isHideShip: data.data.hide_fee,
         })
       }
     } catch (e) {
@@ -175,7 +177,17 @@ class Index extends PureComponent {
   }
 
   onConfirmOrder = async () => {
-    const { restaurant, pages, itemSelected, name, phone, email, address, note } = this.state
+    const {
+      restaurant,
+      pages,
+      itemSelected,
+      name,
+      phone,
+      email,
+      address,
+      note,
+      isHideShip,
+    } = this.state
     try {
       const data = await getListMenuByRestaurant({
         page: 1,
@@ -221,6 +233,7 @@ class Index extends PureComponent {
             note: note.trim(),
             restaurantId: restaurant.id,
             items: itemSelected,
+            hide_ship: isHideShip,
           })
           if (dataOrder.isSuccess) {
             this.setState({
@@ -279,6 +292,7 @@ class Index extends PureComponent {
       isOpenPopup,
       isOpenWarning,
       isSuccess,
+      isHideShip,
     } = this.state
     const total = _.reduce(
       itemSelected,
@@ -287,6 +301,7 @@ class Index extends PureComponent {
       },
       0
     )
+    console.log({ restaurant })
     return (
       <div className={classes.wrapper}>
         <div className={classes.header}>
@@ -317,14 +332,18 @@ class Index extends PureComponent {
               <div style={{ width: '95px' }} />
               <div className={classes.shippingContent}>
                 <span>配送代</span>
-                <span>{`${this.convertPrice(parseInt(restaurant.fee))} VND`}</span>
+                <span>
+                  {isHideShip ? `別途` : `${this.convertPrice(parseInt(restaurant.fee))} VND`}
+                </span>
               </div>
             </div>
             <div className={classes.totalBox}>
               <div style={{ width: '40px' }} />
               <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
                 <span>合計</span>
-                <span>{`${this.convertPrice(total + parseInt(restaurant.fee))} VND`}</span>
+                <span>{`${this.convertPrice(
+                  total + (isHideShip ? 0 : parseInt(restaurant.fee))
+                )} VND`}</span>
               </div>
             </div>
             <div style={{ marginTop: '20px' }}>

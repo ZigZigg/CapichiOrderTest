@@ -5,7 +5,16 @@ import { getMessageErrorFormServer } from '../commons'
 
 export const testOrder = () => {}
 
-export const confirmOrder = async ({ name, email, address, phone, note, restaurantId, items }) => {
+export const confirmOrder = async ({
+  name,
+  email,
+  address,
+  phone,
+  note,
+  restaurantId,
+  items,
+  hide_ship,
+}) => {
   try {
     const formData = new FormData()
     _.map(items, (value, key) => {
@@ -17,6 +26,9 @@ export const confirmOrder = async ({ name, email, address, phone, note, restaura
     formData.append('order[address]', address)
     formData.append('order[email]', email)
     formData.append('order[note]', note)
+    if (hide_ship) {
+      formData.append('order[fee]', 0)
+    }
     const result = await request('', null).post(`${categoryApi}/${restaurantId}/orders`, formData)
     const { data, status } = result
     if (status === 200)
