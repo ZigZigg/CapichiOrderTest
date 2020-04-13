@@ -493,7 +493,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>受け取り希望時間</span>
+                <span style={{maxWidth:'35%'}} className={classes.textItem}>受取希望時間（特に指定がなく最速で受け取りたい場合は何も入力しないでください)</span>
                 <div className={classes.inputContainer}>
                   <ReactInputMask
                     mask="99:99"
