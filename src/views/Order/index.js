@@ -321,21 +321,21 @@ class Index extends PureComponent {
       const check = inputTime.isBefore(convertCurrentTime)
       if (check) {
         this.setState({
-          errorTime: 'Thời gian đặt phải lớn hơn thời gian hiện tại',
+          errorTime: '配達時間は現在の時間より長くなければなりません',
         })
         return
       }
     }
     if (/_/.test(time) && checkTime) {
       this.setState({
-        errorTime: 'Vui lòng nhập đúng định dạng thời gian',
+        errorTime: '正しい時間を記入してください',
       })
       return
     }
     const timeAvailable = checkAvailableTime(restaurant.active_time_csv, time)
     if (time && !timeAvailable && !time.match(/_/g)) {
       this.setState({
-        errorTime: 'Thời gian chọn phải phù hợp với thời gian hoạt động của nhà hàng',
+        errorTime: '営業時間内の時間を記入してください',
       })
     }
   }
@@ -474,26 +474,26 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>Picker type</span>
+                <span className={classes.textItem}>受取方法</span>
                 <div className={classes.inputContainer}>
                   <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
                     <FormControlLabel
                       classes={{ label: 'radio-label' }}
                       value="delivery"
                       control={<Radio size="small" />}
-                      label="Giao hàng"
+                      label="デリバリー"
                     />
                     <FormControlLabel
                       classes={{ label: 'radio-label' }}
                       value="pick_up"
                       control={<Radio size="small" />}
-                      label="Đến mang về"
+                      label="お持ち帰り"
                     />
                   </RadioGroup>
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>Time picker</span>
+                <span className={classes.textItem}>受け取り希望時間</span>
                 <div className={classes.inputContainer}>
                   <ReactInputMask
                     mask="99:99"
