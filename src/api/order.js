@@ -14,6 +14,8 @@ export const confirmOrder = async ({
   restaurantId,
   items,
   hide_ship,
+  time,
+  typePicker,
 }) => {
   try {
     const formData = new FormData()
@@ -26,6 +28,8 @@ export const confirmOrder = async ({
     formData.append('order[address]', address)
     formData.append('order[email]', email)
     formData.append('order[note]', note)
+    formData.append('order[delivery_time]', time)
+    formData.append('order[delivery_type]', typePicker)
     if (hide_ship) {
       formData.append('order[fee]', 0)
     }

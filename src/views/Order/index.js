@@ -1,16 +1,21 @@
 /* eslint-disable radix */
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles, makeStyles } from '@material-ui/core/styles'
 import { KeyboardArrowLeft, LocationOn } from '@material-ui/icons'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import _ from 'lodash'
+import moment from 'moment'
 // import TextField from '@material-ui/core/TextField'
 import Input from '@material-ui/core/Input'
+import ReactInputMask from 'react-input-mask'
 import Dialog from '@material-ui/core/Dialog'
 import classNames from 'classnames'
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 import { getRestaurantDetail, confirmOrder, getListMenuByRestaurant } from '../../api'
 import {
@@ -20,7 +25,14 @@ import {
   validateNote,
   validatePhone,
   getTimeRange,
+  checkAvailableTime,
 } from '../../commons'
+import '../../assets/css/Order/styles.css'
+// const useStyles = makeStyles({
+//   label:{
+//     fontSize:12
+//   },
+// });
 
 class Index extends PureComponent {
   constructor(props) {
@@ -36,6 +48,8 @@ class Index extends PureComponent {
       address: '',
       email: '',
       note: '',
+      time: '',
+      typePicker: 'delivery',
       isOpenPopup: false,
       isOpenWarning: false,
       isSuccess: false,
@@ -45,6 +59,7 @@ class Index extends PureComponent {
       errorEmail: '',
       errorAddress: '',
       errorNote: '',
+      errorTime: '',
     }
   }
 
@@ -155,6 +170,7 @@ class Index extends PureComponent {
       errorPhone,
       errorEmail,
       errorNote,
+      errorTime,
     } = this.state
     if (address.trim().length === 0 || phone.length === 0 || name.trim().length === 0) {
       this.setState({
@@ -166,7 +182,7 @@ class Index extends PureComponent {
       })
       return
     }
-    if (errorAddress || errorPhone || errorName || errorEmail || errorNote) {
+    if (errorAddress || errorPhone || errorName || errorEmail || errorNote || errorTime) {
       return
     }
     this.onConfirmOrder()
@@ -186,6 +202,8 @@ class Index extends PureComponent {
       email,
       address,
       note,
+      time,
+      typePicker,
       isHideShip,
     } = this.state
     try {
@@ -234,6 +252,8 @@ class Index extends PureComponent {
             restaurantId: restaurant.id,
             items: itemSelected,
             hide_ship: isHideShip,
+            time,
+            typePicker,
           })
           if (dataOrder.isSuccess) {
             this.setState({
@@ -273,6 +293,60 @@ class Index extends PureComponent {
     })
   }
 
+  onChangeStartTime = e => {
+    const { value } = e.nativeEvent.target
+    if (Number(value[1]) > 3 && Number(value[0]) >= 2) return
+    if (Number(value[0]) >= 3) return
+    if (Number(value[0]) === 2 && Number(value[1]) > 3) {
+      return
+    }
+
+    if (Number(value[3] > 5)) return
+
+    this.setState({ time: value, errorTime: '' })
+  }
+
+  onBlurStartTime = () => {
+    const { time, restaurant } = this.state
+    const currentTime = moment().format('HH:mm')
+    const convertCurrentTime = moment(currentTime, 'HH:mm')
+    const inputTime = moment(time, 'HH:mm')
+    const checkTime = time.match(/_/g) && time.match(/_/g).length < 4
+    if (time.match(/_/g) && time.match(/_/g).length === 4) {
+      this.setState({
+        time: '',
+      })
+    }
+    if (time && !/_/.test(time)) {
+      const check = inputTime.isBefore(convertCurrentTime)
+      if (check) {
+        this.setState({
+          errorTime: 'Thời gian đặt phải lớn hơn thời gian hiện tại',
+        })
+        return
+      }
+    }
+    if (/_/.test(time) && checkTime) {
+      this.setState({
+        errorTime: 'Vui lòng nhập đúng định dạng thời gian',
+      })
+      return
+    }
+    const timeAvailable = checkAvailableTime(restaurant.active_time_csv, time)
+    if (time && !timeAvailable && !time.match(/_/g)) {
+      this.setState({
+        errorTime: 'Thời gian chọn phải phù hợp với thời gian hoạt động của nhà hàng',
+      })
+    }
+  }
+
+  handleChangeRadio = event => {
+    const { value } = event.target
+    this.setState({
+      typePicker: value,
+    })
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -284,6 +358,7 @@ class Index extends PureComponent {
       errorAddress,
       errorEmail,
       errorNote,
+      errorTime,
       name,
       phone,
       address,
@@ -293,6 +368,8 @@ class Index extends PureComponent {
       isOpenWarning,
       isSuccess,
       isHideShip,
+      time,
+      typePicker,
     } = this.state
     const total = _.reduce(
       itemSelected,
@@ -301,7 +378,7 @@ class Index extends PureComponent {
       },
       0
     )
-    console.log({ restaurant })
+    const shippingFee = typePicker === 'pick_up' ? 0 : restaurant ? restaurant.fee : 0
     return (
       <div className={classes.wrapper}>
         <div className={classes.header}>
@@ -333,7 +410,7 @@ class Index extends PureComponent {
               <div className={classes.shippingContent}>
                 <span>配送代</span>
                 <span>
-                  {isHideShip ? `別途` : `${this.convertPrice(parseInt(restaurant.fee))} VND`}
+                  {isHideShip ? `別途` : `${this.convertPrice(parseInt(shippingFee))} VND`}
                 </span>
               </div>
             </div>
@@ -342,7 +419,7 @@ class Index extends PureComponent {
               <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
                 <span>合計</span>
                 <span>{`${this.convertPrice(
-                  total + (isHideShip ? 0 : parseInt(restaurant.fee))
+                  total + (isHideShip ? 0 : parseInt(shippingFee))
                 )} VND`}</span>
               </div>
             </div>
@@ -394,6 +471,48 @@ class Index extends PureComponent {
                     className={classes.input}
                   />
                   {errorAddress && <span className={classes.error}>{errorAddress}</span>}
+                </div>
+              </div>
+              <div className={classes.inputBox}>
+                <span className={classes.textItem}>Picker type</span>
+                <div className={classes.inputContainer}>
+                  <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
+                    <FormControlLabel
+                      classes={{ label: 'radio-label' }}
+                      value="delivery"
+                      control={<Radio size="small" />}
+                      label="Giao hàng"
+                    />
+                    <FormControlLabel
+                      classes={{ label: 'radio-label' }}
+                      value="pick_up"
+                      control={<Radio size="small" />}
+                      label="Đến mang về"
+                    />
+                  </RadioGroup>
+                </div>
+              </div>
+              <div className={classes.inputBox}>
+                <span className={classes.textItem}>Time picker</span>
+                <div className={classes.inputContainer}>
+                  <ReactInputMask
+                    mask="99:99"
+                    onChange={e => this.onChangeStartTime(e)}
+                    onBlur={() => this.onBlurStartTime()}
+                    value={time}
+                    style={{ width: '40%' }}
+                  >
+                    {() => (
+                      <Input
+                        type="text"
+                        name="name"
+                        placeholder="hh/mm"
+                        maxLength={3}
+                        className={classes.input}
+                      />
+                    )}
+                  </ReactInputMask>
+                  {errorTime && <span className={classes.error}>{errorTime}</span>}
                 </div>
               </div>
               <div className={classes.inputBox}>
