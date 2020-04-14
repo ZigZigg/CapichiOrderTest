@@ -548,7 +548,7 @@ class Index extends PureComponent {
               </div>
               <div className={classes.inputBox}>
                 <span className={classes.textItem} style={{ maxWidth: '35%' }}>
-                  追記事項(特定の食材抜き、配達時間の指定などの特別な注文はこちらに記入してください
+                追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください
                 </span>
 
                 <div className={classes.inputContainer}>
