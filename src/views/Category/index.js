@@ -8,12 +8,16 @@ import InputBase from '@material-ui/core/InputBase'
 import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import classNames from 'classnames'
-import { isMobileOnly, isTablet } from 'react-device-detect'
+import { isMobileOnly, isTablet, isBrowser } from 'react-device-detect'
+import Container from '@material-ui/core/Container'
+import * as firebase from 'firebase/app'
+import Pagination from '@material-ui/lab/Pagination'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 import { getListCategory } from '../../api'
 import CategoryItem from './CategoryItem'
 import logoHeader from '../../assets/img/logo-order.png'
 import { isDevelopEnvironment } from '../../commons'
+import 'firebase/analytics'
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
 const dataDev = [
   { id: 190, label: 'ハノイ', data: null },
@@ -63,7 +67,10 @@ class Index extends PureComponent {
       isLoading: false,
       currentTab: isDevelopEnvironment() ? 190 : 3,
       category: isDevelopEnvironment() ? dataDev : dataProduct,
+      // currentTab: 3,
+      // category: dataProduct,
       firstSeed: null,
+      defaultPage: 1,
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
     this.listRef = {}
@@ -72,6 +79,8 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onGetListCategory({ page: 1 })
+    // firebase.analytics().logEvent('category_view',{user:'ZigZigg'});
+    console.log({ isBrowser })
   }
 
   onChangeText = event => {
@@ -87,11 +96,11 @@ class Index extends PureComponent {
     )
   }
 
-  onGetListCategory = async ({ page = 1, isLoadMore, isSearch, isChangeTab }) => {
+  onGetListCategory = async ({ page = 1, isLoadMore, isSearch, isChangeTab, isPC }) => {
     try {
       const { keyword, totalPage, dataCategory, currentTab, firstSeed } = this.state
       const seedFormat = Math.round(Math.random() * 1000)
-      if (!isLoadMore) {
+      if (!isLoadMore && !isPC) {
         this.setState({
           isLoading: true,
           firstSeed: page === 1 ? seedFormat : firstSeed,
@@ -100,14 +109,15 @@ class Index extends PureComponent {
       if (page <= totalPage || isSearch || isChangeTab) {
         const data = await getListCategory({
           page,
-          limit: isMobileOnly ? 10 : isTablet ? 20 : 30,
+          limit: isMobileOnly ? 10 : isTablet ? 20 : 8,
           keyword,
           provinceId: currentTab,
-          seed: page === 1 ? seedFormat : firstSeed,
+          seed: isPC ? firstSeed : page === 1 ? seedFormat : firstSeed,
         })
         if (data.isSuccess) {
           this.setState({
-            dataCategory: isSearch || isChangeTab ? data.data : dataCategory.concat(data.data),
+            dataCategory:
+              isSearch || isChangeTab || isPC ? data.data : dataCategory.concat(data.data),
             currentPage: page,
             totalPage: data.paging.total_page,
             isLoading: false,
@@ -133,18 +143,34 @@ class Index extends PureComponent {
     this.setState(
       {
         currentTab: id,
+        defaultPage: 1,
       },
       () => this.onGetListCategory({ isChangeTab: true, page: 1 })
     )
   }
 
+  onChangePagination = (event, pages) => {
+    this.onGetListCategory({ page: pages, isPC: true })
+    this.setState({
+      defaultPage: pages,
+    })
+  }
+
   render() {
     const { classes } = this.props
-    const { dataCategory, isLoading, totalPage, currentPage, currentTab, category } = this.state
+    const {
+      dataCategory,
+      isLoading,
+      totalPage,
+      currentPage,
+      currentTab,
+      category,
+      defaultPage,
+    } = this.state
     const isHasMore = currentPage < totalPage && dataCategory.length > 0
     return (
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <div className={classes.header}>
+        <Container className={classes.header} style={{ position: isBrowser && 'inherit' }}>
           <div className={classes.inputContainer}>
             <a style={{ display: 'flex' }} href="https://mycapichi.page.link/order">
               <img alt="logo-header" src={logoHeader} style={{ height: '35px' }} />
@@ -180,8 +206,8 @@ class Index extends PureComponent {
               )
             })}
           </div>
-        </div>
-        <div style={{ marginTop: '100px' }}>
+        </Container>
+        <div style={{ marginTop: isBrowser ? '10px' : '100px' }}>
           {isLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
               <CircularProgress size={30} color="primary" />
@@ -197,15 +223,17 @@ class Index extends PureComponent {
                 marginTop: '20px',
               }}
             >
-              <Grid container>
-                {dataCategory &&
-                  dataCategory.length > 0 &&
-                  dataCategory.map((value, index) => {
-                    return (
-                      <CategoryItem onClick={this.onGoToRestaurant} key={value.id} item={value} />
-                    )
-                  })}
-              </Grid>
+              <Container>
+                <Grid container id="list-store-grid">
+                  {dataCategory &&
+                    dataCategory.length > 0 &&
+                    dataCategory.map((value, index) => {
+                      return (
+                        <CategoryItem onClick={this.onGoToRestaurant} key={value.id} item={value} />
+                      )
+                    })}
+                </Grid>
+              </Container>
             </InfiniteScroll>
           ) : (
             <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
@@ -213,6 +241,17 @@ class Index extends PureComponent {
             </p>
           )}
         </div>
+        {isBrowser && dataCategory.length > 0 && (
+          <Container className={classes.paginationContainer}>
+            <Pagination
+              onChange={this.onChangePagination}
+              count={totalPage}
+              siblingCount={0}
+              boundaryCount={1}
+              page={defaultPage}
+            />
+          </Container>
+        )}
       </div>
     )
   }

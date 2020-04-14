@@ -14,6 +14,9 @@ import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
 import MenuItem from './MenuItem'
 import { getTimeRange } from '../../commons'
 import '../../assets/css/Restaurant/styles.css'
+import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
+import { Container } from '@material-ui/core'
+import Pagination from '@material-ui/lab/Pagination'
 
 class Restaurant extends Component {
   constructor(props) {
@@ -33,6 +36,7 @@ class Restaurant extends Component {
       isOpenPopupInactive: false,
       isOpenTime: false,
       inactiveOrder: [],
+      defaultPage: 1,
     }
   }
 
@@ -87,33 +91,43 @@ class Restaurant extends Component {
       const { totalPage, dataMenu, prevPages, prevItemSelected, listItemSelected } = this.state
       const { match } = this.props
       const { id } = match.params
-      if (!isLoadMore) {
-        this.setState({
-          // isLoading: true,
-        })
-      }
 
       if (page <= totalPage) {
         const data = await getListMenuByRestaurant({
           page,
-          limit: prevPages ? prevPages * 10 : 10,
+          limit: isBrowser ? 9 : prevPages ? prevPages * 10 : 10,
           restaurantId: id,
         })
         let dataFormat = []
-        if (prevPages) {
+        if (prevPages && isMobile) {
           dataFormat = [...data.data]
           prevItemSelected.map(value => {
             const findItem = _.find(dataFormat, { id: value.id })
             if (findItem) {
               listItemSelected.push(value)
             }
-
             return dataFormat.splice(_.findIndex(dataFormat, { id: value.id }), 1, { ...value })
           })
+        } else if (prevPages && isBrowser) {
+          this.setState({
+            listItemSelected: prevItemSelected,
+          })
         }
+        // if (isLoadMore) {
+        //   dataFormat = [...data.data]
+        //   console.log("Restaurant -> onGetListMenu -> dataFormat", dataFormat)
+        //   listItemSelected.map(value => {
+        //     return dataFormat.splice(_.findIndex(dataFormat, { id: value.id }), 1, { ...value })
+        //   })
+        // }
         if (data.isSuccess) {
           this.setState({
-            dataMenu: prevPages ? dataFormat : dataMenu.concat(data.data),
+            dataMenu:
+              prevPages && isMobile
+                ? dataFormat
+                : isLoadMore
+                ? data.data
+                : dataMenu.concat(data.data),
             currentPage: page,
             totalPage: data.paging.total_page,
             prevPages: null,
@@ -144,7 +158,7 @@ class Restaurant extends Component {
 
   onLoadMore = () => {
     const { currentPage } = this.state
-    this.onGetListMenu(currentPage + 1, true)
+    this.onGetListMenu(currentPage + 1)
   }
 
   onGoBack = () => {
@@ -154,7 +168,9 @@ class Restaurant extends Component {
 
   onSubmitForm = () => {
     const { listItemSelected } = this.state
+    console.log('Restaurant -> onSubmitForm -> listItemSelected', listItemSelected)
     const filterArray = _.filter(listItemSelected, value => value.count > 0)
+    console.log('Restaurant -> onSubmitForm -> filterArray', filterArray)
     this.onCheckAvailable(filterArray)
     // history.push('/orderDetail', {
     //   listItemSelected: filterArray,
@@ -172,13 +188,14 @@ class Restaurant extends Component {
   }
 
   onCheckAvailable = async filterArray => {
-    const { currentPage, itemRestaurant } = this.state
+    console.log('Restaurant -> filterArray', filterArray)
+    const { currentPage, itemRestaurant, totalPage } = this.state
     const { history, match } = this.props
     const { id } = match.params
     try {
       const data = await getListMenuByRestaurant({
         page: 1,
-        limit: currentPage * 10,
+        limit: totalPage * 10,
         restaurantId: id,
       })
       if (data.isSuccess) {
@@ -191,10 +208,12 @@ class Restaurant extends Component {
             arraySelect.push(selectValue)
           }
         })
+        console.log({ arraySelect })
         const filterSelected = _.filter(
           arraySelect,
           value => !value.active || value.isShow === false
         )
+        console.log({ filterSelected })
         const dataRestaurant = await getRestaurantDetail({ restaurantId: id })
         let isOpen = true
         if (dataRestaurant.data) {
@@ -240,6 +259,13 @@ class Restaurant extends Component {
     })
   }
 
+  onChangePagination = (event, pages) => {
+    this.onGetListMenu(pages, true)
+    this.setState({
+      defaultPage: pages,
+    })
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -253,121 +279,123 @@ class Restaurant extends Component {
       isOpenPopupInactive,
       inactiveOrder,
       isOpenTime,
+      defaultPage,
     } = this.state
+    console.log({ isOpenPopupInactive })
     const filterSelected = _.filter(listItemSelected, value => value.count > 0)
     const isHasMore = currentPage < totalPage && itemRestaurant && dataMenu.length > 0
     const timeRange = itemRestaurant ? getTimeRange(itemRestaurant.active_time_csv) : []
     return (
       <div id="restaurant" className={classes.wrapper}>
-        <div className={classes.header}>
+        <Container className={classes.header} style={{ position: isBrowser && 'inherit', padding: '0' }}>
           <KeyboardArrowLeft
             onClick={this.onGoBack}
             style={{ fontSize: '40px', marginLeft: '5px' }}
           />
           <span className={classes.headerLabel}>レストランの詳細</span>
           <div style={{ marginRight: '24px', width: '30px' }} />
-          {/* <ShoppingBasket style={{ fontSize: '30px', marginRight: '24px' }} /> */}
-          {/* <div style={{ width: '30px' }} /> */}
-        </div>
+        </Container>
         <InfiniteScroll
           dataLength={dataMenu.length}
-          // throttle={100}
-          // threshold={300}
-          next={this.onLoadMore}
+          next={isBrowser ? false : this.onLoadMore}
           hasMore={isHasMore}
-          // loader={
-          //   isHasMore && (
-          //     <div
-          //       style={{
-          //         width: '100%',
-          //         marginTop: '10px',
-          //         display: 'flex',
-          //         justifyContent: 'center',
-          //       }}
-          //     >
-          //       <CircularProgress
-          //         size={30}
-          //         color="primary"
-          //         style={{ marginTop: '10px', margin: 'auto' }}
-          //       />
-          //     </div>
-          //   )
-          // }
-          // style={{
-          //   width: '100%',
-          // }}
         >
           <div className={classes.container}>
             {itemRestaurant && (
-              <>
-                <div className={classes.imageContainer}>
-                  {itemRestaurant && (
-                    <img
-                      className={classes.image}
-                      src={itemRestaurant.image}
-                      alt={itemRestaurant.name}
-                    />
-                  )}
-                </div>
-                <span className={classes.name}>{itemRestaurant && itemRestaurant.name}</span>
-                <div>
-                  <LocationOn style={{ fontSize: '17px', marginBottom: '-3px' }} />
-                  <span className={classes.address}>
-                    {itemRestaurant && itemRestaurant.address}
-                  </span>
-                </div>
-                <div>
-                  <Phone style={{ fontSize: '17px', marginBottom: '-3px' }} />
-                  <a href={`tel:${itemRestaurant.phone}`} className={classes.address}>
-                    {itemRestaurant.phone}
-                  </a>
-                </div>
-                <div style={{ fontSize: '15px', display: 'flex', flexDirection: 'column' }}>
-                  <span className={classes.rightContentText}>営業時間:</span>
-                  {/* {itemRestaurant.open_time && itemRestaurant.closed_time && (
-                    <span
-                      className={timeClass}
-                    >{`${itemRestaurant.open_time} - ${itemRestaurant.closed_time}`}</span>
-                  )} */}
-                  <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    {timeRange.map((value, index) => {
-                      return (
-                        <span
-                          key={index}
-                          className={classNames({
-                            [classes.itemTimeRange]: true,
-                            [classes.itemTimeClose]: !value.isOpen,
-                          })}
-                        >
-                          {value.time}
-                        </span>
-                      )
+              <Container style={{ padding: isMobile && '0' }}>
+                <div className={classNames({ [classes.rowContainer]: isBrowser })}>
+                  <div
+                    className={classNames({
+                      [classes.imageContainer]: true,
+                      'image-container': isBrowser,
                     })}
+                  >
+                    {itemRestaurant && (
+                      <img
+                        className={classNames({ [classes.image]: true, image: isBrowser })}
+                        src={itemRestaurant.image}
+                        alt={itemRestaurant.name}
+                      />
+                    )}
+                  </div>
+                  <div className={classNames({ [classes.rowRightContainer]: isBrowser })}>
+                    <span className={classNames({ [classes.name]: true, name: isBrowser })}>
+                      {itemRestaurant && itemRestaurant.name}
+                    </span>
+                    <div>
+                      <LocationOn style={{ fontSize: '17px', marginBottom: '-3px' }} />
+                      <span className={classes.address}>
+                        {itemRestaurant && itemRestaurant.address}
+                      </span>
+                    </div>
+                    <div>
+                      <Phone style={{ fontSize: '17px', marginBottom: '-3px' }} />
+                      <a href={`tel:${itemRestaurant.phone}`} className={classes.address}>
+                        {itemRestaurant.phone}
+                      </a>
+                    </div>
+                    <div style={{ fontSize: '15px', display: 'flex', flexDirection: 'column' }}>
+                      <span className={classes.rightContentText}>営業時間:</span>
+                      <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        {timeRange.map((value, index) => {
+                          return (
+                            <span
+                              key={index}
+                              className={classNames({
+                                [classes.itemTimeRange]: true,
+                                [classes.itemTimeClose]: !value.isOpen,
+                              })}
+                            >
+                              {value.time}
+                            </span>
+                          )
+                        })}
+                      </div>
+                    </div>
+                    {itemRestaurant.note && (
+                      <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>
+                    )}
                   </div>
                 </div>
-                {itemRestaurant.note && (
-                  <span style={{ fontSize: '15px' }}>{itemRestaurant.note}</span>
-                )}
 
                 <p style={{ fontSize: '16px', textAlign: 'center' }}>メニュー一覧</p>
-              </>
+              </Container>
             )}
-
-            <Grid container>
-              {dataMenu &&
-                dataMenu.length > 0 &&
-                dataMenu.map(value => {
-                  return <MenuItem key={value.id} onSetOrder={this.onSetOrder} item={value} />
-                })}
-              {itemRestaurant && dataMenu.length === 0 && (
-                <p style={{ width: '100%', textAlign: 'center', fontSize: '12px' }}>
-                  まだこの店舗にメニューが登録されていません
-                </p>
-              )}
-              <div style={{ width: '100%', height: '60px', marginTop: '10px' }} />
-            </Grid>
+            <Container style={{ padding: isMobile && '0' }}>
+              <Grid container>
+                {dataMenu &&
+                  dataMenu.length > 0 &&
+                  dataMenu.map(value => {
+                    return (
+                      <MenuItem
+                        listItemSelected={listItemSelected}
+                        key={value.id}
+                        onSetOrder={this.onSetOrder}
+                        item={value}
+                      />
+                    )
+                  })}
+                {itemRestaurant && dataMenu.length === 0 && (
+                  <p style={{ width: '100%', textAlign: 'center', fontSize: '12px' }}>
+                    まだこの店舗にメニューが登録されていません
+                  </p>
+                )}
+                {!isBrowser && <div style={{ width: '100%', height: '60px', marginTop: '10px' }} />}
+              </Grid>
+            </Container>
           </div>
         </InfiniteScroll>
+        {isBrowser && dataMenu.length > 0 && (
+          <Container className={classes.paginationContainer}>
+            <Pagination
+              onChange={this.onChangePagination}
+              count={totalPage}
+              siblingCount={0}
+              boundaryCount={1}
+              page={defaultPage}
+            />
+          </Container>
+        )}
         <div className={classes.btnContainer}>
           <Button
             variant="contained"

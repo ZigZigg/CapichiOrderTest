@@ -6,6 +6,8 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 import { getTimeRange } from '../../commons'
+import '../../assets/css/Category/styles.css'
+import { isMobileOnly, isMobile, isTablet, isBrowser } from 'react-device-detect'
 
 class CategoryItem extends PureComponent {
   constructor(props) {
@@ -27,9 +29,26 @@ class CategoryItem extends PureComponent {
     _.orderBy(timeRange, ['sort'], ['desc'])
     const sortTime = _.orderBy(timeRange, ['sort'], ['desc'])
     return (
-      <Grid onClick={this.onClickItem} item xs={12} md={6} lg={3} className={classes.itemCategory}>
-        <div className={classes.itemContentCategory}>
-          <div style={{ width: '135px', height: '135px' }}>
+      <Grid
+        onClick={this.onClickItem}
+        item
+        xs={12}
+        sm={6}
+        lg={3}
+        className={classNames({ [classes.itemCategory]: true, 'item-category': true })}
+      >
+        <div
+          className={classNames({
+            [classes.itemContentCategory]: true,
+            'item-content-category': true,
+          })}
+        >
+          <div
+            className={classNames({
+              [classes.imageContainer]: isMobile,
+              [classes.imageContainerDes]: isBrowser,
+            })}
+          >
             <img className={classes.image} src={item.image} alt={item.name} />
           </div>
 

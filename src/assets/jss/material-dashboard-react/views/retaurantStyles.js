@@ -3,6 +3,7 @@ const styles = {
     // height: '100vh',
     // position: 'relative',
     display: 'flex',
+    flexDirection: 'column',
   },
   container: {
     padding: '0 24px',
@@ -10,6 +11,10 @@ const styles = {
     // overflowX: 'hidden',
     // height: '85vh',
     paddingTop: '55px',
+  },
+  rowContainer: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   header: {
     display: 'flex',
@@ -25,12 +30,19 @@ const styles = {
     fontSize: '18px',
     fontWeight: 'bold',
   },
+  imageContainerPc: {
+    padding: '0 15px',
+    height: 'auto',
+  },
   imageContainer: {
     width: '100%',
     height: '150px',
     borderRadius: '10px',
     // marginTop: '10px',
     marginBottom: '5px',
+  },
+  imagePc: {
+    height: '270px',
   },
   image: {
     width: '100%',
@@ -45,6 +57,10 @@ const styles = {
     fontSize: '12px',
     marginLeft: '5px',
   },
+  rowRightContainer: {
+    padding: '10px 15px 0 15px',
+    width: '100%',
+  },
   btnContainer: {
     position: 'fixed',
     bottom: '-2px',
@@ -54,6 +70,13 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  gridItem: {
+    padding: '0 5px',
+  },
+  imgView: {
+    width: '60px',
+    height: '60px',
   },
   itemMenu: {
     width: '100%',
@@ -116,6 +139,12 @@ const styles = {
   itemTimeClose: {
     backgroundColor: '#c2c2c2',
     color: 'red',
+  },
+  paginationContainer: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '15px',
   },
   rightContentText: {
     fontSize: '14px',

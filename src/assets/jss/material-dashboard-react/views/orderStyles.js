@@ -14,6 +14,9 @@ const styles = {
     width: '100%',
     backgroundColor: '#fff',
   },
+  gridItem: {
+    padding: '0 5px',
+  },
   headerLabel: {
     fontSize: '18px',
     fontWeight: 'bold',

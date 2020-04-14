@@ -2,3 +2,21 @@
     font-size: 12px !important;
     color:#1E1F21
 }
+@media (min-width: 1200px){
+    #order-grid-item .item-order{
+        height: 85px;
+        padding: 5px;
+        box-sizing: border-box;
+        border: 1px solid #dbdbdb;
+        border-radius: 5px;
+    }
+    #order-grid-item .img-view, #order-grid-item .img-view img{
+        width: 70px;
+        height: 70px;
+        border-radius: 5px;
+    }
+    .fluid-pc{
+        width: 70% !important;
+        margin: auto
+    }
+}

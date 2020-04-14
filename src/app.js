@@ -29,37 +29,26 @@ import Order from './views/Order'
 // import RTL from './layouts/RTL'
 // import * as serviceWorker from '../src1/serviceWorker';
 import './assets/css/material-dashboard-react.css'
+import * as firebase from 'firebase/app'
+import 'firebase/analytics'
 // import { AUTHEN_TOKEN } from './constants/define'
 
 const hist = createBrowserHistory()
+const firebaseConfig = {
+  apiKey: 'AIzaSyBYnN-Ij2vKyDgk_G3rWxEn3qo4SCTgdaU',
+  authDomain: 'orderanalystic.firebaseapp.com',
+  databaseURL: 'https://orderanalystic.firebaseio.com',
+  projectId: 'orderanalystic',
+  storageBucket: 'orderanalystic.appspot.com',
+  messagingSenderId: '135663922911',
+  appId: '1:135663922911:web:f612d87f66572e43c0c36a',
+  measurementId: 'G-9KDFJ9BPEQ',
+}
+
+firebase.initializeApp(firebaseConfig)
+firebase.analytics()
 
 function App() {
-  // const authenToken = localStorage.getItem(AUTHEN_TOKEN)
-  // const defaultRedirect = routeProps => {
-  //   const { match, history } = routeProps
-  //   if (!authenToken) {
-  //     return <Redirect to={`${match.url}login`} />
-  //   }
-  //   if (history.location.pathname.slice(1) === 'login') {
-  //     return <Redirect to={`${match.url}admin/user`} />
-  //   }
-  //   if (history.location.pathname === '/') {
-  //     return !authenToken ? (
-  //       <Redirect to={`${match.url}login`} />
-  //     ) : (
-  //       <Redirect to={`${match.url}admin/user`} />
-  //     )
-  //   }
-  //   return history.location.pathname.slice(-1) === '/' ? (
-  //     <Redirect
-  //       to={`${history.location.pathname.slice(0, -1)}${history.location.search}${
-  //         history.location.hash
-  //       }`}
-  //     />
-  //   ) : (
-  //     <Redirect to={`${match.url}admin/user`} />
-  //   )
-  // }
   return (
     <div className="App">
       <header className="App-header">

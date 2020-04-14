@@ -28,6 +28,8 @@ import {
   checkAvailableTime,
 } from '../../commons'
 import '../../assets/css/Order/styles.css'
+import { Container } from '@material-ui/core'
+import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
 // const useStyles = makeStyles({
 //   label:{
 //     fontSize:12
@@ -130,25 +132,35 @@ class Index extends PureComponent {
     })
     const rowTotalPrice = item.count * item.price
     return (
-      <Grid key={item.id} item xs={12} md={6} lg={3} className={classes.itemOrder}>
-        <div style={{ width: '60px', height: '60px' }}>
-          <img src={item.image} alt={item.name} className={classes.imgItem} />
-        </div>
-        <div className={classes.itemContent}>
-          <div className={classes.nameItem}>
-            <span className={itemClass} style={{ marginTop: '10px' }}>
-              {item.name}
-            </span>
-            <span className={itemClass}>{`${this.convertPrice(item.price)}VND`}</span>
+      <Grid
+        id="order-grid-item"
+        key={item.id}
+        item
+        xs={12}
+        md={6}
+        lg={4}
+        className={classNames({ [classes.gridItem]: isBrowser })}
+      >
+        <div className={classNames({ [classes.itemOrder]: true, 'item-order': true })}>
+          <div className={classNames({ [classes.imgView]: true, 'img-view': isBrowser })}>
+            <img src={item.image} alt={item.name} className={classes.imgItem} />
           </div>
-          <span
-            className={classes.textItem}
-            style={{ width: '10%', textAlign: 'right' }}
-          >{`x${item.count}`}</span>
-          <span
-            className={classes.textItem}
-            style={{ width: '45%', textAlign: 'right' }}
-          >{`${this.convertPrice(rowTotalPrice)}VND`}</span>
+          <div className={classes.itemContent}>
+            <div className={classes.nameItem}>
+              <span className={itemClass} style={{ marginTop: '10px' }}>
+                {item.name}
+              </span>
+              <span className={itemClass}>{`${this.convertPrice(item.price)}VND`}</span>
+            </div>
+            <span
+              className={classes.textItem}
+              style={{ width: '10%', textAlign: 'right' }}
+            >{`x${item.count}`}</span>
+            <span
+              className={classes.textItem}
+              style={{ width: '45%', textAlign: 'right' }}
+            >{`${this.convertPrice(rowTotalPrice)}VND`}</span>
+          </div>
         </div>
       </Grid>
     )
@@ -381,16 +393,19 @@ class Index extends PureComponent {
     const shippingFee = typePicker === 'pick_up' ? 0 : restaurant ? restaurant.fee : 0
     return (
       <div className={classes.wrapper}>
-        <div className={classes.header}>
+        <Container
+          className={classes.header}
+          style={{ position: isBrowser && 'inherit', padding: '0' }}
+        >
           <KeyboardArrowLeft
             onClick={this.onGoBack}
             style={{ fontSize: '40px', marginLeft: '10px' }}
           />
           <span className={classes.headerLabel}>注文内容確認</span>
           <div style={{ marginRight: '24px', width: '30px' }} />
-        </div>
+        </Container>
         {restaurant && (
-          <div className={classes.container}>
+          <Container className={classes.container}>
             <div>
               <span className={classes.name}>{restaurant.name}</span>
               <div>
@@ -423,7 +438,7 @@ class Index extends PureComponent {
                 )} VND`}</span>
               </div>
             </div>
-            <div style={{ marginTop: '20px' }}>
+            <div style={{ marginTop: '20px' }} className="fluid-pc">
               <p className={classes.textItem} style={{ textAlign: 'center' }}>
                 注文者情報入力
               </p>
@@ -493,7 +508,9 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span style={{maxWidth:'35%'}} className={classes.textItem}>受取希望時間（特に指定がなく最速で受け取りたい場合は何も入力しないでください)</span>
+                <span style={{ maxWidth: '35%' }} className={classes.textItem}>
+                  受取希望時間（特に指定がなく最速で受け取りたい場合は何も入力しないでください)
+                </span>
                 <div className={classes.inputContainer}>
                   <ReactInputMask
                     mask="99:99"
@@ -549,13 +566,13 @@ class Index extends PureComponent {
                 </div>
               </div>
             </div>
-            <div style={{ width: '100%', height: '60px', marginTop: '10px' }}>
+            <div style={{ width: '100%', height: '60px', marginTop: '10px' }} className="fluid-pc">
               <p style={{ fontSize: '9px', lineHeight: '15px' }}>
                 入力していたいただいたメールアドレス宛に注文状況、配達状況などをメールでリアルタイムに共有します。
               </p>
             </div>
             <div style={{ width: '100%', height: '100px' }} />
-          </div>
+          </Container>
         )}
         <div className={classes.btnContainer}>
           {isSuccess ? (

@@ -1,3 +1,33 @@
 #restaurant .infinite-scroll-component__outerdiv{
     width: 100%;
 }
+#restaurant .image-container{
+    padding: 0 15px;
+    height: auto;
+    width: 480px
+}
+#restaurant .image{
+    height: 300px;
+    width: 480px;
+    border-radius: 0
+}
+#restaurant .name{
+    font-size: 22px;
+    color: #464646;
+    font-weight: bold
+}
+
+@media (min-width: 1200px){
+    #restaurant-grid-item .item-menu{
+        height: 85px;
+        padding: 5px;
+        box-sizing: border-box;
+        border: 1px solid #dbdbdb;
+        border-radius: 5px;
+    }
+    #restaurant-grid-item .img-view, #restaurant-grid-item .img-view img{
+        width: 70px;
+        height: 70px;
+        border-radius: 5px;
+    }
+}

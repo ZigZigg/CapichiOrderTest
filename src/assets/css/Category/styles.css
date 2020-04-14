@@ -1,0 +1,18 @@
+@media (max-width: 480px){
+    #list-store-grid .item-category{
+        padding:0
+    }
+
+}
+@media (min-width: 1200px){
+    #list-store-grid .item-category .item-content-category{
+        flex-direction: column;
+        height: 320px
+    }
+    #list-store-grid .item-category .item-content-category img{
+        width: 100%;
+        height: 170px;
+        border-top-right-radius: 7px;
+        border-bottom-left-radius: 0
+    }
+}

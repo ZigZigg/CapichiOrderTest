@@ -5,10 +5,10 @@ import PropTypes from 'prop-types'
 import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
 import { AddCircle, RemoveCircle } from '@material-ui/icons'
+import classNames from 'classnames'
+import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
+import _ from 'lodash'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
-// import circlePlus from '../../assets/img/circle-plus.png'
-// import circleMinus from '../../assets/img/circle-minus.png'
-// import circleMinusInactive from '../../assets/img/circle-plus-inactive.png'
 
 class MenuItem extends PureComponent {
   constructor(props) {
@@ -19,12 +19,34 @@ class MenuItem extends PureComponent {
     }
   }
 
-  // componentDidMount() {
-  //   const { item, onSetOrder } = this.props
+  componentDidMount() {
+    if (isBrowser) {
+      const { item, listItemSelected } = this.props
+      // console.log("MenuItem -> componentDidMount -> listItemSelected", listItemSelected)
+      let itemData = null
+      if (listItemSelected.length > 0) {
+        itemData = _.find(listItemSelected, { id: item.id })
+      }
+      this.setState({
+        count: itemData ? itemData.count : 0,
+      })
+    }
+  }
 
-  //   if (item && item.count && onSetOrder) {
-  //     console.log({ item })
-  //     onSetOrder(item)
+  // UNSAFE_componentWillReceiveProps(nextProps) {
+  //   const { item } = this.props
+  //   const { listItemSelected } = nextProps
+  //   console.log("MenuItem -> UNSAFE_componentWillReceiveProps -> listItemSelected", listItemSelected)
+  //   if (item && !_.isEqual(item, nextProps.item)) {
+  //     console.log('EQUA:L::123')
+  //     let itemData = null
+  //     if (listItemSelected.length > 0) {
+  //       itemData = _.find(listItemSelected, { id: nextProps.item.id })
+  //     }
+  //     console.log({itemData})
+  //     this.setState({
+  //       count: itemData ? itemData.count : 0,
+  //     })
   //   }
   // }
 
@@ -57,47 +79,43 @@ class MenuItem extends PureComponent {
     const { classes, item } = this.props
     const { count } = this.state
     return (
-      <Grid onClick={this.onClickItem} item xs={12} md={6} lg={3} className={classes.itemMenu}>
-        <div style={{ width: '60px', height: '60px' }}>
-          <img src={item.image} alt="name" className={classes.imageMenu} />
-        </div>
+      <Grid
+        id="restaurant-grid-item"
+        onClick={this.onClickItem}
+        item
+        xs={12}
+        md={6}
+        lg={4}
+        className={classNames({ [classes.gridItem]: isBrowser })}
+      >
+        <div className={classNames({ [classes.itemMenu]: true, 'item-menu': true })}>
+          <div className={classNames({ [classes.imgView]: true, 'img-view': isBrowser })}>
+            <img src={item.image} alt="name" className={classes.imageMenu} />
+          </div>
 
-        <div className={classes.content}>
-          <span className={classes.textContent} style={{ marginTop: '10px' }}>
-            {item.name}
-          </span>
-          <span className={classes.textContent}>{this.converCurrency(item.price)}</span>
-        </div>
-        <div className={classes.action}>
-          {/* <img /> */}
-          {count > 0 && (
-            // <img
-            //   src={circleMinus}
-            //   alt="minus"
-            //   onClick={() => this.onSetCount(false)}
-            //   className={classes.imgIcon}
-            // />
-            <RemoveCircle
-              onClick={() => this.onSetCount(false)}
-              style={{ fontSize: '28px', color: '#F7941C' }}
-            />
-          )}
-          {count > 0 && <span style={{ margin: '0 10px' }}>{count}</span>}
-          {item.active ? (
-            <AddCircle
-              onClick={() => this.onSetCount(true)}
-              style={{ fontSize: '28px', color: '#F7941C' }}
-            />
-          ) : (
-            // <img
-            //   src={circlePlus}
-            //   alt="plus"
-            //   onClick={() => this.onSetCount(true)}
-            //   className={classes.imgIcon}
-            // />
-            <AddCircle style={{ fontSize: '28px', color: '#898988' }} />
-            // <img src={circleMinusInactive} alt="plus" className={classes.imgIcon} />
-          )}
+          <div className={classes.content}>
+            <span className={classes.textContent} style={{ marginTop: '10px' }}>
+              {item.name}
+            </span>
+            <span className={classes.textContent}>{this.converCurrency(item.price)}</span>
+          </div>
+          <div className={classes.action}>
+            {count > 0 && (
+              <RemoveCircle
+                onClick={() => this.onSetCount(false)}
+                style={{ fontSize: '28px', color: '#F7941C' }}
+              />
+            )}
+            {count > 0 && <span style={{ margin: '0 10px' }}>{count}</span>}
+            {item.active ? (
+              <AddCircle
+                onClick={() => this.onSetCount(true)}
+                style={{ fontSize: '28px', color: '#F7941C' }}
+              />
+            ) : (
+              <AddCircle style={{ fontSize: '28px', color: '#898988' }} />
+            )}
+          </div>
         </div>
       </Grid>
     )
