@@ -287,7 +287,10 @@ class Restaurant extends Component {
     const timeRange = itemRestaurant ? getTimeRange(itemRestaurant.active_time_csv) : []
     return (
       <div id="restaurant" className={classes.wrapper}>
-        <Container className={classes.header} style={{ position: isBrowser && 'inherit', padding: '0' }}>
+        <Container
+          className={classes.header}
+          style={{ position: isBrowser && 'inherit', padding: '0' }}
+        >
           <KeyboardArrowLeft
             onClick={this.onGoBack}
             style={{ fontSize: '40px', marginLeft: '5px' }}
@@ -396,7 +399,7 @@ class Restaurant extends Component {
             />
           </Container>
         )}
-        <div className={classes.btnContainer}>
+        <div className={classes.btnContainer} style={{ position: isBrowser && 'inherit' }}>
           <Button
             variant="contained"
             color="primary"

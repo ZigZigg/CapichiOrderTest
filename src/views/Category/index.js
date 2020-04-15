@@ -217,7 +217,7 @@ class Index extends PureComponent {
               dataLength={dataCategory.length}
               // throttle={100}
               // threshold={300}
-              next={this.onLoadMore}
+              next={isBrowser ? false : this.onLoadMore}
               hasMore={isHasMore}
               style={{
                 marginTop: '20px',

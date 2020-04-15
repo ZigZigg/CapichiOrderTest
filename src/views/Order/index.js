@@ -329,15 +329,15 @@ class Index extends PureComponent {
         time: '',
       })
     }
-    if (time && !/_/.test(time)) {
-      const check = inputTime.isBefore(convertCurrentTime)
-      if (check) {
-        this.setState({
-          errorTime: '配達時間は現在の時間より長くなければなりません',
-        })
-        return
-      }
-    }
+    // if (time && !/_/.test(time)) {
+    //   const check = inputTime.isBefore(convertCurrentTime)
+    //   if (check) {
+    //     this.setState({
+    //       errorTime: '配達時間は現在の時間より長くなければなりません',
+    //     })
+    //     return
+    //   }
+    // }
     if (/_/.test(time) && checkTime) {
       this.setState({
         errorTime: '正しい時間を記入してください',
@@ -548,7 +548,7 @@ class Index extends PureComponent {
               </div>
               <div className={classes.inputBox}>
                 <span className={classes.textItem} style={{ maxWidth: '35%' }}>
-                追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください）
+                  追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください）
                 </span>
 
                 <div className={classes.inputContainer}>
