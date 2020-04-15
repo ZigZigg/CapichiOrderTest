@@ -17,7 +17,7 @@ import '../../assets/css/Restaurant/styles.css'
 import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
 import { Container } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
-
+import {restaurantText} from '../../variables/texts'
 class Restaurant extends Component {
   constructor(props) {
     super(props)
@@ -289,7 +289,7 @@ class Restaurant extends Component {
             onClick={this.onGoBack}
             style={{ fontSize: '40px', marginLeft: '5px' }}
           />
-          <span className={classes.headerLabel}>レストランの詳細</span>
+          <span className={classes.headerLabel}>{restaurantText.header}</span>
           <div style={{ marginRight: '24px', width: '30px' }} />
         </Container>
         <InfiniteScroll
@@ -332,7 +332,7 @@ class Restaurant extends Component {
                       </a>
                     </div>
                     <div style={{ fontSize: '15px', display: 'flex', flexDirection: 'column' }}>
-                      <span className={classes.rightContentText}>営業時間:</span>
+                      <span className={classes.rightContentText}>{restaurantText.openTime}</span>
                       <div style={{ display: 'flex', flexDirection: 'row' }}>
                         {timeRange.map((value, index) => {
                           return (
@@ -355,7 +355,7 @@ class Restaurant extends Component {
                   </div>
                 </div>
 
-                <p style={{ fontSize: '16px', textAlign: 'center' }}>メニュー一覧</p>
+                <p style={{ fontSize: '16px', textAlign: 'center' }}>{restaurantText.menu}</p>
               </Container>
             )}
             <Container style={{ padding: isMobile && '0' }}>
@@ -374,7 +374,7 @@ class Restaurant extends Component {
                   })}
                 {itemRestaurant && dataMenu.length === 0 && (
                   <p style={{ width: '100%', textAlign: 'center', fontSize: '12px' }}>
-                    まだこの店舗にメニューが登録されていません
+                    {restaurantText.dataEmpty}
                   </p>
                 )}
                 {!isBrowser && <div style={{ width: '100%', height: '60px', marginTop: '10px' }} />}
@@ -406,7 +406,7 @@ class Restaurant extends Component {
                 this.isRestaurantOpen() && filterSelected.length > 0 ? '#F7941D' : '#F2F2F2',
             }}
           >
-            {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `確定`}
+            {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : restaurantText.submit}
           </Button>
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
@@ -418,7 +418,7 @@ class Restaurant extends Component {
               margin: '10px 20px',
             }}
           >
-            この店舗は現在営業しておりません
+            {restaurantText.dialogOpenTime.header}
           </p>
           <p
             style={{
@@ -428,7 +428,7 @@ class Restaurant extends Component {
               margin: '0px 20px',
             }}
           >
-            メニューはあとで選ぶことができます
+            {restaurantText.dialogOpenTime.text}
           </p>
           <div className={classes.closeBtn}>
             <Button
@@ -454,7 +454,7 @@ class Restaurant extends Component {
               margin: '10px 20px',
             }}
           >
-            申し訳ありません。このメニューは売り切れました:
+            {restaurantText.dialogFailedMenu.text}
           </p>
           {inactiveOrder.length > 0 &&
             inactiveOrder.map(value => {
@@ -484,9 +484,9 @@ class Restaurant extends Component {
               margin: '10px 40px',
             }}
           >
-            注文に失敗しました
+            {restaurantText.dialogFailedSubmit.header}
           </p>
-          <span style={{ textAlign: 'center', fontSize: '12px' }}>もう一度試してください!</span>
+          <span style={{ textAlign: 'center', fontSize: '12px' }}>{restaurantText.dialogFailedSubmit.text}</span>
           <div
             style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
           >
