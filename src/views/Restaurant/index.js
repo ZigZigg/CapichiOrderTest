@@ -168,9 +168,7 @@ class Restaurant extends Component {
 
   onSubmitForm = () => {
     const { listItemSelected } = this.state
-    console.log('Restaurant -> onSubmitForm -> listItemSelected', listItemSelected)
     const filterArray = _.filter(listItemSelected, value => value.count > 0)
-    console.log('Restaurant -> onSubmitForm -> filterArray', filterArray)
     this.onCheckAvailable(filterArray)
     // history.push('/orderDetail', {
     //   listItemSelected: filterArray,
@@ -188,7 +186,6 @@ class Restaurant extends Component {
   }
 
   onCheckAvailable = async filterArray => {
-    console.log('Restaurant -> filterArray', filterArray)
     const { currentPage, itemRestaurant, totalPage } = this.state
     const { history, match } = this.props
     const { id } = match.params
@@ -208,12 +205,10 @@ class Restaurant extends Component {
             arraySelect.push(selectValue)
           }
         })
-        console.log({ arraySelect })
         const filterSelected = _.filter(
           arraySelect,
           value => !value.active || value.isShow === false
         )
-        console.log({ filterSelected })
         const dataRestaurant = await getRestaurantDetail({ restaurantId: id })
         let isOpen = true
         if (dataRestaurant.data) {
@@ -281,7 +276,6 @@ class Restaurant extends Component {
       isOpenTime,
       defaultPage,
     } = this.state
-    console.log({ isOpenPopupInactive })
     const filterSelected = _.filter(listItemSelected, value => value.count > 0)
     const isHasMore = currentPage < totalPage && itemRestaurant && dataMenu.length > 0
     const timeRange = itemRestaurant ? getTimeRange(itemRestaurant.active_time_csv) : []

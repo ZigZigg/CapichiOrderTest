@@ -307,13 +307,13 @@ class Index extends PureComponent {
 
   onChangeStartTime = e => {
     const { value } = e.nativeEvent.target
-    if (Number(value[1]) > 3 && Number(value[0]) >= 2) return
-    if (Number(value[0]) >= 3) return
-    if (Number(value[0]) === 2 && Number(value[1]) > 3) {
-      return
-    }
+    // if (Number(value[1]) > 3 && Number(value[0]) >= 2) return
+    // if (Number(value[0]) >= 3) return
+    // if (Number(value[0]) === 2 && Number(value[1]) > 3) {
+    //   return
+    // }
 
-    if (Number(value[3] > 5)) return
+    // if (Number(value[3] > 5)) return
 
     this.setState({ time: value, errorTime: '' })
   }
@@ -509,7 +509,7 @@ class Index extends PureComponent {
               </div>
               <div className={classes.inputBox}>
                 <span style={{ maxWidth: '35%' }} className={classes.textItem}>
-                  受取希望時間（特に指定がなく最速で受け取りたい場合は何も入力しないでください)
+                  受取希望時間（時間指定がなければ最短でお届けします）
                 </span>
                 <div className={classes.inputContainer}>
                   <ReactInputMask
