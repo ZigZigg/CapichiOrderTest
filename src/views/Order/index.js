@@ -30,6 +30,7 @@ import {
 import '../../assets/css/Order/styles.css'
 import { Container } from '@material-ui/core'
 import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
+import {orderText} from '../../variables/texts'
 // const useStyles = makeStyles({
 //   label:{
 //     fontSize:12
@@ -186,9 +187,9 @@ class Index extends PureComponent {
     } = this.state
     if (address.trim().length === 0 || phone.length === 0 || name.trim().length === 0) {
       this.setState({
-        errorName: name.trim().length === 0 ? 'お客様の名前を入力してください' : '',
-        errorPhone: phone.length === 0 ? '電話番号を入力してください' : '',
-        errorAddress: address.trim().length === 0 ? '住所を入力してください' : '',
+        errorName: name.trim().length === 0 ? orderText.error.name : '',
+        errorPhone: phone.length === 0 ? orderText.error.phone : '',
+        errorAddress: address.trim().length === 0 ? orderText.error.address : '',
         name: name.trim().length === 0 ? '' : name,
         address: address.trim().length === 0 ? '' : address,
       })
@@ -340,14 +341,14 @@ class Index extends PureComponent {
     // }
     if (/_/.test(time) && checkTime) {
       this.setState({
-        errorTime: '正しい時間を記入してください',
+        errorTime: orderText.error.timeFormat,
       })
       return
     }
     const timeAvailable = checkAvailableTime(restaurant.active_time_csv, time)
     if (time && !timeAvailable && !time.match(/_/g)) {
       this.setState({
-        errorTime: '営業時間内の時間を記入してください',
+        errorTime: orderText.error.timeOpen,
       })
     }
   }
@@ -401,7 +402,7 @@ class Index extends PureComponent {
             onClick={this.onGoBack}
             style={{ fontSize: '40px', marginLeft: '10px' }}
           />
-          <span className={classes.headerLabel}>注文内容確認</span>
+          <span className={classes.headerLabel}>{orderText.header}</span>
           <div style={{ marginRight: '24px', width: '30px' }} />
         </Container>
         {restaurant && (
@@ -423,7 +424,7 @@ class Index extends PureComponent {
             <div className={classes.shippingBox}>
               <div style={{ width: '95px' }} />
               <div className={classes.shippingContent}>
-                <span>配送代</span>
+                <span>{orderText.shippingFee}</span>
                 <span>
                   {isHideShip ? `別途` : `${this.convertPrice(parseInt(shippingFee))} VND`}
                 </span>
@@ -432,7 +433,7 @@ class Index extends PureComponent {
             <div className={classes.totalBox}>
               <div style={{ width: '40px' }} />
               <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
-                <span>合計</span>
+                <span>{orderText.grandTotal}</span>
                 <span>{`${this.convertPrice(
                   total + (isHideShip ? 0 : parseInt(shippingFee))
                 )} VND`}</span>
@@ -440,11 +441,11 @@ class Index extends PureComponent {
             </div>
             <div style={{ marginTop: '20px' }} className="fluid-pc">
               <p className={classes.textItem} style={{ textAlign: 'center' }}>
-                注文者情報入力
+                {orderText.orderInformation}
               </p>
 
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>名前*</span>
+                <span className={classes.textItem}>{orderText.labelName}</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={name}
@@ -459,7 +460,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>電話番号*</span>
+                <span className={classes.textItem}>{orderText.labelName}</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={phone}
@@ -473,7 +474,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>住所*</span>
+                <span className={classes.textItem}>{orderText.labelAddress}</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={address}
@@ -489,27 +490,27 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>受取方法</span>
+                <span className={classes.textItem}>{orderText.labelMethod}</span>
                 <div className={classes.inputContainer}>
                   <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
                     <FormControlLabel
                       classes={{ label: 'radio-label' }}
                       value="delivery"
                       control={<Radio size="small" />}
-                      label="デリバリー"
+                      label={orderText.selectDelivery}
                     />
                     <FormControlLabel
                       classes={{ label: 'radio-label' }}
                       value="pick_up"
                       control={<Radio size="small" />}
-                      label="お持ち帰り"
+                      label={orderText.selectPickup}
                     />
                   </RadioGroup>
                 </div>
               </div>
               <div className={classes.inputBox}>
                 <span style={{ maxWidth: '35%' }} className={classes.textItem}>
-                  受取希望時間（時間指定がなければ最短でお届けします）
+                {orderText.labelTime}
                 </span>
                 <div className={classes.inputContainer}>
                   <ReactInputMask
@@ -533,7 +534,7 @@ class Index extends PureComponent {
                 </div>
               </div>
               <div className={classes.inputBox}>
-                <span className={classes.textItem}>メールアドレス</span>
+                <span className={classes.textItem}>{orderText.labelEmail}</span>
                 <div className={classes.inputContainer}>
                   <Input
                     value={email}
@@ -548,7 +549,7 @@ class Index extends PureComponent {
               </div>
               <div className={classes.inputBox}>
                 <span className={classes.textItem} style={{ maxWidth: '35%' }}>
-                  追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください）
+                {orderText.labelNote}
                 </span>
 
                 <div className={classes.inputContainer}>
@@ -568,7 +569,7 @@ class Index extends PureComponent {
             </div>
             <div style={{ width: '100%', height: '60px', marginTop: '10px' }} className="fluid-pc">
               <p style={{ fontSize: '9px', lineHeight: '15px' }}>
-                入力していたいただいたメールアドレス宛に注文状況、配達状況などをメールでリアルタイムに共有します。
+              {orderText.note}
               </p>
             </div>
             <div style={{ width: '100%', height: '100px' }} />
@@ -576,7 +577,7 @@ class Index extends PureComponent {
         )}
         <div className={classes.btnContainer}>
           {isSuccess ? (
-            <span>注文は完了しました</span>
+            <span>{orderText.success}</span>
           ) : (
             <Button
               variant="contained"
@@ -585,19 +586,19 @@ class Index extends PureComponent {
               onClick={this.onSubmitForm}
               style={{ backgroundColor: '#F7941D' }}
             >
-              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `注文`}
+              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : orderText.submit}
             </Button>
           )}
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
           <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-            注文は完了しました
+            {orderText.dialogSuccess.header}
           </p>
           <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-            あなたの注文情報はレストランに送信されました
+          {orderText.dialogSuccess.text1}
           </span>
           <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-            レストランの確認をお待ちください
+          {orderText.dialogSuccess.text2}
           </span>
           <div
             style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
@@ -622,9 +623,9 @@ class Index extends PureComponent {
               margin: '10px 40px',
             }}
           >
-            注文に失敗しました
+            {orderText.dialogFailed.header}
           </p>
-          <span style={{ textAlign: 'center', fontSize: '12px' }}>もう一度試してください!</span>
+          <span style={{ textAlign: 'center', fontSize: '12px' }}>{orderText.dialogFailed.text}</span>
           <div
             style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
           >

@@ -18,6 +18,7 @@ import CategoryItem from './CategoryItem'
 import logoHeader from '../../assets/img/logo-order.png'
 import { isDevelopEnvironment } from '../../commons'
 import 'firebase/analytics'
+import {categoryText} from '../../variables/texts'
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
 const dataDev = [
   { id: 190, label: 'ハノイ', data: null },
@@ -178,7 +179,7 @@ class Index extends PureComponent {
 
             <CustomInput
               //   onKeyPress={this.handlePressKey}
-              placeholder="名前で店舗を探す..."
+              placeholder={categoryText.search}
               onChange={this.onChangeText}
               style={{ width: '60%' }}
             />
@@ -237,7 +238,7 @@ class Index extends PureComponent {
             </InfiniteScroll>
           ) : (
             <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-              店舗が見つかりません
+              {categoryText.dataEmpty}
             </p>
           )}
         </div>
