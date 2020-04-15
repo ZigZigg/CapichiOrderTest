@@ -5,12 +5,14 @@ import { withStyles, makeStyles } from '@material-ui/core/styles'
 import { KeyboardArrowLeft, LocationOn } from '@material-ui/icons'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
+import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import Button from '@material-ui/core/Button'
 import _ from 'lodash'
+import MomentUtils from '@date-io/moment'
+// import Datefns from '@date-io/date-fns'
 import moment from 'moment'
 // import TextField from '@material-ui/core/TextField'
 import Input from '@material-ui/core/Input'
-import ReactInputMask from 'react-input-mask'
 import Dialog from '@material-ui/core/Dialog'
 import classNames from 'classnames'
 import Radio from '@material-ui/core/Radio'
@@ -28,7 +30,7 @@ import {
   checkAvailableTime,
 } from '../../commons'
 import '../../assets/css/Order/styles.css'
-import { Container } from '@material-ui/core'
+import { Container, TextField } from '@material-ui/core'
 import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
 // const useStyles = makeStyles({
 //   label:{
@@ -306,7 +308,8 @@ class Index extends PureComponent {
   }
 
   onChangeStartTime = e => {
-    const { value } = e.nativeEvent.target
+    console.log('Index -> e', e)
+    const value = moment(e).format('HH:mm')
     // if (Number(value[1]) > 3 && Number(value[0]) >= 2) return
     // if (Number(value[0]) >= 3) return
     // if (Number(value[0]) === 2 && Number(value[1]) > 3) {
@@ -315,16 +318,17 @@ class Index extends PureComponent {
 
     // if (Number(value[3] > 5)) return
 
-    this.setState({ time: value, errorTime: '' })
+    this.setState({ time: e, errorTime: '' })
   }
 
   onBlurStartTime = () => {
     const { time, restaurant } = this.state
+    console.log('Index -> onBlurStartTime -> time', time)
     const currentTime = moment().format('HH:mm')
     const convertCurrentTime = moment(currentTime, 'HH:mm')
-    const inputTime = moment(time, 'HH:mm')
-    const checkTime = time.match(/_/g) && time.match(/_/g).length < 4
-    if (time.match(/_/g) && time.match(/_/g).length === 4) {
+    const inputTime = `${moment(time, 'HH:mm')}`
+    const checkTime = inputTime.match(/_/g) && inputTime.match(/_/g).length < 4
+    if (inputTime.match(/_/g) && inputTime.match(/_/g).length === 4) {
       this.setState({
         time: '',
       })
@@ -338,14 +342,14 @@ class Index extends PureComponent {
     //     return
     //   }
     // }
-    if (/_/.test(time) && checkTime) {
+    if (/_/.test(inputTime) && checkTime) {
       this.setState({
         errorTime: '正しい時間を記入してください',
       })
       return
     }
-    const timeAvailable = checkAvailableTime(restaurant.active_time_csv, time)
-    if (time && !timeAvailable && !time.match(/_/g)) {
+    const timeAvailable = checkAvailableTime(restaurant.active_time_csv, inputTime)
+    if (inputTime && !timeAvailable && !inputTime.match(/_/g)) {
       this.setState({
         errorTime: '営業時間内の時間を記入してください',
       })
@@ -392,254 +396,260 @@ class Index extends PureComponent {
     )
     const shippingFee = typePicker === 'pick_up' ? 0 : restaurant ? restaurant.fee : 0
     return (
-      <div className={classes.wrapper}>
-        <Container
-          className={classes.header}
-          style={{ position: isBrowser && 'inherit', padding: '0' }}
-        >
-          <KeyboardArrowLeft
-            onClick={this.onGoBack}
-            style={{ fontSize: '40px', marginLeft: '10px' }}
-          />
-          <span className={classes.headerLabel}>注文内容確認</span>
-          <div style={{ marginRight: '24px', width: '30px' }} />
-        </Container>
-        {restaurant && (
-          <Container className={classes.container}>
-            <div>
-              <span className={classes.name}>{restaurant.name}</span>
-              <div>
-                <LocationOn style={{ fontSize: '17px', marginBottom: '-3px' }} />
-                <span className={classes.address}>{restaurant.address}</span>
-              </div>
-            </div>
-            <Grid container style={{ marginTop: '10px' }}>
-              {itemSelected &&
-                itemSelected.length > 0 &&
-                itemSelected.map(value => {
-                  return this.renderItem(value)
-                })}
-            </Grid>
-            <div className={classes.shippingBox}>
-              <div style={{ width: '95px' }} />
-              <div className={classes.shippingContent}>
-                <span>配送代</span>
-                <span>
-                  {isHideShip ? `別途` : `${this.convertPrice(parseInt(shippingFee))} VND`}
-                </span>
-              </div>
-            </div>
-            <div className={classes.totalBox}>
-              <div style={{ width: '40px' }} />
-              <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
-                <span>合計</span>
-                <span>{`${this.convertPrice(
-                  total + (isHideShip ? 0 : parseInt(shippingFee))
-                )} VND`}</span>
-              </div>
-            </div>
-            <div style={{ marginTop: '20px' }} className="fluid-pc">
-              <p className={classes.textItem} style={{ textAlign: 'center' }}>
-                注文者情報入力
-              </p>
-
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>名前*</span>
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={name}
-                    error={!!errorName}
-                    onChange={this.onChangeText}
-                    type="text"
-                    name="name"
-                    maxLength={3}
-                    className={classes.input}
-                  />
-                  {errorName && <span className={classes.error}>{errorName}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>電話番号*</span>
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={phone}
-                    error={!!errorPhone}
-                    onChange={this.onChangeText}
-                    type="text"
-                    name="phone"
-                    className={classes.input}
-                  />
-                  {errorPhone && <span className={classes.error}>{errorPhone}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>住所*</span>
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={address}
-                    error={!!errorAddress}
-                    onChange={this.onChangeText}
-                    type="text"
-                    name="address"
-                    multiline
-                    rows={2}
-                    className={classes.input}
-                  />
-                  {errorAddress && <span className={classes.error}>{errorAddress}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>受取方法</span>
-                <div className={classes.inputContainer}>
-                  <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
-                    <FormControlLabel
-                      classes={{ label: 'radio-label' }}
-                      value="delivery"
-                      control={<Radio size="small" />}
-                      label="デリバリー"
-                    />
-                    <FormControlLabel
-                      classes={{ label: 'radio-label' }}
-                      value="pick_up"
-                      control={<Radio size="small" />}
-                      label="お持ち帰り"
-                    />
-                  </RadioGroup>
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span style={{ maxWidth: '35%' }} className={classes.textItem}>
-                  受取希望時間（時間指定がなければ最短でお届けします）
-                </span>
-                <div className={classes.inputContainer}>
-                  <ReactInputMask
-                    mask="99:99"
-                    onChange={e => this.onChangeStartTime(e)}
-                    onBlur={() => this.onBlurStartTime()}
-                    value={time}
-                    style={{ width: '40%' }}
-                  >
-                    {() => (
-                      <Input
-                        type="text"
-                        name="name"
-                        placeholder="hh/mm"
-                        maxLength={3}
-                        className={classes.input}
-                      />
-                    )}
-                  </ReactInputMask>
-                  {errorTime && <span className={classes.error}>{errorTime}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>メールアドレス</span>
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={email}
-                    error={!!errorEmail}
-                    onChange={this.onChangeText}
-                    type="email"
-                    name="email"
-                    className={classes.input}
-                  />
-                  {errorEmail && <span className={classes.error}>{errorEmail}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem} style={{ maxWidth: '35%' }}>
-                  追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください）
-                </span>
-
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={note}
-                    error={!!errorNote}
-                    onChange={this.onChangeText}
-                    type="text"
-                    name="note"
-                    multiline
-                    rows={4}
-                    className={classes.input}
-                  />
-                  {errorNote && <span className={classes.error}>{errorNote}</span>}
-                </div>
-              </div>
-            </div>
-            <div style={{ width: '100%', height: '60px', marginTop: '10px' }} className="fluid-pc">
-              <p style={{ fontSize: '9px', lineHeight: '15px' }}>
-                入力していたいただいたメールアドレス宛に注文状況、配達状況などをメールでリアルタイムに共有します。
-              </p>
-            </div>
-            <div style={{ width: '100%', height: '100px' }} />
+      <MuiPickersUtilsProvider utils={MomentUtils} libInstance={moment}>
+        <div className={classes.wrapper}>
+          <Container
+            className={classes.header}
+            style={{ position: isBrowser && 'inherit', padding: '0' }}
+          >
+            <KeyboardArrowLeft
+              onClick={this.onGoBack}
+              style={{ fontSize: '40px', marginLeft: '10px' }}
+            />
+            <span className={classes.headerLabel}>注文内容確認</span>
+            <div style={{ marginRight: '24px', width: '30px' }} />
           </Container>
-        )}
-        <div className={classes.btnContainer}>
-          {isSuccess ? (
-            <span>注文は完了しました</span>
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              className="btn-login"
-              onClick={this.onSubmitForm}
-              style={{ backgroundColor: '#F7941D' }}
-            >
-              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `注文`}
-            </Button>
+          {restaurant && (
+            <Container className={classes.container}>
+              <div>
+                <span className={classes.name}>{restaurant.name}</span>
+                <div>
+                  <LocationOn style={{ fontSize: '17px', marginBottom: '-3px' }} />
+                  <span className={classes.address}>{restaurant.address}</span>
+                </div>
+              </div>
+              <Grid container style={{ marginTop: '10px' }}>
+                {itemSelected &&
+                  itemSelected.length > 0 &&
+                  itemSelected.map(value => {
+                    return this.renderItem(value)
+                  })}
+              </Grid>
+              <div className={classes.shippingBox}>
+                <div style={{ width: '95px' }} />
+                <div className={classes.shippingContent}>
+                  <span>配送代</span>
+                  <span>
+                    {isHideShip ? `別途` : `${this.convertPrice(parseInt(shippingFee))} VND`}
+                  </span>
+                </div>
+              </div>
+              <div className={classes.totalBox}>
+                <div style={{ width: '40px' }} />
+                <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
+                  <span>合計</span>
+                  <span>{`${this.convertPrice(
+                    total + (isHideShip ? 0 : parseInt(shippingFee))
+                  )} VND`}</span>
+                </div>
+              </div>
+              <div style={{ marginTop: '20px' }} className="fluid-pc">
+                <p className={classes.textItem} style={{ textAlign: 'center' }}>
+                  注文者情報入力
+                </p>
+
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>名前*</span>
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={name}
+                      error={!!errorName}
+                      onChange={this.onChangeText}
+                      type="text"
+                      name="name"
+                      maxLength={3}
+                      className={classes.input}
+                    />
+                    {errorName && <span className={classes.error}>{errorName}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>電話番号*</span>
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={phone}
+                      error={!!errorPhone}
+                      onChange={this.onChangeText}
+                      type="text"
+                      name="phone"
+                      className={classes.input}
+                    />
+                    {errorPhone && <span className={classes.error}>{errorPhone}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>住所*</span>
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={address}
+                      error={!!errorAddress}
+                      onChange={this.onChangeText}
+                      type="text"
+                      name="address"
+                      multiline
+                      rows={2}
+                      className={classes.input}
+                    />
+                    {errorAddress && <span className={classes.error}>{errorAddress}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>受取方法</span>
+                  <div className={classes.inputContainer}>
+                    <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
+                      <FormControlLabel
+                        classes={{ label: 'radio-label' }}
+                        value="delivery"
+                        control={<Radio size="small" />}
+                        label="デリバリー"
+                      />
+                      <FormControlLabel
+                        classes={{ label: 'radio-label' }}
+                        value="pick_up"
+                        control={<Radio size="small" />}
+                        label="お持ち帰り"
+                      />
+                    </RadioGroup>
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span style={{ maxWidth: '35%' }} className={classes.textItem}>
+                    受取希望時間（時間指定がなければ最短でお届けします）
+                  </span>
+                  <div className={classes.inputContainer}>
+                    <TimePicker
+                      error={false}
+                      helperText=""
+                      ampm={false}
+                      value={time}
+                      onChange={this.onChangeStartTime}
+                      onBlur={this.onBlurStartTime}
+                    />
+                    {errorTime && <span className={classes.error}>{errorTime}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>メールアドレス</span>
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={email}
+                      error={!!errorEmail}
+                      onChange={this.onChangeText}
+                      type="email"
+                      name="email"
+                      className={classes.input}
+                    />
+                    {errorEmail && <span className={classes.error}>{errorEmail}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem} style={{ maxWidth: '35%' }}>
+                    追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください）
+                  </span>
+
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={note}
+                      error={!!errorNote}
+                      onChange={this.onChangeText}
+                      type="text"
+                      name="note"
+                      multiline
+                      rows={4}
+                      className={classes.input}
+                    />
+                    {errorNote && <span className={classes.error}>{errorNote}</span>}
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{ width: '100%', height: '60px', marginTop: '10px' }}
+                className="fluid-pc"
+              >
+                <p style={{ fontSize: '9px', lineHeight: '15px' }}>
+                  入力していたいただいたメールアドレス宛に注文状況、配達状況などをメールでリアルタイムに共有します。
+                </p>
+              </div>
+              <div style={{ width: '100%', height: '100px' }} />
+            </Container>
           )}
+          <div className={classes.btnContainer}>
+            {isSuccess ? (
+              <span>注文は完了しました</span>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                className="btn-login"
+                onClick={this.onSubmitForm}
+                style={{ backgroundColor: '#F7941D' }}
+              >
+                {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `注文`}
+              </Button>
+            )}
+          </div>
+          <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
+            <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
+              注文は完了しました
+            </p>
+            <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
+              あなたの注文情報はレストランに送信されました
+            </span>
+            <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
+              レストランの確認をお待ちください
+            </span>
+            <div
+              style={{
+                width: '100%',
+                margin: '20px 0px',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                className="btn-login"
+                onClick={this.handleClose}
+                style={{ backgroundColor: '#F7941D' }}
+              >
+                Ok
+              </Button>
+            </div>
+          </Dialog>
+          <Dialog onClose={this.handleCloseWarning} style={{ width: '100%' }} open={isOpenWarning}>
+            <p
+              style={{
+                textAlign: 'center',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                margin: '10px 40px',
+              }}
+            >
+              注文に失敗しました
+            </p>
+            <span style={{ textAlign: 'center', fontSize: '12px' }}>もう一度試してください!</span>
+            <div
+              style={{
+                width: '100%',
+                margin: '20px 0px',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                className="btn-login"
+                onClick={this.handleCloseWarning}
+                style={{ backgroundColor: '#F7941D' }}
+              >
+                Ok
+              </Button>
+            </div>
+          </Dialog>
         </div>
-        <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
-          <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-            注文は完了しました
-          </p>
-          <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-            あなたの注文情報はレストランに送信されました
-          </span>
-          <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-            レストランの確認をお待ちください
-          </span>
-          <div
-            style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              className="btn-login"
-              onClick={this.handleClose}
-              style={{ backgroundColor: '#F7941D' }}
-            >
-              Ok
-            </Button>
-          </div>
-        </Dialog>
-        <Dialog onClose={this.handleCloseWarning} style={{ width: '100%' }} open={isOpenWarning}>
-          <p
-            style={{
-              textAlign: 'center',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              margin: '10px 40px',
-            }}
-          >
-            注文に失敗しました
-          </p>
-          <span style={{ textAlign: 'center', fontSize: '12px' }}>もう一度試してください!</span>
-          <div
-            style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              className="btn-login"
-              onClick={this.handleCloseWarning}
-              style={{ backgroundColor: '#F7941D' }}
-            >
-              Ok
-            </Button>
-          </div>
-        </Dialog>
-      </div>
+      </MuiPickersUtilsProvider>
     )
   }
 }
