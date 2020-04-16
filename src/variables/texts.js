@@ -9,10 +9,11 @@ export const orderText ={
     labelMethod:'受取方法',
     selectDelivery:'デリバリー',
     selectPickup:'お持ち帰り',
-    labelTime:'受取希望時間（時間指定がなければ最短でお届けします）',
+    labelTime:'受取希望時間（時間指定がなければ最短でお届けします)',
     labelEmail:'メールアドレス',
     labelNote:'追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください）',
     note:'入力していたいただいたメールアドレス宛に注文状況、配達状況などをメールでリアルタイムに共有します。',
+    clear:'削除',
     error:{
         name:'お客様の名前を入力してください',
         phone:'電話番号を入力してください',

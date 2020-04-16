@@ -5,12 +5,14 @@ import { withStyles, makeStyles } from '@material-ui/core/styles'
 import { KeyboardArrowLeft, LocationOn } from '@material-ui/icons'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
+import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
 import Button from '@material-ui/core/Button'
 import _ from 'lodash'
+import MomentUtils from '@date-io/moment'
+// import Datefns from '@date-io/date-fns'
 import moment from 'moment'
 // import TextField from '@material-ui/core/TextField'
 import Input from '@material-ui/core/Input'
-import ReactInputMask from 'react-input-mask'
 import Dialog from '@material-ui/core/Dialog'
 import classNames from 'classnames'
 import Radio from '@material-ui/core/Radio'
@@ -28,7 +30,7 @@ import {
   checkAvailableTime,
 } from '../../commons'
 import '../../assets/css/Order/styles.css'
-import { Container } from '@material-ui/core'
+import { Container, TextField } from '@material-ui/core'
 import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
 import {orderText} from '../../variables/texts'
 // const useStyles = makeStyles({
@@ -52,6 +54,7 @@ class Index extends PureComponent {
       email: '',
       note: '',
       time: '',
+      timePicker:null,
       typePicker: 'delivery',
       isOpenPopup: false,
       isOpenWarning: false,
@@ -307,7 +310,8 @@ class Index extends PureComponent {
   }
 
   onChangeStartTime = e => {
-    const { value } = e.nativeEvent.target
+    console.log('Index -> e', e)
+    const value = moment(e).format('HH:mm')
     // if (Number(value[1]) > 3 && Number(value[0]) >= 2) return
     // if (Number(value[0]) >= 3) return
     // if (Number(value[0]) === 2 && Number(value[1]) > 3) {
@@ -316,16 +320,16 @@ class Index extends PureComponent {
 
     // if (Number(value[3] > 5)) return
 
-    this.setState({ time: value, errorTime: '' })
+    this.setState({ time: e, errorTime: '' })
   }
 
   onBlurStartTime = () => {
     const { time, restaurant } = this.state
     const currentTime = moment().format('HH:mm')
     const convertCurrentTime = moment(currentTime, 'HH:mm')
-    const inputTime = moment(time, 'HH:mm')
-    const checkTime = time.match(/_/g) && time.match(/_/g).length < 4
-    if (time.match(/_/g) && time.match(/_/g).length === 4) {
+    const inputTime = `${moment(time, 'HH:mm')}`
+    const checkTime = inputTime.match(/_/g) && inputTime.match(/_/g).length < 4
+    if (inputTime.match(/_/g) && inputTime.match(/_/g).length === 4) {
       this.setState({
         time: '',
       })
@@ -339,14 +343,14 @@ class Index extends PureComponent {
     //     return
     //   }
     // }
-    if (/_/.test(time) && checkTime) {
+    if (/_/.test(inputTime) && checkTime) {
       this.setState({
         errorTime: orderText.error.timeFormat,
       })
       return
     }
-    const timeAvailable = checkAvailableTime(restaurant.active_time_csv, time)
-    if (time && !timeAvailable && !time.match(/_/g)) {
+    const timeAvailable = checkAvailableTime(restaurant.active_time_csv, inputTime)
+    if (inputTime && !timeAvailable && !inputTime.match(/_/g)) {
       this.setState({
         errorTime: orderText.error.timeOpen,
       })
@@ -357,6 +361,36 @@ class Index extends PureComponent {
     const { value } = event.target
     this.setState({
       typePicker: value,
+    })
+  }
+
+  onChangeTimePicker = date =>{
+    const {restaurant} = this.state
+    const dateFormat = moment(date).format('HH:mm')
+    this.setState({
+      timePicker:date,
+      time:dateFormat
+    })
+    const currentTime = moment().format('HH:mm')
+    const convertCurrentTime = moment(currentTime, 'HH:mm')
+    const inputTime = `${dateFormat}`
+    const timeAvailable = checkAvailableTime(restaurant.active_time_csv, inputTime)
+    if (inputTime && !timeAvailable) {
+      this.setState({
+        errorTime: orderText.error.timeOpen,
+      })
+    }else{
+      this.setState({
+        errorTime: '',
+      })
+    }
+  }
+
+  onClearTime = () =>{
+    this.setState({
+      timePicker:null,
+      errorTime:'',
+      time:''
     })
   }
 
@@ -383,6 +417,7 @@ class Index extends PureComponent {
       isHideShip,
       time,
       typePicker,
+      timePicker
     } = this.state
     const total = _.reduce(
       itemSelected,
@@ -393,254 +428,275 @@ class Index extends PureComponent {
     )
     const shippingFee = typePicker === 'pick_up' ? 0 : restaurant ? restaurant.fee : 0
     return (
-      <div className={classes.wrapper}>
-        <Container
-          className={classes.header}
-          style={{ position: isBrowser && 'inherit', padding: '0' }}
-        >
-          <KeyboardArrowLeft
-            onClick={this.onGoBack}
-            style={{ fontSize: '40px', marginLeft: '10px' }}
-          />
-          <span className={classes.headerLabel}>{orderText.header}</span>
-          <div style={{ marginRight: '24px', width: '30px' }} />
-        </Container>
-        {restaurant && (
-          <Container className={classes.container}>
-            <div>
-              <span className={classes.name}>{restaurant.name}</span>
-              <div>
-                <LocationOn style={{ fontSize: '17px', marginBottom: '-3px' }} />
-                <span className={classes.address}>{restaurant.address}</span>
-              </div>
-            </div>
-            <Grid container style={{ marginTop: '10px' }}>
-              {itemSelected &&
-                itemSelected.length > 0 &&
-                itemSelected.map(value => {
-                  return this.renderItem(value)
-                })}
-            </Grid>
-            <div className={classes.shippingBox}>
-              <div style={{ width: '95px' }} />
-              <div className={classes.shippingContent}>
-                <span>{orderText.shippingFee}</span>
-                <span>
-                  {isHideShip ? `別途` : `${this.convertPrice(parseInt(shippingFee))} VND`}
-                </span>
-              </div>
-            </div>
-            <div className={classes.totalBox}>
-              <div style={{ width: '40px' }} />
-              <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
-                <span>{orderText.grandTotal}</span>
-                <span>{`${this.convertPrice(
-                  total + (isHideShip ? 0 : parseInt(shippingFee))
-                )} VND`}</span>
-              </div>
-            </div>
-            <div style={{ marginTop: '20px' }} className="fluid-pc">
-              <p className={classes.textItem} style={{ textAlign: 'center' }}>
-                {orderText.orderInformation}
-              </p>
-
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>{orderText.labelName}</span>
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={name}
-                    error={!!errorName}
-                    onChange={this.onChangeText}
-                    type="text"
-                    name="name"
-                    maxLength={3}
-                    className={classes.input}
-                  />
-                  {errorName && <span className={classes.error}>{errorName}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>{orderText.labelName}</span>
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={phone}
-                    error={!!errorPhone}
-                    onChange={this.onChangeText}
-                    type="text"
-                    name="phone"
-                    className={classes.input}
-                  />
-                  {errorPhone && <span className={classes.error}>{errorPhone}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>{orderText.labelAddress}</span>
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={address}
-                    error={!!errorAddress}
-                    onChange={this.onChangeText}
-                    type="text"
-                    name="address"
-                    multiline
-                    rows={2}
-                    className={classes.input}
-                  />
-                  {errorAddress && <span className={classes.error}>{errorAddress}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>{orderText.labelMethod}</span>
-                <div className={classes.inputContainer}>
-                  <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
-                    <FormControlLabel
-                      classes={{ label: 'radio-label' }}
-                      value="delivery"
-                      control={<Radio size="small" />}
-                      label={orderText.selectDelivery}
-                    />
-                    <FormControlLabel
-                      classes={{ label: 'radio-label' }}
-                      value="pick_up"
-                      control={<Radio size="small" />}
-                      label={orderText.selectPickup}
-                    />
-                  </RadioGroup>
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span style={{ maxWidth: '35%' }} className={classes.textItem}>
-                {orderText.labelTime}
-                </span>
-                <div className={classes.inputContainer}>
-                  <ReactInputMask
-                    mask="99:99"
-                    onChange={e => this.onChangeStartTime(e)}
-                    onBlur={() => this.onBlurStartTime()}
-                    value={time}
-                    style={{ width: '40%' }}
-                  >
-                    {() => (
-                      <Input
-                        type="text"
-                        name="name"
-                        placeholder="hh/mm"
-                        maxLength={3}
-                        className={classes.input}
-                      />
-                    )}
-                  </ReactInputMask>
-                  {errorTime && <span className={classes.error}>{errorTime}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem}>{orderText.labelEmail}</span>
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={email}
-                    error={!!errorEmail}
-                    onChange={this.onChangeText}
-                    type="email"
-                    name="email"
-                    className={classes.input}
-                  />
-                  {errorEmail && <span className={classes.error}>{errorEmail}</span>}
-                </div>
-              </div>
-              <div className={classes.inputBox}>
-                <span className={classes.textItem} style={{ maxWidth: '35%' }}>
-                {orderText.labelNote}
-                </span>
-
-                <div className={classes.inputContainer}>
-                  <Input
-                    value={note}
-                    error={!!errorNote}
-                    onChange={this.onChangeText}
-                    type="text"
-                    name="note"
-                    multiline
-                    rows={4}
-                    className={classes.input}
-                  />
-                  {errorNote && <span className={classes.error}>{errorNote}</span>}
-                </div>
-              </div>
-            </div>
-            <div style={{ width: '100%', height: '60px', marginTop: '10px' }} className="fluid-pc">
-              <p style={{ fontSize: '9px', lineHeight: '15px' }}>
-              {orderText.note}
-              </p>
-            </div>
-            <div style={{ width: '100%', height: '100px' }} />
+      <MuiPickersUtilsProvider utils={MomentUtils} libInstance={moment}>
+        <div className={classes.wrapper}>
+          <Container
+            className={classes.header}
+            style={{ position: isBrowser && 'inherit', padding: '0' }}
+          >
+            <KeyboardArrowLeft
+              onClick={this.onGoBack}
+              style={{ fontSize: '40px', marginLeft: '10px' }}
+            />
+            <span className={classes.headerLabel}>{orderText.header}</span>
+            <div style={{ marginRight: '24px', width: '30px' }} />
           </Container>
-        )}
-        <div className={classes.btnContainer}>
-          {isSuccess ? (
-            <span>{orderText.success}</span>
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              className="btn-login"
-              onClick={this.onSubmitForm}
-              style={{ backgroundColor: '#F7941D' }}
-            >
-              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : orderText.submit}
-            </Button>
+          {restaurant && (
+            <Container className={classes.container}>
+              <div>
+                <span className={classes.name}>{restaurant.name}</span>
+                <div>
+                  <LocationOn style={{ fontSize: '17px', marginBottom: '-3px' }} />
+                  <span className={classes.address}>{restaurant.address}</span>
+                </div>
+              </div>
+              <Grid container style={{ marginTop: '10px' }}>
+                {itemSelected &&
+                  itemSelected.length > 0 &&
+                  itemSelected.map(value => {
+                    return this.renderItem(value)
+                  })}
+              </Grid>
+              <div className={classes.shippingBox}>
+                <div style={{ width: '95px' }} />
+                <div className={classes.shippingContent}>
+                  <span>{orderText.shippingFee}</span>
+                  <span>
+                    {isHideShip ? `別途` : `${this.convertPrice(parseInt(shippingFee))} VND`}
+                  </span>
+                </div>
+              </div>
+              <div className={classes.totalBox}>
+                <div style={{ width: '40px' }} />
+                <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
+                  <span>{orderText.grandTotal}</span>
+                  <span>{`${this.convertPrice(
+                    total + (isHideShip ? 0 : parseInt(shippingFee))
+                  )} VND`}</span>
+                </div>
+              </div>
+              <div style={{ marginTop: '20px' }} className="fluid-pc">
+                <p className={classes.textItem} style={{ textAlign: 'center' }}>
+                {orderText.orderInformation}
+                </p>
+
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>{orderText.labelName}</span>
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={name}
+                      error={!!errorName}
+                      onChange={this.onChangeText}
+                      type="text"
+                      name="name"
+                      maxLength={3}
+                      className={classes.input}
+                    />
+                    {errorName && <span className={classes.error}>{errorName}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>{orderText.labelPhone}</span>
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={phone}
+                      error={!!errorPhone}
+                      onChange={this.onChangeText}
+                      type="text"
+                      name="phone"
+                      className={classes.input}
+                    />
+                    {errorPhone && <span className={classes.error}>{errorPhone}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>{orderText.labelAddress}</span>
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={address}
+                      error={!!errorAddress}
+                      onChange={this.onChangeText}
+                      type="text"
+                      name="address"
+                      multiline
+                      rows={2}
+                      className={classes.input}
+                    />
+                    {errorAddress && <span className={classes.error}>{errorAddress}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>{orderText.labelMethod}</span>
+                  <div className={classes.inputContainer}>
+                    <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
+                      <FormControlLabel
+                        classes={{ label: 'radio-label' }}
+                        value="delivery"
+                        control={<Radio size="small" />}
+                        label="デリバリー"
+                      />
+                      <FormControlLabel
+                        classes={{ label: 'radio-label' }}
+                        value="pick_up"
+                        control={<Radio size="small" />}
+                        label="お持ち帰り"
+                      />
+                    </RadioGroup>
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span style={{ maxWidth: '35%' }} className={classes.textItem}>
+                  {orderText.labelTime}
+                  </span>
+                  <div className={classes.inputContainer}>
+                    <div style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+                    <TimePicker
+                      error={false}
+                      helperText=""
+                      ampm={false}
+                      value={timePicker}
+                      placeholder="hh/mm"
+                      format="HH:mm"
+                      onChange={this.onChangeTimePicker}
+                      style={{width:'50%'}}
+                      // onBlur={this.onBlurStartTime}
+                    />
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className="btn-login"
+                        onClick={this.onClearTime}
+                        style={{ backgroundColor: 'red', marginLeft:'20px' }}
+                      >
+                        {orderText.clear}
+                      </Button>
+                    </div>
+
+                    {errorTime && <span className={classes.error}>{errorTime}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>{orderText.labelEmail}</span>
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={email}
+                      error={!!errorEmail}
+                      onChange={this.onChangeText}
+                      type="email"
+                      name="email"
+                      className={classes.input}
+                    />
+                    {errorEmail && <span className={classes.error}>{errorEmail}</span>}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem} style={{ maxWidth: '35%' }}>
+                  {orderText.labelNote}
+                  </span>
+
+                  <div className={classes.inputContainer}>
+                    <Input
+                      value={note}
+                      error={!!errorNote}
+                      onChange={this.onChangeText}
+                      type="text"
+                      name="note"
+                      multiline
+                      rows={4}
+                      className={classes.input}
+                    />
+                    {errorNote && <span className={classes.error}>{errorNote}</span>}
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{ width: '100%', height: '60px', marginTop: '10px' }}
+                className="fluid-pc"
+              >
+                <p style={{ fontSize: '9px', lineHeight: '15px' }}>
+                {orderText.note}
+                </p>
+              </div>
+              <div style={{ width: '100%', height: '100px' }} />
+            </Container>
           )}
-        </div>
-        <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
-          <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
+          <div className={classes.btnContainer}>
+            {isSuccess ? (
+              <span>{orderText.success}</span>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                className="btn-login"
+                onClick={this.onSubmitForm}
+                style={{ backgroundColor: '#F7941D' }}
+              >
+                {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `注文`}
+              </Button>
+            )}
+          </div>
+          <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
+            <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
             {orderText.dialogSuccess.header}
-          </p>
-          <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-          {orderText.dialogSuccess.text1}
-          </span>
-          <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-          {orderText.dialogSuccess.text2}
-          </span>
-          <div
-            style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              className="btn-login"
-              onClick={this.handleClose}
-              style={{ backgroundColor: '#F7941D' }}
+            </p>
+            <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
+            {orderText.dialogSuccess.text1}
+            </span>
+            <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
+            {orderText.dialogSuccess.text2}
+            </span>
+            <div
+              style={{
+                width: '100%',
+                margin: '20px 0px',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
             >
-              Ok
-            </Button>
-          </div>
-        </Dialog>
-        <Dialog onClose={this.handleCloseWarning} style={{ width: '100%' }} open={isOpenWarning}>
-          <p
-            style={{
-              textAlign: 'center',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              margin: '10px 40px',
-            }}
-          >
-            {orderText.dialogFailed.header}
-          </p>
-          <span style={{ textAlign: 'center', fontSize: '12px' }}>{orderText.dialogFailed.text}</span>
-          <div
-            style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              className="btn-login"
-              onClick={this.handleCloseWarning}
-              style={{ backgroundColor: '#F7941D' }}
+              <Button
+                variant="contained"
+                color="primary"
+                className="btn-login"
+                onClick={this.handleClose}
+                style={{ backgroundColor: '#F7941D' }}
+              >
+                Ok
+              </Button>
+            </div>
+          </Dialog>
+          <Dialog onClose={this.handleCloseWarning} style={{ width: '100%' }} open={isOpenWarning}>
+            <p
+              style={{
+                textAlign: 'center',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                margin: '10px 40px',
+              }}
             >
-              Ok
-            </Button>
-          </div>
-        </Dialog>
-      </div>
+              {orderText.dialogFailed.header}
+            </p>
+            <span style={{ textAlign: 'center', fontSize: '12px' }}>{orderText.dialogFailed.text}</span>
+            <div
+              style={{
+                width: '100%',
+                margin: '20px 0px',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                className="btn-login"
+                onClick={this.handleCloseWarning}
+                style={{ backgroundColor: '#F7941D' }}
+              >
+                Ok
+              </Button>
+            </div>
+          </Dialog>
+        </div>
+      </MuiPickersUtilsProvider>
     )
   }
 }
