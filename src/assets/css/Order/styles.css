@@ -2,6 +2,28 @@
     font-size: 12px !important;
     color:#1E1F21
 }
+.suggest-box{
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    padding: 5px 10px;
+}
+.suggest-box span{
+    color: #fff;
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: bold;
+}
+.suggest-box.clear-box{
+    padding: 15px 10px;
+    text-align: center
+}
+.suggest-box.clear-box span{
+    font-weight: 400
+}
+.suggest-box:hover{
+    background-color: #6e737a
+}
 @media (min-width: 1200px){
     #order-grid-item .item-order{
         height: 85px;
