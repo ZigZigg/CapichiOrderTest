@@ -7,7 +7,7 @@ import _ from 'lodash'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 import { getTimeRange } from '../../commons'
 import '../../assets/css/Category/styles.css'
-import { isMobileOnly, isMobile, isTablet, isBrowser } from 'react-device-detect'
+import { isMobile, isBrowser } from 'react-device-detect'
 
 class CategoryItem extends PureComponent {
   constructor(props) {

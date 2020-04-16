@@ -35,14 +35,14 @@ import 'firebase/analytics'
 
 const hist = createBrowserHistory()
 const firebaseConfig = {
-  apiKey: 'AIzaSyBYnN-Ij2vKyDgk_G3rWxEn3qo4SCTgdaU',
-  authDomain: 'orderanalystic.firebaseapp.com',
-  databaseURL: 'https://orderanalystic.firebaseio.com',
-  projectId: 'orderanalystic',
-  storageBucket: 'orderanalystic.appspot.com',
-  messagingSenderId: '135663922911',
-  appId: '1:135663922911:web:f612d87f66572e43c0c36a',
-  measurementId: 'G-9KDFJ9BPEQ',
+  apiKey: 'AIzaSyBzoB2AoWbjM0JYhumG0GkZOr_I1YE-yLE',
+  authDomain: 'capichi-order.firebaseapp.com',
+  databaseURL: 'https://capichi-order.firebaseio.com',
+  projectId: 'capichi-order',
+  storageBucket: 'capichi-order.appspot.com',
+  messagingSenderId: '29990364818',
+  appId: '1:29990364818:web:aad6400798a176d286284b',
+  measurementId: 'G-P1GCPBW5N2',
 }
 
 firebase.initializeApp(firebaseConfig)

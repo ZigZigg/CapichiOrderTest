@@ -1,7 +1,7 @@
 /* eslint-disable radix */
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import { withStyles, makeStyles } from '@material-ui/core/styles'
+import { withStyles } from '@material-ui/core/styles'
 import { KeyboardArrowLeft, LocationOn } from '@material-ui/icons'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
@@ -28,11 +28,14 @@ import {
   validatePhone,
   getTimeRange,
   checkAvailableTime,
+  isDevelopEnvironment,
 } from '../../commons'
 import '../../assets/css/Order/styles.css'
-import { Container, TextField } from '@material-ui/core'
-import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
-import {orderText} from '../../variables/texts'
+import { Container } from '@material-ui/core'
+import { isBrowser } from 'react-device-detect'
+import { orderText } from '../../variables/texts'
+import * as firebase from 'firebase/app'
+import 'firebase/analytics'
 // const useStyles = makeStyles({
 //   label:{
 //     fontSize:12
@@ -54,7 +57,7 @@ class Index extends PureComponent {
       email: '',
       note: '',
       time: '',
-      timePicker:null,
+      timePicker: null,
       typePicker: 'delivery',
       isOpenPopup: false,
       isOpenWarning: false,
@@ -70,6 +73,12 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
+    if (isDevelopEnvironment()) {
+      firebase.analytics().logEvent('order_view_debug')
+    } else {
+      firebase.analytics().logEvent('order_view')
+    }
+
     this.onGetRestaurantDetail()
   }
 
@@ -272,6 +281,24 @@ class Index extends PureComponent {
             typePicker,
           })
           if (dataOrder.isSuccess) {
+            if (isDevelopEnvironment()) {
+              firebase.analytics().logEvent('order_submit_success_debug', {
+                name: name.trim(),
+                phone,
+                email: email.trim(),
+                address: address.trim(),
+                restaurantId: restaurant.id,
+              })
+            } else {
+              firebase.analytics().logEvent('order_submit_success', {
+                name: name.trim(),
+                phone,
+                email: email.trim(),
+                address: address.trim(),
+                restaurantId: restaurant.id,
+              })
+            }
+
             this.setState({
               isOpenPopup: true,
             })
@@ -310,8 +337,7 @@ class Index extends PureComponent {
   }
 
   onChangeStartTime = e => {
-    console.log('Index -> e', e)
-    const value = moment(e).format('HH:mm')
+    // const value = moment(e).format('HH:mm')
     // if (Number(value[1]) > 3 && Number(value[0]) >= 2) return
     // if (Number(value[0]) >= 3) return
     // if (Number(value[0]) === 2 && Number(value[1]) > 3) {
@@ -325,8 +351,8 @@ class Index extends PureComponent {
 
   onBlurStartTime = () => {
     const { time, restaurant } = this.state
-    const currentTime = moment().format('HH:mm')
-    const convertCurrentTime = moment(currentTime, 'HH:mm')
+    // const currentTime = moment().format('HH:mm')
+    // const convertCurrentTime = moment(currentTime, 'HH:mm')
     const inputTime = `${moment(time, 'HH:mm')}`
     const checkTime = inputTime.match(/_/g) && inputTime.match(/_/g).length < 4
     if (inputTime.match(/_/g) && inputTime.match(/_/g).length === 4) {
@@ -364,33 +390,33 @@ class Index extends PureComponent {
     })
   }
 
-  onChangeTimePicker = date =>{
-    const {restaurant} = this.state
+  onChangeTimePicker = date => {
+    const { restaurant } = this.state
     const dateFormat = moment(date).format('HH:mm')
     this.setState({
-      timePicker:date,
-      time:dateFormat
+      timePicker: date,
+      time: dateFormat,
     })
     const currentTime = moment().format('HH:mm')
-    const convertCurrentTime = moment(currentTime, 'HH:mm')
+    // const convertCurrentTime = moment(currentTime, 'HH:mm')
     const inputTime = `${dateFormat}`
     const timeAvailable = checkAvailableTime(restaurant.active_time_csv, inputTime)
     if (inputTime && !timeAvailable) {
       this.setState({
         errorTime: orderText.error.timeOpen,
       })
-    }else{
+    } else {
       this.setState({
         errorTime: '',
       })
     }
   }
 
-  onClearTime = () =>{
+  onClearTime = () => {
     this.setState({
-      timePicker:null,
-      errorTime:'',
-      time:''
+      timePicker: null,
+      errorTime: '',
+      time: '',
     })
   }
 
@@ -415,9 +441,8 @@ class Index extends PureComponent {
       isOpenWarning,
       isSuccess,
       isHideShip,
-      time,
       typePicker,
-      timePicker
+      timePicker,
     } = this.state
     const total = _.reduce(
       itemSelected,
@@ -477,7 +502,7 @@ class Index extends PureComponent {
               </div>
               <div style={{ marginTop: '20px' }} className="fluid-pc">
                 <p className={classes.textItem} style={{ textAlign: 'center' }}>
-                {orderText.orderInformation}
+                  {orderText.orderInformation}
                 </p>
 
                 <div className={classes.inputBox}>
@@ -546,27 +571,27 @@ class Index extends PureComponent {
                 </div>
                 <div className={classes.inputBox}>
                   <span style={{ maxWidth: '35%' }} className={classes.textItem}>
-                  {orderText.labelTime}
+                    {orderText.labelTime}
                   </span>
                   <div className={classes.inputContainer}>
-                    <div style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
-                    <TimePicker
-                      error={false}
-                      helperText=""
-                      ampm={false}
-                      value={timePicker}
-                      placeholder="hh/mm"
-                      format="HH:mm"
-                      onChange={this.onChangeTimePicker}
-                      style={{width:'50%'}}
-                      // onBlur={this.onBlurStartTime}
-                    />
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                      <TimePicker
+                        error={false}
+                        helperText=""
+                        ampm={false}
+                        value={timePicker}
+                        placeholder="hh/mm"
+                        format="HH:mm"
+                        onChange={this.onChangeTimePicker}
+                        style={{ width: '50%' }}
+                        // onBlur={this.onBlurStartTime}
+                      />
                       <Button
                         variant="contained"
                         color="primary"
                         className="btn-login"
                         onClick={this.onClearTime}
-                        style={{ backgroundColor: 'red', marginLeft:'20px' }}
+                        style={{ backgroundColor: 'red', marginLeft: '20px' }}
                       >
                         {orderText.clear}
                       </Button>
@@ -591,7 +616,7 @@ class Index extends PureComponent {
                 </div>
                 <div className={classes.inputBox}>
                   <span className={classes.textItem} style={{ maxWidth: '35%' }}>
-                  {orderText.labelNote}
+                    {orderText.labelNote}
                   </span>
 
                   <div className={classes.inputContainer}>
@@ -613,9 +638,7 @@ class Index extends PureComponent {
                 style={{ width: '100%', height: '60px', marginTop: '10px' }}
                 className="fluid-pc"
               >
-                <p style={{ fontSize: '9px', lineHeight: '15px' }}>
-                {orderText.note}
-                </p>
+                <p style={{ fontSize: '9px', lineHeight: '15px' }}>{orderText.note}</p>
               </div>
               <div style={{ width: '100%', height: '100px' }} />
             </Container>
@@ -637,13 +660,13 @@ class Index extends PureComponent {
           </div>
           <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
             <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-            {orderText.dialogSuccess.header}
+              {orderText.dialogSuccess.header}
             </p>
             <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-            {orderText.dialogSuccess.text1}
+              {orderText.dialogSuccess.text1}
             </span>
             <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-            {orderText.dialogSuccess.text2}
+              {orderText.dialogSuccess.text2}
             </span>
             <div
               style={{
@@ -675,7 +698,9 @@ class Index extends PureComponent {
             >
               {orderText.dialogFailed.header}
             </p>
-            <span style={{ textAlign: 'center', fontSize: '12px' }}>{orderText.dialogFailed.text}</span>
+            <span style={{ textAlign: 'center', fontSize: '12px' }}>
+              {orderText.dialogFailed.text}
+            </span>
             <div
               style={{
                 width: '100%',

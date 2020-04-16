@@ -12,12 +12,15 @@ import Dialog from '@material-ui/core/Dialog'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
 import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
 import MenuItem from './MenuItem'
-import { getTimeRange } from '../../commons'
+import { getTimeRange, isDevelopEnvironment } from '../../commons'
 import '../../assets/css/Restaurant/styles.css'
-import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
+import { isBrowser, isMobile } from 'react-device-detect'
 import { Container } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
-import {restaurantText} from '../../variables/texts'
+import { restaurantText } from '../../variables/texts'
+import * as firebase from 'firebase/app'
+import 'firebase/analytics'
+
 class Restaurant extends Component {
   constructor(props) {
     super(props)
@@ -41,7 +44,12 @@ class Restaurant extends Component {
   }
 
   componentDidMount() {
-    // this.onGetListMenu()
+    if (isDevelopEnvironment()) {
+      firebase.analytics().logEvent('restaurant_menu_view_debug')
+    } else {
+      firebase.analytics().logEvent('restaurant_menu_view')
+    }
+
     this.onGetRestaurantDetail()
   }
 
@@ -406,7 +414,11 @@ class Restaurant extends Component {
                 this.isRestaurantOpen() && filterSelected.length > 0 ? '#F7941D' : '#F2F2F2',
             }}
           >
-            {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : restaurantText.submit}
+            {isLoadingSubmit ? (
+              <CircularProgress size={30} color="inherit" />
+            ) : (
+              restaurantText.submit
+            )}
           </Button>
         </div>
         <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
@@ -486,7 +498,9 @@ class Restaurant extends Component {
           >
             {restaurantText.dialogFailedSubmit.header}
           </p>
-          <span style={{ textAlign: 'center', fontSize: '12px' }}>{restaurantText.dialogFailedSubmit.text}</span>
+          <span style={{ textAlign: 'center', fontSize: '12px' }}>
+            {restaurantText.dialogFailedSubmit.text}
+          </span>
           <div
             style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
           >
