@@ -103,7 +103,7 @@ class Restaurant extends Component {
       if (page <= totalPage) {
         const data = await getListMenuByRestaurant({
           page,
-          limit: isBrowser ? 9 : prevPages ? prevPages * 10 : 10,
+          limit: isBrowser ? 12 : prevPages ? prevPages * 10 : 10,
           restaurantId: id,
         })
         let dataFormat = []
