@@ -5,3 +5,4 @@ export const isDevelopEnvironment = () => {
   }
   return false
 }
+export const testDev = () => {}

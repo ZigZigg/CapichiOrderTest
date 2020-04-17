@@ -1,4 +1,3 @@
-
 const styles = {
   wrapper: {
     // display: '0 24px',

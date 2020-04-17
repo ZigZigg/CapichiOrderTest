@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
 import { AddCircle, RemoveCircle } from '@material-ui/icons'
 import classNames from 'classnames'
-import { isMobileOnly, isTablet, isBrowser, isMobile } from 'react-device-detect'
+import { isBrowser } from 'react-device-detect'
 import _ from 'lodash'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
 
@@ -32,23 +32,6 @@ class MenuItem extends PureComponent {
       })
     }
   }
-
-  // UNSAFE_componentWillReceiveProps(nextProps) {
-  //   const { item } = this.props
-  //   const { listItemSelected } = nextProps
-  //   console.log("MenuItem -> UNSAFE_componentWillReceiveProps -> listItemSelected", listItemSelected)
-  //   if (item && !_.isEqual(item, nextProps.item)) {
-  //     console.log('EQUA:L::123')
-  //     let itemData = null
-  //     if (listItemSelected.length > 0) {
-  //       itemData = _.find(listItemSelected, { id: nextProps.item.id })
-  //     }
-  //     console.log({itemData})
-  //     this.setState({
-  //       count: itemData ? itemData.count : 0,
-  //     })
-  //   }
-  // }
 
   onClickItem = () => {
     const { onClick, item } = this.props
@@ -127,6 +110,7 @@ MenuItem.propTypes = {
   onClick: PropTypes.func,
   onSetOrder: PropTypes.func,
   item: PropTypes.any,
+  listItemSelected: PropTypes.any,
 }
 
 export default withStyles(styles)(MenuItem)

@@ -16,7 +16,7 @@
 
 */
 // @material-ui/icons
-import Person from '@material-ui/icons/Person'
+// import Person from '@material-ui/icons/Person'
 // import LibraryBooks from '@material-ui/icons/LibraryBooks'
 // core components/views for Admin layout
 // import DashboardPage from './views/Dashboard/Dashboard'

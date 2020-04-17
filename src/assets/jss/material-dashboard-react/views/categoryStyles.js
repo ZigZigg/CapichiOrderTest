@@ -19,6 +19,7 @@ const styles = {
     padding: '1px 20px',
     fontSize: '14px',
     border: '1px solid #7d7d7d',
+    color:'#000'
   },
   isActive: {
     backgroundColor: '#F7941D',
@@ -74,7 +75,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     marginTop: '15px',
-    marginBottom:'20px'
+    marginBottom: '20px',
   },
   rightContentText: {
     fontSize: '12px',
@@ -107,6 +108,27 @@ const styles = {
     fontSize: '16px',
     fontWeight: 'bold',
     marginTop: '-5px',
+  },
+  viewFlag: {
+    padding: '5px',
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '1px solid #636363',
+  },
+  imgFlag: {
+    width: '30px',
+    height: '20px',
+  },
+  popupView: {
+    padding: '5px 0px',
+    backgroundColor: '#fff',
+    borderRadius: 4,
+    border: '1px solid #636363',
+    display: 'flex',
+    flexDirection: 'column',
   },
 }
 

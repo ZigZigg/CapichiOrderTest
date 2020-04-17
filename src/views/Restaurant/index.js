@@ -1,7 +1,9 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable react/no-array-index-key */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import { KeyboardArrowLeft, LocationOn, Phone } from '@material-ui/icons'
+import { LocationOn, Phone } from '@material-ui/icons'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
@@ -9,17 +11,20 @@ import _ from 'lodash'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import classNames from 'classnames'
 import Dialog from '@material-ui/core/Dialog'
-import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
-import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
-import MenuItem from './MenuItem'
-import { getTimeRange, isDevelopEnvironment } from '../../commons'
-import '../../assets/css/Restaurant/styles.css'
+
 import { isBrowser, isMobile } from 'react-device-detect'
 import { Container } from '@material-ui/core'
 import Pagination from '@material-ui/lab/Pagination'
-import { restaurantText } from '../../variables/texts'
 import * as firebase from 'firebase/app'
+import MenuItem from './MenuItem'
 import 'firebase/analytics'
+import Header from '../../components/Header'
+import { getTimeRange, isDevelopEnvironment } from '../../commons'
+import '../../assets/css/Restaurant/styles.css'
+import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
+import { I18n } from '../../config'
+import LanguageBox from '../../components/LanguageBox'
+import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
 
 class Restaurant extends Component {
   constructor(props) {
@@ -269,6 +274,12 @@ class Restaurant extends Component {
     })
   }
 
+  onChangeLanguage = locale => {
+    this.setState({
+      localeSelect: locale,
+    })
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -289,17 +300,11 @@ class Restaurant extends Component {
     const timeRange = itemRestaurant ? getTimeRange(itemRestaurant.active_time_csv) : []
     return (
       <div id="restaurant" className={classes.wrapper}>
-        <Container
-          className={classes.header}
-          style={{ position: isBrowser && 'inherit', padding: '0' }}
-        >
-          <KeyboardArrowLeft
-            onClick={this.onGoBack}
-            style={{ fontSize: '40px', marginLeft: '5px' }}
-          />
-          <span className={classes.headerLabel}>{restaurantText.header}</span>
-          <div style={{ marginRight: '24px', width: '30px' }} />
-        </Container>
+        <Header
+          onGoBack={this.onGoBack}
+          headerText={I18n.t('restaurantText.header')}
+          rightComponent={<LanguageBox onChangeLanguage={this.onChangeLanguage} />}
+        />
         <InfiniteScroll
           dataLength={dataMenu.length}
           next={isBrowser ? false : this.onLoadMore}
@@ -340,7 +345,9 @@ class Restaurant extends Component {
                       </a>
                     </div>
                     <div style={{ fontSize: '15px', display: 'flex', flexDirection: 'column' }}>
-                      <span className={classes.rightContentText}>{restaurantText.openTime}</span>
+                      <span className={classes.rightContentText}>
+                        {I18n.t('restaurantText.openTime')}
+                      </span>
                       <div style={{ display: 'flex', flexDirection: 'row' }}>
                         {timeRange.map((value, index) => {
                           return (
@@ -363,7 +370,9 @@ class Restaurant extends Component {
                   </div>
                 </div>
 
-                <p style={{ fontSize: '16px', textAlign: 'center' }}>{restaurantText.menu}</p>
+                <p style={{ fontSize: '16px', textAlign: 'center' }}>
+                  {I18n.t('restaurantText.menu')}
+                </p>
               </Container>
             )}
             <Container style={{ padding: isMobile && '0' }}>
@@ -382,7 +391,7 @@ class Restaurant extends Component {
                   })}
                 {itemRestaurant && dataMenu.length === 0 && (
                   <p style={{ width: '100%', textAlign: 'center', fontSize: '12px' }}>
-                    {restaurantText.dataEmpty}
+                    {I18n.t('restaurantText.dataEmpty')}
                   </p>
                 )}
                 {!isBrowser && <div style={{ width: '100%', height: '60px', marginTop: '10px' }} />}
@@ -417,7 +426,7 @@ class Restaurant extends Component {
             {isLoadingSubmit ? (
               <CircularProgress size={30} color="inherit" />
             ) : (
-              restaurantText.submit
+              I18n.t('restaurantText.submit')
             )}
           </Button>
         </div>
@@ -430,7 +439,7 @@ class Restaurant extends Component {
               margin: '10px 20px',
             }}
           >
-            {restaurantText.dialogOpenTime.header}
+            {I18n.t('restaurantText.dialogOpenTime.header')}
           </p>
           <p
             style={{
@@ -440,7 +449,7 @@ class Restaurant extends Component {
               margin: '0px 20px',
             }}
           >
-            {restaurantText.dialogOpenTime.text}
+            {I18n.t('restaurantText.dialogOpenTime.text')}
           </p>
           <div className={classes.closeBtn}>
             <Button
@@ -449,7 +458,11 @@ class Restaurant extends Component {
               onClick={this.handleClose}
               style={{ backgroundColor: '#F7941D' }}
             >
-              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `閉じる`}
+              {isLoadingSubmit ? (
+                <CircularProgress size={30} color="inherit" />
+              ) : (
+                I18n.t('restaurantText.ok')
+              )}
             </Button>
           </div>
         </Dialog>
@@ -466,7 +479,7 @@ class Restaurant extends Component {
               margin: '10px 20px',
             }}
           >
-            {restaurantText.dialogFailedMenu.text}
+            {I18n.t('restaurantText.dialogFailedMenu.text')}
           </p>
           {inactiveOrder.length > 0 &&
             inactiveOrder.map(value => {
@@ -483,7 +496,11 @@ class Restaurant extends Component {
               onClick={this.handleCloseInactive}
               style={{ backgroundColor: '#F7941D' }}
             >
-              {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `閉める`}
+              {isLoadingSubmit ? (
+                <CircularProgress size={30} color="inherit" />
+              ) : (
+                I18n.t('restaurantText.ok')
+              )}
             </Button>
           </div>
         </Dialog>
@@ -496,10 +513,10 @@ class Restaurant extends Component {
               margin: '10px 40px',
             }}
           >
-            {restaurantText.dialogFailedSubmit.header}
+            {I18n.t('restaurantText.dialogFailedSubmit.header')}
           </p>
           <span style={{ textAlign: 'center', fontSize: '12px' }}>
-            {restaurantText.dialogFailedSubmit.text}
+            {I18n.t('restaurantText.dialogFailedSubmit.text')}
           </span>
           <div
             style={{ width: '100%', margin: '20px 0px', display: 'flex', justifyContent: 'center' }}
