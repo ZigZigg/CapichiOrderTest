@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
 import classNames from 'classnames'
 import _ from 'lodash'
-import { isMobile, isBrowser } from 'react-device-detect'
+import { isMobileOnly, isBrowser } from 'react-device-detect'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 import '../../assets/css/Order/styles.css'
 
@@ -52,10 +52,9 @@ class AutoFillForm extends PureComponent {
 
   render() {
     const { classes, item, dataAutofill } = this.props
-    console.log('AutoFillForm -> render -> dataAutofill', dataAutofill)
 
     return (
-      <div ref={this.wrapperRef} className={classes.autoFillContainer}>
+      <div ref={this.wrapperRef} className={classes.autoFillContainer} style={{width:isBrowser ? '50%' : '100%'}}>
         {dataAutofill.map(value => {
           return (
             <a href="#" className="suggest-box" onClick={event => this.selectItem(value, event)}>
