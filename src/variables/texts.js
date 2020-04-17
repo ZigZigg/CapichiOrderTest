@@ -3,7 +3,7 @@ export const orderText = {
   shippingFee: '配送代',
   grandTotal: '合計',
   orderInformation: '注文者情報入力',
-  labelName: '名前*',
+  labelName: '名称*',
   labelPhone: '電話番号*',
   labelAddress: '住所*',
   labelMethod: '受取方法',
@@ -34,6 +34,7 @@ export const orderText = {
     text: 'もう一度試してください!',
   },
   success: '注文は完了しました',
+  clear: 'リセット',
 }
 
 export const restaurantText = {

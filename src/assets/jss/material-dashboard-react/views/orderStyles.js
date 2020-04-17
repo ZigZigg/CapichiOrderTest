@@ -1,3 +1,4 @@
+
 const styles = {
   wrapper: {
     // display: '0 24px',
@@ -115,11 +116,23 @@ const styles = {
     width: '60%',
     display: 'flex',
     flexDirection: 'column',
+    position: 'relative',
   },
   error: {
     fontSize: '10px',
     color: 'red',
     lineHeight: '15px',
+  },
+  autoFillContainer: {
+    position: 'absolute',
+    width: '50%',
+    backgroundColor: '#2e2e2e',
+    top: '35px',
+    borderRadius: 7,
+    padding: '10px 0px',
+    zIndex: 10,
+    maxHeight: '125px',
+    overflowY: 'scroll',
   },
 }
 

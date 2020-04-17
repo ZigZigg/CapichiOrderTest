@@ -36,6 +36,7 @@ import { isBrowser } from 'react-device-detect'
 import { orderText } from '../../variables/texts'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
+import AutoFillForm from './AutoFillForm'
 // const useStyles = makeStyles({
 //   label:{
 //     fontSize:12
@@ -69,6 +70,8 @@ class Index extends PureComponent {
       errorAddress: '',
       errorNote: '',
       errorTime: '',
+      suggestEnable: '',
+      dataAutofill: [],
     }
   }
 
@@ -78,8 +81,32 @@ class Index extends PureComponent {
     } else {
       firebase.analytics().logEvent('order_view')
     }
-
+    // const formData = [
+    //   {
+    //     name:'Zig',
+    //     address:'Ha noi',
+    //     phone:'90039302930923'
+    //   }
+    // ]
+    // localStorage.setItem('form_data', JSON.stringify(formData))
+    const dataSuggest = localStorage.getItem('DATA_SUGGEST')
+    if (dataSuggest) {
+      const dataFormat = JSON.parse(dataSuggest)
+      if (dataFormat.length > 0) {
+        this.onSetDefaultData(dataFormat)
+      }
+    }
     this.onGetRestaurantDetail()
+  }
+
+  onSetDefaultData = dataSuggest => {
+    const { name, phone, address, email } = dataSuggest[dataSuggest.length - 1]
+    this.setState({
+      name,
+      phone,
+      address,
+      email,
+    })
   }
 
   onGetRestaurantDetail = async () => {
@@ -103,30 +130,35 @@ class Index extends PureComponent {
       this.setState({
         [name]: value,
         errorEmail: validateEmail(value),
+        suggestEnable: '',
       })
     }
     if (name === 'name') {
       this.setState({
         [name]: value,
         errorName: validateName(value),
+        suggestEnable: '',
       })
     }
     if (name === 'phone') {
       this.setState({
         [name]: value.replace(/[\D]/g, ''),
         errorPhone: validatePhone(value.replace(/[\D]/g, '')),
+        suggestEnable: '',
       })
     }
     if (name === 'address') {
       this.setState({
         [name]: value,
         errorAddress: validateAddress(value),
+        suggestEnable: '',
       })
     }
     if (name === 'note') {
       this.setState({
         [name]: value,
         errorNote: validateNote(value),
+        suggestEnable: '',
       })
     }
   }
@@ -298,7 +330,13 @@ class Index extends PureComponent {
                 restaurantId: restaurant.id,
               })
             }
-
+            const dataFill = {
+              name: name.trim(),
+              phone,
+              email: email.trim(),
+              address: address.trim(),
+            }
+            this.onSetAutoFill(dataFill)
             this.setState({
               isOpenPopup: true,
             })
@@ -307,6 +345,31 @@ class Index extends PureComponent {
       }
     } catch (e) {
       console.warn(e)
+    }
+  }
+
+  onSetAutoFill = data => {
+    const dataSuggest = localStorage.getItem('DATA_SUGGEST')
+    const dataSuggestFormat = JSON.parse(dataSuggest)
+    if (!dataSuggestFormat) {
+      const dataArray = []
+      dataArray.push(data)
+
+      localStorage.setItem('DATA_SUGGEST', JSON.stringify(dataArray))
+    } else if (dataSuggestFormat.length > 0) {
+      const { name, phone, address, email } = data
+      const findItem = _.find(
+        dataSuggestFormat,
+        value =>
+          _.isEqual(value.name, name) &&
+          _.isEqual(value.phone, phone) &&
+          _.isEqual(value.address, address) &&
+          _.isEqual(value.email, email)
+      )
+      if (!findItem) {
+        dataSuggestFormat.push(data)
+        localStorage.setItem('DATA_SUGGEST', JSON.stringify(dataSuggestFormat))
+      }
     }
   }
 
@@ -420,6 +483,40 @@ class Index extends PureComponent {
     })
   }
 
+  onFocusInput = e => {
+    const { name } = e.nativeEvent.target
+    const dataAutofill = localStorage.getItem('DATA_SUGGEST')
+    this.setState({
+      suggestEnable: name,
+      dataAutofill: JSON.parse(dataAutofill),
+    })
+  }
+
+  onClickOutside = () => {
+    this.setState({
+      suggestEnable: '',
+    })
+  }
+
+  autoFillInput = value => {
+    const { name, phone, address, email } = value
+    this.setState({
+      name,
+      phone,
+      address,
+      email,
+    })
+  }
+
+  onClearFormData = () => {
+    this.setState({
+      name: '',
+      phone: '',
+      address: '',
+      email: '',
+    })
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -443,6 +540,8 @@ class Index extends PureComponent {
       isHideShip,
       typePicker,
       timePicker,
+      suggestEnable,
+      dataAutofill,
     } = this.state
     const total = _.reduce(
       itemSelected,
@@ -500,11 +599,30 @@ class Index extends PureComponent {
                   )} VND`}</span>
                 </div>
               </div>
-              <div style={{ marginTop: '20px' }} className="fluid-pc">
+              <form
+                method="post"
+                style={{ marginTop: '20px' }}
+                className="fluid-pc"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+              >
                 <p className={classes.textItem} style={{ textAlign: 'center' }}>
                   {orderText.orderInformation}
                 </p>
-
+                {/* DONT TOUCH */}
+                <Input
+                  value={name}
+                  error={!!errorName}
+                  onChange={this.onChangeText}
+                  type="text"
+                  name="name"
+                  onFocus={this.onFocusInput}
+                  style={{ display: 'none' }}
+                  placeholder={orderText.labelName}
+                  autoComplete="off"
+                />
+                {/* THIS INPUT */}
                 <div className={classes.inputBox}>
                   <span className={classes.textItem}>{orderText.labelName}</span>
                   <div className={classes.inputContainer}>
@@ -514,9 +632,20 @@ class Index extends PureComponent {
                       onChange={this.onChangeText}
                       type="text"
                       name="name"
-                      maxLength={3}
+                      onFocus={this.onFocusInput}
                       className={classes.input}
+                      placeholder={orderText.labelName}
+                      autoComplete="new-password"
                     />
+                    {suggestEnable === 'name' && dataAutofill && dataAutofill.length > 0 && (
+                      <AutoFillForm
+                        onClearFormData={this.onClearFormData}
+                        autoFillInput={this.autoFillInput}
+                        dataAutofill={dataAutofill}
+                        onClickOutside={this.onClickOutside}
+                      />
+                    )}
+
                     {errorName && <span className={classes.error}>{errorName}</span>}
                   </div>
                 </div>
@@ -529,8 +658,19 @@ class Index extends PureComponent {
                       onChange={this.onChangeText}
                       type="text"
                       name="phone"
+                      onFocus={this.onFocusInput}
                       className={classes.input}
+                      placeholder={orderText.labelPhone}
+                      autoComplete="new-password"
                     />
+                    {suggestEnable === 'phone' && dataAutofill && dataAutofill.length > 0 && (
+                      <AutoFillForm
+                        onClearFormData={this.onClearFormData}
+                        autoFillInput={this.autoFillInput}
+                        dataAutofill={dataAutofill}
+                        onClickOutside={this.onClickOutside}
+                      />
+                    )}
                     {errorPhone && <span className={classes.error}>{errorPhone}</span>}
                   </div>
                 </div>
@@ -545,8 +685,19 @@ class Index extends PureComponent {
                       name="address"
                       multiline
                       rows={2}
+                      onFocus={this.onFocusInput}
                       className={classes.input}
+                      placeholder={orderText.labelAddress}
+                      autoComplete="new-password"
                     />
+                    {suggestEnable === 'address' && dataAutofill && dataAutofill.length > 0 && (
+                      <AutoFillForm
+                        onClearFormData={this.onClearFormData}
+                        autoFillInput={this.autoFillInput}
+                        dataAutofill={dataAutofill}
+                        onClickOutside={this.onClickOutside}
+                      />
+                    )}
                     {errorAddress && <span className={classes.error}>{errorAddress}</span>}
                   </div>
                 </div>
@@ -609,8 +760,19 @@ class Index extends PureComponent {
                       onChange={this.onChangeText}
                       type="email"
                       name="email"
+                      onFocus={this.onFocusInput}
                       className={classes.input}
+                      placeholder={orderText.labelEmail}
+                      autoComplete="new-password"
                     />
+                    {suggestEnable === 'email' && dataAutofill && dataAutofill.length > 0 && (
+                      <AutoFillForm
+                        onClearFormData={this.onClearFormData}
+                        autoFillInput={this.autoFillInput}
+                        dataAutofill={dataAutofill}
+                        onClickOutside={this.onClickOutside}
+                      />
+                    )}
                     {errorEmail && <span className={classes.error}>{errorEmail}</span>}
                   </div>
                 </div>
@@ -629,11 +791,12 @@ class Index extends PureComponent {
                       multiline
                       rows={4}
                       className={classes.input}
+                      autoComplete="off"
                     />
                     {errorNote && <span className={classes.error}>{errorNote}</span>}
                   </div>
                 </div>
-              </div>
+              </form>
               <div
                 style={{ width: '100%', height: '60px', marginTop: '10px' }}
                 className="fluid-pc"
