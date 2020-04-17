@@ -74,6 +74,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     marginTop: '15px',
+    marginBottom:'20px'
   },
   rightContentText: {
     fontSize: '12px',

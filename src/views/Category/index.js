@@ -113,7 +113,7 @@ class Index extends PureComponent {
       if (page <= totalPage || isSearch || isChangeTab) {
         const data = await getListCategory({
           page,
-          limit: isMobileOnly ? 10 : isTablet ? 20 : 8,
+          limit: isMobileOnly ? 10 : isTablet ? 20 : 12,
           keyword,
           provinceId: currentTab,
           seed: isPC ? firstSeed : page === 1 ? seedFormat : firstSeed,
