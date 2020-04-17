@@ -1,4 +1,3 @@
-import { maxHeight } from '@material-ui/system'
 
 const styles = {
   wrapper: {

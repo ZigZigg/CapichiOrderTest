@@ -34,6 +34,7 @@ export const orderText = {
     text: 'もう一度試してください!',
   },
   success: '注文は完了しました',
+  clear: 'リセット',
 }
 
 export const restaurantText = {

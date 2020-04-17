@@ -36,7 +36,6 @@ import { isBrowser } from 'react-device-detect'
 import { orderText } from '../../variables/texts'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
-import { stringify } from 'querystring'
 import AutoFillForm from './AutoFillForm'
 // const useStyles = makeStyles({
 //   label:{
@@ -358,8 +357,19 @@ class Index extends PureComponent {
 
       localStorage.setItem('DATA_SUGGEST', JSON.stringify(dataArray))
     } else if (dataSuggestFormat.length > 0) {
-      dataSuggestFormat.push(data)
-      localStorage.setItem('DATA_SUGGEST', JSON.stringify(dataSuggestFormat))
+      const { name, phone, address, email } = data
+      const findItem = _.find(
+        dataSuggestFormat,
+        value =>
+          _.isEqual(value.name, name) &&
+          _.isEqual(value.phone, phone) &&
+          _.isEqual(value.address, address) &&
+          _.isEqual(value.email, email)
+      )
+      if (!findItem) {
+        dataSuggestFormat.push(data)
+        localStorage.setItem('DATA_SUGGEST', JSON.stringify(dataSuggestFormat))
+      }
     }
   }
 

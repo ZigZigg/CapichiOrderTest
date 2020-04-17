@@ -1,12 +1,11 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
-import classNames from 'classnames'
 import _ from 'lodash'
-import { isMobileOnly, isBrowser } from 'react-device-detect'
+import { isBrowser } from 'react-device-detect'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 import '../../assets/css/Order/styles.css'
+import { orderText } from '../../variables/texts'
 
 class AutoFillForm extends PureComponent {
   constructor(props) {
@@ -51,11 +50,15 @@ class AutoFillForm extends PureComponent {
   }
 
   render() {
-    const { classes, item, dataAutofill } = this.props
-
+    const { classes, dataAutofill } = this.props
+    const dataFormat = _.reverse(dataAutofill)
     return (
-      <div ref={this.wrapperRef} className={classes.autoFillContainer} style={{width:isBrowser ? '50%' : '100%'}}>
-        {dataAutofill.map(value => {
+      <div
+        ref={this.wrapperRef}
+        className={classes.autoFillContainer}
+        style={{ width: isBrowser ? '50%' : '100%' }}
+      >
+        {dataFormat.map(value => {
           return (
             <a href="#" className="suggest-box" onClick={event => this.selectItem(value, event)}>
               <span>{value.name}</span>
@@ -65,7 +68,7 @@ class AutoFillForm extends PureComponent {
           )
         })}
         <a href="#" className="suggest-box clear-box" onClick={this.clearForm}>
-          <span>Clear form</span>
+          <span>{orderText.clear}</span>
         </a>
       </div>
     )
