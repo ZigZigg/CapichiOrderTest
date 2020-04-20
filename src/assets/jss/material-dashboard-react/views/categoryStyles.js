@@ -19,7 +19,7 @@ const styles = {
     padding: '1px 20px',
     fontSize: '14px',
     border: '1px solid #7d7d7d',
-    color:'#000'
+    color: '#000',
   },
   isActive: {
     backgroundColor: '#F7941D',

@@ -12,6 +12,7 @@ export default {
     selectPickup: 'お持ち帰り',
     labelTime: '受取希望時間（時間指定がなければ最短でお届けします)',
     labelEmail: 'メールアドレス',
+    freeShip: '別途',
     labelNote:
       '追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください）',
     note:
@@ -59,5 +60,15 @@ export default {
   categoryText: {
     search: '名前で店舗を探す...',
     dataEmpty: '店舗が見つかりません',
+  },
+  validateEmail: '正しいフォーマットでメールアドレスを入力してください',
+  validateName: '顧客名は最大150文字で入力してください',
+  validatePhone: '電話番号は10〜15桁の数字で入力してください',
+  validateAddress: '住所は最大300文字で入力してください',
+  validateNote: '追記事項は最大1024文字で入力してください',
+  city: {
+    HaNoi: 'ハノイ',
+    HoChiMinh: 'ホーチミン',
+    HaiPhong: 'ハイフォン',
   },
 }

@@ -10,6 +10,7 @@ export default {
     labelMethod: 'Phương thức giao hàng',
     selectDelivery: 'Giao hàng',
     selectPickup: 'Đến mang về',
+    freeShip: 'Miễn phí',
     labelTime:
       'Thời gian giao hàng( Nếu không có thời gian chỉ định, đơn hàng của bạn sẽ được giao sớm nhất)',
     labelEmail: 'Địa chỉ Email',
@@ -25,7 +26,7 @@ export default {
       timeFormat: 'Vui lòng nhập đúng định dạng thời gian',
       timeOpen: 'Vui lòng nhập đúng với thời gian hoạt động của nhà hàng',
     },
-    submit: 'Order',
+    submit: 'Đặt hàng',
     dialogSuccess: {
       header: 'Đơn hàng đã hoàn tất',
       text1: 'Thông tin đơn hàng của bạn đã được gửi đến nhà hàng',
@@ -58,7 +59,17 @@ export default {
     ok: 'OK',
   },
   categoryText: {
-    search: 'Tìm kiếm nhà hàng theo tên...',
+    search: 'Tìm kiếm theo tên...',
     dataEmpty: 'Không tìm thấy nhà hàng',
+  },
+  validateEmail: 'Vui lòng nhập đúng định dạng email',
+  validateName: 'Tên của bạn không được vượt quá 150 kí tự',
+  validatePhone: 'Số điện thoại chỉ được phép nhập 10-15 kí tự',
+  validateAddress: 'Địa chỉ không được quá 300 kí tự',
+  validateNote: 'Ghi chú không được quá 1024 kí tự',
+  city: {
+    HaNoi: 'Hà Nội',
+    HoChiMinh: 'Hồ Chí Minh',
+    HaiPhong: 'Hải Phòng',
   },
 }

@@ -25,15 +25,15 @@ import LanguageBox from '../../components/LanguageBox'
 import '../../assets/css/Category/styles.css'
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
 const dataDev = [
-  { id: 190, label: 'ハノイ', data: null },
-  { id: 192, label: 'ホーチミン', data: null },
-  { id: 191, label: 'ハイフォン', data: null },
+  { id: 190, label: 'city.HaNoi', data: null },
+  { id: 192, label: 'city.HoChiMinh', data: null },
+  { id: 191, label: 'city.HaiPhong', data: null },
 ]
 
 const dataProduct = [
-  { id: 3, label: 'ハノイ', data: null },
-  { id: 5, label: 'ホーチミン', data: null },
-  { id: 4, label: 'ハイフォン', data: null },
+  { id: 3, label: 'city.HaNoi', data: null },
+  { id: 5, label: 'city.HoChiMinh', data: null },
+  { id: 4, label: 'city.HaiPhong', data: null },
 ]
 
 const CustomInput = withStyles(theme => ({
@@ -192,14 +192,14 @@ class Index extends PureComponent {
               <img alt="logo-header" src={logoHeader} style={{ height: '35px' }} />
             </a>
             <div
-              style={{ width: '55%', display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+              style={{ width: '60%', display: 'flex', flexDirection: 'row', alignItems: 'center' }}
             >
               <LanguageBox onChangeLanguage={this.onChangeLanguage} />
               <CustomInput
                 //   onKeyPress={this.handlePressKey}
                 placeholder={I18n.t('categoryText.search')}
                 onChange={this.onChangeText}
-                style={{ width: '100%', marginLeft: '10px' }}
+                style={{ width: '100%', marginLeft: '10px', fontSize: '13px' }}
               />
             </div>
           </div>
@@ -220,10 +220,10 @@ class Index extends PureComponent {
                   className={classNames({
                     [classes.tabButton]: true,
                     [classes.isActive]: currentTab === value.id,
-                    ['tab-item']:true
+                    'tab-item': true,
                   })}
                 >
-                  {value.label}
+                  {I18n.t(value.label)}
                 </a>
               )
             })}

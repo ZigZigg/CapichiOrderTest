@@ -237,9 +237,9 @@ class Index extends PureComponent {
     } = this.state
     if (address.trim().length === 0 || phone.length === 0 || name.trim().length === 0) {
       this.setState({
-        errorName: name.trim().length === 0 ? I18n.t('orderText.error.name') : '',
-        errorPhone: phone.length === 0 ? I18n.t('orderText.error.phone') : '',
-        errorAddress: address.trim().length === 0 ? I18n.t('orderText.error.address') : '',
+        errorName: name.trim().length === 0 ? 'orderText.error.name' : '',
+        errorPhone: phone.length === 0 ? 'orderText.error.phone' : '',
+        errorAddress: address.trim().length === 0 ? 'orderText.error.address' : '',
         name: name.trim().length === 0 ? '' : name,
         address: address.trim().length === 0 ? '' : address,
       })
@@ -438,12 +438,12 @@ class Index extends PureComponent {
     //     return
     //   }
     // }
-    if (/_/.test(inputTime) && checkTime) {
-      this.setState({
-        errorTime: I18n.t('orderText.error.timeFormat'),
-      })
-      return
-    }
+    // if (/_/.test(inputTime) && checkTime) {
+    //   this.setState({
+    //     errorTime: I18n.t('orderText.error.timeFormat'),
+    //   })
+    //   return
+    // }
     const timeAvailable = checkAvailableTime(restaurant.active_time_csv, inputTime)
     if (inputTime && !timeAvailable && !inputTime.match(/_/g)) {
       this.setState({
@@ -472,7 +472,7 @@ class Index extends PureComponent {
     const timeAvailable = checkAvailableTime(restaurant.active_time_csv, inputTime)
     if (inputTime && !timeAvailable) {
       this.setState({
-        errorTime: I18n.t('orderText.error.timeOpen'),
+        errorTime: 'orderText.error.timeOpen',
       })
     } else {
       this.setState({
@@ -505,12 +505,17 @@ class Index extends PureComponent {
   }
 
   autoFillInput = value => {
+    const { errorName, errorPhone, errorAddress, errorEmail } = this.state
     const { name, phone, address, email } = value
     this.setState({
       name,
       phone,
       address,
       email,
+      errorName: name.length > 0 ? validateName(name) : errorName,
+      errorPhone: phone.length > 0 ? validatePhone(phone) : errorPhone,
+      errorAddress: address.length > 0 ? validateAddress(address) : errorAddress,
+      errorEmail: email.length > 0 ? validateEmail(email) : errorEmail,
     })
   }
 
@@ -526,6 +531,7 @@ class Index extends PureComponent {
   onChangeLanguage = locale => {
     this.setState({
       localeSelect: locale,
+      // errorName:errorName !== '' ? I18n.t('orderText.error.name') : ''
     })
   }
 
@@ -555,6 +561,7 @@ class Index extends PureComponent {
       suggestEnable,
       dataAutofill,
     } = this.state
+    console.log(errorName)
     const total = _.reduce(
       itemSelected,
       (sum, item) => {
@@ -592,7 +599,9 @@ class Index extends PureComponent {
                 <div className={classes.shippingContent}>
                   <span>{I18n.t('orderText.shippingFee')}</span>
                   <span>
-                    {isHideShip ? `別途` : `${this.convertPrice(parseInt(shippingFee))} VND`}
+                    {isHideShip
+                      ? I18n.t('orderText.freeShip')
+                      : `${this.convertPrice(parseInt(shippingFee))} VND`}
                   </span>
                 </div>
               </div>
@@ -652,7 +661,7 @@ class Index extends PureComponent {
                       />
                     )}
 
-                    {errorName && <span className={classes.error}>{errorName}</span>}
+                    {errorName && <span className={classes.error}>{I18n.t(errorName)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
@@ -677,7 +686,7 @@ class Index extends PureComponent {
                         onClickOutside={this.onClickOutside}
                       />
                     )}
-                    {errorPhone && <span className={classes.error}>{errorPhone}</span>}
+                    {errorPhone && <span className={classes.error}>{I18n.t(errorPhone)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
@@ -704,7 +713,7 @@ class Index extends PureComponent {
                         onClickOutside={this.onClickOutside}
                       />
                     )}
-                    {errorAddress && <span className={classes.error}>{errorAddress}</span>}
+                    {errorAddress && <span className={classes.error}>{I18n.t(errorAddress)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
@@ -737,7 +746,7 @@ class Index extends PureComponent {
                         helperText=""
                         ampm={false}
                         value={timePicker}
-                        placeholder="hh/mm"
+                        placeholder="HH:MM"
                         format="HH:mm"
                         onChange={this.onChangeTimePicker}
                         style={{ width: '50%' }}
@@ -754,7 +763,7 @@ class Index extends PureComponent {
                       </Button>
                     </div>
 
-                    {errorTime && <span className={classes.error}>{errorTime}</span>}
+                    {errorTime && <span className={classes.error}>{I18n.t(errorTime)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
@@ -779,7 +788,7 @@ class Index extends PureComponent {
                         onClickOutside={this.onClickOutside}
                       />
                     )}
-                    {errorEmail && <span className={classes.error}>{errorEmail}</span>}
+                    {errorEmail && <span className={classes.error}>{I18n.t(errorEmail)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
@@ -799,7 +808,7 @@ class Index extends PureComponent {
                       className={classes.input}
                       autoComplete="off"
                     />
-                    {errorNote && <span className={classes.error}>{errorNote}</span>}
+                    {errorNote && <span className={classes.error}>{I18n.t(errorNote)}</span>}
                   </div>
                 </div>
               </form>
