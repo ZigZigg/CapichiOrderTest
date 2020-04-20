@@ -13,7 +13,7 @@ export default {
     freeShip: 'Miễn phí',
     labelTime:
       'Thời gian giao hàng( Nếu không có thời gian chỉ định, đơn hàng của bạn sẽ được giao sớm nhất)',
-    labelEmail: 'Địa chỉ Email',
+    labelEmail: 'Địa chỉ Email*',
     labelNote:
       'Ghi chú (Ghi chú cho nhà hàng về thực đơn như là loại bỏ những thứ không cần thiết, thêm đũa, thêm thìa...',
     note:
