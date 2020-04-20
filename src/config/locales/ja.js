@@ -11,7 +11,7 @@ export default {
     selectDelivery: 'デリバリー',
     selectPickup: 'お持ち帰り',
     labelTime: '受取希望時間（時間指定がなければ最短でお届けします)',
-    labelEmail: 'メールアドレス',
+    labelEmail: 'メールアドレス*',
     freeShip: '別途',
     labelNote:
       '追記事項（特定の食材抜き、箸・スプーン不要などの特別な注文はこちらに記入してください）',

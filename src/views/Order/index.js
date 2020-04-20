@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 /* eslint-disable radix */
 /* eslint-disable  no-nested-ternary */
 import React, { PureComponent } from 'react'
@@ -126,7 +127,7 @@ class Index extends PureComponent {
         })
       }
     } catch (e) {
-      console.warn(e)
+      // console.warn(e)
     }
   }
 
@@ -228,6 +229,7 @@ class Index extends PureComponent {
       name,
       phone,
       address,
+      email,
       errorName,
       errorAddress,
       errorPhone,
@@ -235,13 +237,20 @@ class Index extends PureComponent {
       errorNote,
       errorTime,
     } = this.state
-    if (address.trim().length === 0 || phone.length === 0 || name.trim().length === 0) {
+    if (
+      address.trim().length === 0 ||
+      phone.length === 0 ||
+      name.trim().length === 0 ||
+      email.trim().length === 0
+    ) {
       this.setState({
         errorName: name.trim().length === 0 ? 'orderText.error.name' : '',
         errorPhone: phone.length === 0 ? 'orderText.error.phone' : '',
         errorAddress: address.trim().length === 0 ? 'orderText.error.address' : '',
+        errorEmail: email.trim().length === 0 ? 'validateEmail' : '',
         name: name.trim().length === 0 ? '' : name,
         address: address.trim().length === 0 ? '' : address,
+        email: email.trim().length === 0 ? '' : email,
       })
       return
     }
@@ -350,7 +359,7 @@ class Index extends PureComponent {
         }
       }
     } catch (e) {
-      console.warn(e)
+      // console.warn(e)
     }
   }
 
@@ -423,7 +432,7 @@ class Index extends PureComponent {
     // const currentTime = moment().format('HH:mm')
     // const convertCurrentTime = moment(currentTime, 'HH:mm')
     const inputTime = `${moment(time, 'HH:mm')}`
-    const checkTime = inputTime.match(/_/g) && inputTime.match(/_/g).length < 4
+    // const checkTime = inputTime.match(/_/g) && inputTime.match(/_/g).length < 4
     if (inputTime.match(/_/g) && inputTime.match(/_/g).length === 4) {
       this.setState({
         time: '',
@@ -561,7 +570,7 @@ class Index extends PureComponent {
       suggestEnable,
       dataAutofill,
     } = this.state
-    console.log(errorName)
+    // console.log(errorName)
     const total = _.reduce(
       itemSelected,
       (sum, item) => {
