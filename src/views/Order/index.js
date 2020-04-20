@@ -1,8 +1,9 @@
 /* eslint-disable radix */
+/* eslint-disable  no-nested-ternary */
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
-import { KeyboardArrowLeft, LocationOn } from '@material-ui/icons'
+import { LocationOn } from '@material-ui/icons'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Grid from '@material-ui/core/Grid'
 import { TimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers'
@@ -18,8 +19,12 @@ import classNames from 'classnames'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
-import { getRestaurantDetail, confirmOrder, getListMenuByRestaurant } from '../../api'
+
+import { Container } from '@material-ui/core'
+import { isBrowser } from 'react-device-detect'
+
+import * as firebase from 'firebase/app'
+import 'firebase/analytics'
 import {
   validateEmail,
   validateAddress,
@@ -31,12 +36,12 @@ import {
   isDevelopEnvironment,
 } from '../../commons'
 import '../../assets/css/Order/styles.css'
-import { Container } from '@material-ui/core'
-import { isBrowser } from 'react-device-detect'
-import { orderText } from '../../variables/texts'
-import * as firebase from 'firebase/app'
-import 'firebase/analytics'
+import { I18n } from '../../config'
 import AutoFillForm from './AutoFillForm'
+import { getRestaurantDetail, confirmOrder, getListMenuByRestaurant } from '../../api'
+import Header from '../../components/Header'
+import LanguageBox from '../../components/LanguageBox'
+import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 // const useStyles = makeStyles({
 //   label:{
 //     fontSize:12
@@ -72,6 +77,7 @@ class Index extends PureComponent {
       errorTime: '',
       suggestEnable: '',
       dataAutofill: [],
+      localeSelect: null,
     }
   }
 
@@ -231,9 +237,9 @@ class Index extends PureComponent {
     } = this.state
     if (address.trim().length === 0 || phone.length === 0 || name.trim().length === 0) {
       this.setState({
-        errorName: name.trim().length === 0 ? orderText.error.name : '',
-        errorPhone: phone.length === 0 ? orderText.error.phone : '',
-        errorAddress: address.trim().length === 0 ? orderText.error.address : '',
+        errorName: name.trim().length === 0 ? 'orderText.error.name' : '',
+        errorPhone: phone.length === 0 ? 'orderText.error.phone' : '',
+        errorAddress: address.trim().length === 0 ? 'orderText.error.address' : '',
         name: name.trim().length === 0 ? '' : name,
         address: address.trim().length === 0 ? '' : address,
       })
@@ -432,16 +438,16 @@ class Index extends PureComponent {
     //     return
     //   }
     // }
-    if (/_/.test(inputTime) && checkTime) {
-      this.setState({
-        errorTime: orderText.error.timeFormat,
-      })
-      return
-    }
+    // if (/_/.test(inputTime) && checkTime) {
+    //   this.setState({
+    //     errorTime: I18n.t('orderText.error.timeFormat'),
+    //   })
+    //   return
+    // }
     const timeAvailable = checkAvailableTime(restaurant.active_time_csv, inputTime)
     if (inputTime && !timeAvailable && !inputTime.match(/_/g)) {
       this.setState({
-        errorTime: orderText.error.timeOpen,
+        errorTime: I18n.t('orderText.error.timeOpen'),
       })
     }
   }
@@ -460,13 +466,13 @@ class Index extends PureComponent {
       timePicker: date,
       time: dateFormat,
     })
-    const currentTime = moment().format('HH:mm')
+    // const currentTime = moment().format('HH:mm')
     // const convertCurrentTime = moment(currentTime, 'HH:mm')
     const inputTime = `${dateFormat}`
     const timeAvailable = checkAvailableTime(restaurant.active_time_csv, inputTime)
     if (inputTime && !timeAvailable) {
       this.setState({
-        errorTime: orderText.error.timeOpen,
+        errorTime: 'orderText.error.timeOpen',
       })
     } else {
       this.setState({
@@ -499,12 +505,17 @@ class Index extends PureComponent {
   }
 
   autoFillInput = value => {
+    const { errorName, errorPhone, errorAddress, errorEmail } = this.state
     const { name, phone, address, email } = value
     this.setState({
       name,
       phone,
       address,
       email,
+      errorName: name.length > 0 ? validateName(name) : errorName,
+      errorPhone: phone.length > 0 ? validatePhone(phone) : errorPhone,
+      errorAddress: address.length > 0 ? validateAddress(address) : errorAddress,
+      errorEmail: email.length > 0 ? validateEmail(email) : errorEmail,
     })
   }
 
@@ -514,6 +525,13 @@ class Index extends PureComponent {
       phone: '',
       address: '',
       email: '',
+    })
+  }
+
+  onChangeLanguage = locale => {
+    this.setState({
+      localeSelect: locale,
+      // errorName:errorName !== '' ? I18n.t('orderText.error.name') : ''
     })
   }
 
@@ -543,6 +561,7 @@ class Index extends PureComponent {
       suggestEnable,
       dataAutofill,
     } = this.state
+    console.log(errorName)
     const total = _.reduce(
       itemSelected,
       (sum, item) => {
@@ -554,17 +573,11 @@ class Index extends PureComponent {
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} libInstance={moment}>
         <div className={classes.wrapper}>
-          <Container
-            className={classes.header}
-            style={{ position: isBrowser && 'inherit', padding: '0' }}
-          >
-            <KeyboardArrowLeft
-              onClick={this.onGoBack}
-              style={{ fontSize: '40px', marginLeft: '10px' }}
-            />
-            <span className={classes.headerLabel}>{orderText.header}</span>
-            <div style={{ marginRight: '24px', width: '30px' }} />
-          </Container>
+          <Header
+            onGoBack={this.onGoBack}
+            headerText={I18n.t('orderText.header')}
+            rightComponent={<LanguageBox onChangeLanguage={this.onChangeLanguage} />}
+          />
           {restaurant && (
             <Container className={classes.container}>
               <div>
@@ -584,16 +597,18 @@ class Index extends PureComponent {
               <div className={classes.shippingBox}>
                 <div style={{ width: '95px' }} />
                 <div className={classes.shippingContent}>
-                  <span>{orderText.shippingFee}</span>
+                  <span>{I18n.t('orderText.shippingFee')}</span>
                   <span>
-                    {isHideShip ? `別途` : `${this.convertPrice(parseInt(shippingFee))} VND`}
+                    {isHideShip
+                      ? I18n.t('orderText.freeShip')
+                      : `${this.convertPrice(parseInt(shippingFee))} VND`}
                   </span>
                 </div>
               </div>
               <div className={classes.totalBox}>
                 <div style={{ width: '40px' }} />
                 <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
-                  <span>{orderText.grandTotal}</span>
+                  <span>{I18n.t('orderText.grandTotal')}</span>
                   <span>{`${this.convertPrice(
                     total + (isHideShip ? 0 : parseInt(shippingFee))
                   )} VND`}</span>
@@ -608,7 +623,7 @@ class Index extends PureComponent {
                 autoCapitalize="off"
               >
                 <p className={classes.textItem} style={{ textAlign: 'center' }}>
-                  {orderText.orderInformation}
+                  {I18n.t('orderText.orderInformation')}
                 </p>
                 {/* DONT TOUCH */}
                 <Input
@@ -619,12 +634,12 @@ class Index extends PureComponent {
                   name="name"
                   onFocus={this.onFocusInput}
                   style={{ display: 'none' }}
-                  placeholder={orderText.labelName}
+                  placeholder={I18n.t('orderText.labelName')}
                   autoComplete="off"
                 />
                 {/* THIS INPUT */}
                 <div className={classes.inputBox}>
-                  <span className={classes.textItem}>{orderText.labelName}</span>
+                  <span className={classes.textItem}>{I18n.t('orderText.labelName')}</span>
                   <div className={classes.inputContainer}>
                     <Input
                       value={name}
@@ -634,7 +649,7 @@ class Index extends PureComponent {
                       name="name"
                       onFocus={this.onFocusInput}
                       className={classes.input}
-                      placeholder={orderText.labelName}
+                      placeholder={I18n.t('orderText.labelName')}
                       autoComplete="new-password"
                     />
                     {suggestEnable === 'name' && dataAutofill && dataAutofill.length > 0 && (
@@ -646,11 +661,11 @@ class Index extends PureComponent {
                       />
                     )}
 
-                    {errorName && <span className={classes.error}>{errorName}</span>}
+                    {errorName && <span className={classes.error}>{I18n.t(errorName)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
-                  <span className={classes.textItem}>{orderText.labelPhone}</span>
+                  <span className={classes.textItem}>{I18n.t('orderText.labelPhone')}</span>
                   <div className={classes.inputContainer}>
                     <Input
                       value={phone}
@@ -660,7 +675,7 @@ class Index extends PureComponent {
                       name="phone"
                       onFocus={this.onFocusInput}
                       className={classes.input}
-                      placeholder={orderText.labelPhone}
+                      placeholder={I18n.t('orderText.labelPhone')}
                       autoComplete="new-password"
                     />
                     {suggestEnable === 'phone' && dataAutofill && dataAutofill.length > 0 && (
@@ -671,11 +686,11 @@ class Index extends PureComponent {
                         onClickOutside={this.onClickOutside}
                       />
                     )}
-                    {errorPhone && <span className={classes.error}>{errorPhone}</span>}
+                    {errorPhone && <span className={classes.error}>{I18n.t(errorPhone)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
-                  <span className={classes.textItem}>{orderText.labelAddress}</span>
+                  <span className={classes.textItem}>{I18n.t('orderText.labelAddress')}</span>
                   <div className={classes.inputContainer}>
                     <Input
                       value={address}
@@ -687,7 +702,7 @@ class Index extends PureComponent {
                       rows={2}
                       onFocus={this.onFocusInput}
                       className={classes.input}
-                      placeholder={orderText.labelAddress}
+                      placeholder={I18n.t('orderText.labelAddress')}
                       autoComplete="new-password"
                     />
                     {suggestEnable === 'address' && dataAutofill && dataAutofill.length > 0 && (
@@ -698,11 +713,11 @@ class Index extends PureComponent {
                         onClickOutside={this.onClickOutside}
                       />
                     )}
-                    {errorAddress && <span className={classes.error}>{errorAddress}</span>}
+                    {errorAddress && <span className={classes.error}>{I18n.t(errorAddress)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
-                  <span className={classes.textItem}>{orderText.labelMethod}</span>
+                  <span className={classes.textItem}>{I18n.t('orderText.labelMethod')}</span>
                   <div className={classes.inputContainer}>
                     <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
                       <FormControlLabel
@@ -722,7 +737,7 @@ class Index extends PureComponent {
                 </div>
                 <div className={classes.inputBox}>
                   <span style={{ maxWidth: '35%' }} className={classes.textItem}>
-                    {orderText.labelTime}
+                    {I18n.t('orderText.labelTime')}
                   </span>
                   <div className={classes.inputContainer}>
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
@@ -731,7 +746,7 @@ class Index extends PureComponent {
                         helperText=""
                         ampm={false}
                         value={timePicker}
-                        placeholder="hh/mm"
+                        placeholder="HH:MM"
                         format="HH:mm"
                         onChange={this.onChangeTimePicker}
                         style={{ width: '50%' }}
@@ -744,15 +759,15 @@ class Index extends PureComponent {
                         onClick={this.onClearTime}
                         style={{ backgroundColor: 'red', marginLeft: '20px' }}
                       >
-                        {orderText.clear}
+                        {I18n.t('orderText.clear')}
                       </Button>
                     </div>
 
-                    {errorTime && <span className={classes.error}>{errorTime}</span>}
+                    {errorTime && <span className={classes.error}>{I18n.t(errorTime)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
-                  <span className={classes.textItem}>{orderText.labelEmail}</span>
+                  <span className={classes.textItem}>{I18n.t('orderText.labelEmail')}</span>
                   <div className={classes.inputContainer}>
                     <Input
                       value={email}
@@ -762,7 +777,7 @@ class Index extends PureComponent {
                       name="email"
                       onFocus={this.onFocusInput}
                       className={classes.input}
-                      placeholder={orderText.labelEmail}
+                      placeholder={I18n.t('orderText.labelEmail')}
                       autoComplete="new-password"
                     />
                     {suggestEnable === 'email' && dataAutofill && dataAutofill.length > 0 && (
@@ -773,12 +788,12 @@ class Index extends PureComponent {
                         onClickOutside={this.onClickOutside}
                       />
                     )}
-                    {errorEmail && <span className={classes.error}>{errorEmail}</span>}
+                    {errorEmail && <span className={classes.error}>{I18n.t(errorEmail)}</span>}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
                   <span className={classes.textItem} style={{ maxWidth: '35%' }}>
-                    {orderText.labelNote}
+                    {I18n.t('orderText.labelNote')}
                   </span>
 
                   <div className={classes.inputContainer}>
@@ -793,7 +808,7 @@ class Index extends PureComponent {
                       className={classes.input}
                       autoComplete="off"
                     />
-                    {errorNote && <span className={classes.error}>{errorNote}</span>}
+                    {errorNote && <span className={classes.error}>{I18n.t(errorNote)}</span>}
                   </div>
                 </div>
               </form>
@@ -801,14 +816,14 @@ class Index extends PureComponent {
                 style={{ width: '100%', height: '60px', marginTop: '10px' }}
                 className="fluid-pc"
               >
-                <p style={{ fontSize: '9px', lineHeight: '15px' }}>{orderText.note}</p>
+                <p style={{ fontSize: '9px', lineHeight: '15px' }}>{I18n.t('orderText.note')}</p>
               </div>
               <div style={{ width: '100%', height: '100px' }} />
             </Container>
           )}
           <div className={classes.btnContainer}>
             {isSuccess ? (
-              <span>{orderText.success}</span>
+              <span>{I18n.t('orderText.success')}</span>
             ) : (
               <Button
                 variant="contained"
@@ -817,19 +832,23 @@ class Index extends PureComponent {
                 onClick={this.onSubmitForm}
                 style={{ backgroundColor: '#F7941D' }}
               >
-                {isLoadingSubmit ? <CircularProgress size={30} color="inherit" /> : `注文`}
+                {isLoadingSubmit ? (
+                  <CircularProgress size={30} color="inherit" />
+                ) : (
+                  I18n.t('orderText.submit')
+                )}
               </Button>
             )}
           </div>
           <Dialog onClose={this.handleClose} style={{ width: '100%' }} open={isOpenPopup}>
             <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-              {orderText.dialogSuccess.header}
+              {I18n.t('orderText.dialogSuccess.header')}
             </p>
             <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-              {orderText.dialogSuccess.text1}
+              {I18n.t('orderText.dialogSuccess.text1')}
             </span>
             <span style={{ textAlign: 'center', margin: '0px 20px', fontSize: '12px' }}>
-              {orderText.dialogSuccess.text2}
+              {I18n.t('orderText.dialogSuccess.text2')}
             </span>
             <div
               style={{
@@ -859,10 +878,10 @@ class Index extends PureComponent {
                 margin: '10px 40px',
               }}
             >
-              {orderText.dialogFailed.header}
+              {I18n.t('orderText.dialogFailed.header')}
             </p>
             <span style={{ textAlign: 'center', fontSize: '12px' }}>
-              {orderText.dialogFailed.text}
+              {I18n.t('orderText.dialogFailed.text')}
             </span>
             <div
               style={{

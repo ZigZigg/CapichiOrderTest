@@ -1,4 +1,6 @@
 /* eslint-disable no-nested-ternary */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { PureComponent } from 'react'
 import { withStyles, fade } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
@@ -18,18 +20,20 @@ import CategoryItem from './CategoryItem'
 import logoHeader from '../../assets/img/logo-order.png'
 import { isDevelopEnvironment } from '../../commons'
 import 'firebase/analytics'
-import { categoryText } from '../../variables/texts'
+import { I18n } from '../../config'
+import LanguageBox from '../../components/LanguageBox'
+import '../../assets/css/Category/styles.css'
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
 const dataDev = [
-  { id: 190, label: 'ハノイ', data: null },
-  { id: 192, label: 'ホーチミン', data: null },
-  { id: 191, label: 'ハイフォン', data: null },
+  { id: 190, label: 'city.HaNoi', data: null },
+  { id: 192, label: 'city.HoChiMinh', data: null },
+  { id: 191, label: 'city.HaiPhong', data: null },
 ]
 
 const dataProduct = [
-  { id: 3, label: 'ハノイ', data: null },
-  { id: 5, label: 'ホーチミン', data: null },
-  { id: 4, label: 'ハイフォン', data: null },
+  { id: 3, label: 'city.HaNoi', data: null },
+  { id: 5, label: 'city.HoChiMinh', data: null },
+  { id: 4, label: 'city.HaiPhong', data: null },
 ]
 
 const CustomInput = withStyles(theme => ({
@@ -72,6 +76,7 @@ class Index extends PureComponent {
       // category: dataProduct,
       firstSeed: null,
       defaultPage: 1,
+      localeSelect: null,
     }
     this.sendTextChange = _.debounce(this.sendTextChange, 400)
     this.listRef = {}
@@ -143,7 +148,8 @@ class Index extends PureComponent {
     history.push(`/restaurant/${restaurantItem.id}`, { item: restaurantItem })
   }
 
-  onChangeTab = id => {
+  onChangeTab = (event, id) => {
+    event.preventDefault()
     this.setState(
       {
         currentTab: id,
@@ -157,6 +163,12 @@ class Index extends PureComponent {
     this.onGetListCategory({ page: pages, isPC: true })
     this.setState({
       defaultPage: pages,
+    })
+  }
+
+  onChangeLanguage = locale => {
+    this.setState({
+      localeSelect: locale,
     })
   }
 
@@ -179,13 +191,17 @@ class Index extends PureComponent {
             <a style={{ display: 'flex' }} href="https://mycapichi.page.link/order">
               <img alt="logo-header" src={logoHeader} style={{ height: '35px' }} />
             </a>
-
-            <CustomInput
-              //   onKeyPress={this.handlePressKey}
-              placeholder={categoryText.search}
-              onChange={this.onChangeText}
-              style={{ width: '60%' }}
-            />
+            <div
+              style={{ width: '60%', display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+            >
+              <LanguageBox onChangeLanguage={this.onChangeLanguage} />
+              <CustomInput
+                //   onKeyPress={this.handlePressKey}
+                placeholder={I18n.t('categoryText.search')}
+                onChange={this.onChangeText}
+                style={{ width: '100%', marginLeft: '10px', fontSize: '13px' }}
+              />
+            </div>
           </div>
           <div
             style={{
@@ -197,16 +213,18 @@ class Index extends PureComponent {
           >
             {category.map((value, index) => {
               return (
-                <div
+                <a
+                  href="#"
                   key={index}
-                  onClick={() => this.onChangeTab(value.id)}
+                  onClick={e => this.onChangeTab(e, value.id)}
                   className={classNames({
                     [classes.tabButton]: true,
                     [classes.isActive]: currentTab === value.id,
+                    'tab-item': true,
                   })}
                 >
-                  {value.label}
-                </div>
+                  {I18n.t(value.label)}
+                </a>
               )
             })}
           </div>
@@ -231,7 +249,7 @@ class Index extends PureComponent {
                 <Grid container id="list-store-grid">
                   {dataCategory &&
                     dataCategory.length > 0 &&
-                    dataCategory.map((value, index) => {
+                    dataCategory.map(value => {
                       return (
                         <CategoryItem onClick={this.onGoToRestaurant} key={value.id} item={value} />
                       )
@@ -241,7 +259,7 @@ class Index extends PureComponent {
             </InfiniteScroll>
           ) : (
             <p style={{ textAlign: 'center', fontSize: '18px', fontWeight: 'bold' }}>
-              {categoryText.dataEmpty}
+              {I18n.t('categoryText.dataEmpty')}
             </p>
           )}
         </div>

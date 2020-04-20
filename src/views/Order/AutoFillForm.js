@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
@@ -5,7 +6,7 @@ import _ from 'lodash'
 import { isBrowser } from 'react-device-detect'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 import '../../assets/css/Order/styles.css'
-import { orderText } from '../../variables/texts'
+import { I18n } from '../../config'
 
 class AutoFillForm extends PureComponent {
   constructor(props) {
@@ -14,17 +15,17 @@ class AutoFillForm extends PureComponent {
     this.wrapperRef = React.createRef()
   }
 
-  onClickItem = () => {
-    const { onClick, item } = this.props
-    if (onClick) onClick(item)
-  }
-
   componentDidMount() {
     document.addEventListener('mousedown', this.handleClickOutside)
   }
 
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.handleClickOutside)
+  }
+
+  onClickItem = () => {
+    const { onClick, item } = this.props
+    if (onClick) onClick(item)
   }
 
   handleClickOutside = event => {
@@ -68,7 +69,7 @@ class AutoFillForm extends PureComponent {
           )
         })}
         <a href="#" className="suggest-box clear-box" onClick={this.clearForm}>
-          <span>{orderText.clear}</span>
+          <span>{I18n.t('orderText.clearForm')}</span>
         </a>
       </div>
     )
@@ -77,8 +78,12 @@ class AutoFillForm extends PureComponent {
 
 AutoFillForm.propTypes = {
   classes: PropTypes.any,
-  item: PropTypes.any,
+  autoFillInput: PropTypes.any,
+  onClickOutside: PropTypes.func,
+  onClearFormData: PropTypes.func,
   onClick: PropTypes.func,
+  item: PropTypes.any,
+  dataAutofill: PropTypes.any,
 }
 
 export default withStyles(styles)(AutoFillForm)

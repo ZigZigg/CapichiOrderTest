@@ -21,7 +21,8 @@ import { createBrowserHistory } from 'history'
 // import PropTypes from 'prop-types'
 import { Router, Route, Switch, BrowserRouter, Redirect } from 'react-router-dom'
 import { ToastProvider } from 'react-toast-notifications'
-
+import * as firebase from 'firebase/app'
+import 'firebase/analytics'
 import Category from './views/Category'
 import Restaurant from './views/Restaurant'
 import Order from './views/Order'
@@ -29,8 +30,7 @@ import Order from './views/Order'
 // import RTL from './layouts/RTL'
 // import * as serviceWorker from '../src1/serviceWorker';
 import './assets/css/material-dashboard-react.css'
-import * as firebase from 'firebase/app'
-import 'firebase/analytics'
+
 // import { AUTHEN_TOKEN } from './constants/define'
 
 const hist = createBrowserHistory()

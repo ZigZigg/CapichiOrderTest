@@ -1,15 +1,17 @@
-import React, { PureComponent } from 'react'
+/* eslint-disable react/no-array-index-key */
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
 import classNames from 'classnames'
 import _ from 'lodash'
+import { isMobile, isBrowser } from 'react-device-detect'
 import styles from '../../assets/jss/material-dashboard-react/views/categoryStyles'
 import { getTimeRange } from '../../commons'
 import '../../assets/css/Category/styles.css'
-import { isMobile, isBrowser } from 'react-device-detect'
+import { I18n } from '../../config'
 
-class CategoryItem extends PureComponent {
+class CategoryItem extends Component {
   constructor(props) {
     super(props)
     this.state = {}
@@ -56,7 +58,7 @@ class CategoryItem extends PureComponent {
             <span className={classes.rightTextName}>{item.name}</span>
             <span className={classes.rightContentText}>{item.address}</span>
             <div style={{ margin: 0, display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '12px' }}>営業時間:</span>
+              <span style={{ fontSize: '12px' }}>{I18n.t('restaurantText.openTime')}</span>
               <div
                 style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
               >
