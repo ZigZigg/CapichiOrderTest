@@ -42,15 +42,15 @@ export default {
   restaurantText: {
     header: 'Thông tin nhà hàng',
     openTime: 'Giờ mở cửa',
-    menu: 'Menu',
-    dataEmpty: 'Menu chưa được tạo bởi nhà hàng',
+    menu: 'Thực đơn',
+    dataEmpty: 'Thực đơn chưa được tạo bởi nhà hàng',
     submit: 'Xác nhận',
     dialogOpenTime: {
       header: 'Nhà hàng hiện đang đóng cửa',
-      text: 'Bạn có thể lựa chọn menu vào dịp sau',
+      text: 'Bạn có thể lựa chọn thực đơn vào dịp sau',
     },
     dialogFailedMenu: {
-      text: 'Xin lỗi, hiện nhà hàng không phục vụ menu sau:',
+      text: 'Xin lỗi, hiện nhà hàng không phục vụ thực đơn sau:',
     },
     dialogFailedSubmit: {
       header: 'Đặt hàng thất bại',
