@@ -150,6 +150,13 @@ const styles = {
     fontSize: '14px',
     marginBottom: '5px',
   },
+  buttonJumbStore: {
+    maxWidth: '50%',
+    backgroundColor: '#F7941D',
+  },
+  textBtn: {
+    fontSize: 12,
+  },
 }
 
 export default styles

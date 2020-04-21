@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-array-index-key */
 import React, { Component } from 'react'
@@ -21,7 +22,7 @@ import 'firebase/analytics'
 import Header from '../../components/Header'
 import { getTimeRange, isDevelopEnvironment } from '../../commons'
 import '../../assets/css/Restaurant/styles.css'
-import { getListMenuByRestaurant, getRestaurantDetail } from '../../api'
+import { getListMenuByRestaurant, getRestaurantDetail, baseURL } from '../../api'
 import { I18n } from '../../config'
 import LanguageBox from '../../components/LanguageBox'
 import styles from '../../assets/jss/material-dashboard-react/views/retaurantStyles'
@@ -95,7 +96,7 @@ class Restaurant extends Component {
         this.onGetListMenu()
       }
     } catch (e) {
-      console.warn(e)
+      // console.warn(e)
     }
   }
 
@@ -149,7 +150,7 @@ class Restaurant extends Component {
         }
       }
     } catch (e) {
-      console.warn(e)
+      // console.warn(e)
     }
   }
 
@@ -251,7 +252,7 @@ class Restaurant extends Component {
         }
       }
     } catch (e) {
-      console.warn(e)
+      // console.warn(e)
     }
   }
 
@@ -278,6 +279,13 @@ class Restaurant extends Component {
     this.setState({
       localeSelect: locale,
     })
+  }
+
+  onOpenApp = () => {
+    const { itemRestaurant } = this.state
+    const mUrl = `${baseURL}frontend/places/${itemRestaurant.place_id}`
+    const shareUrl = `https://mycapichi.page.link/?link=${mUrl}&apn=com.capichi.Capichi&isi=1481540574&ibi=com.capichi.Capichi`
+    window.open(shareUrl)
   }
 
   render() {
@@ -329,9 +337,27 @@ class Restaurant extends Component {
                     )}
                   </div>
                   <div className={classNames({ [classes.rowRightContainer]: isBrowser })}>
-                    <span className={classNames({ [classes.name]: true, name: isBrowser })}>
-                      {itemRestaurant && itemRestaurant.name}
-                    </span>
+                    <div
+                      style={{
+                        marginTop: 16,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <span className={classNames({ [classes.name]: true, name: isBrowser })}>
+                        {itemRestaurant && itemRestaurant.name}
+                      </span>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={this.onOpenApp}
+                        style={styles.buttonJumbStore}
+                      >
+                        <span style={styles.textBtn}>{I18n.t('watchThisStoreVideo')}</span>
+                      </Button>
+                    </div>
                     <div>
                       <LocationOn style={{ fontSize: '17px', marginBottom: '-3px' }} />
                       <span className={classes.address}>

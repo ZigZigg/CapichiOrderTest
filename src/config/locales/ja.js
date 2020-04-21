@@ -71,4 +71,5 @@ export default {
     HoChiMinh: 'ホーチミン',
     HaiPhong: 'ハイフォン',
   },
+  watchThisStoreVideo: 'Capichiアプリでお店の動画レビューを確認',
 }

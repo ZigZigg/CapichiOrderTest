@@ -72,4 +72,5 @@ export default {
     HoChiMinh: 'Hồ Chí Minh',
     HaiPhong: 'Hải Phòng',
   },
+  watchThisStoreVideo: 'Xem Video Cửa hàng',
 }
