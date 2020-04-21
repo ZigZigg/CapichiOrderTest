@@ -306,6 +306,13 @@ class Restaurant extends Component {
     const filterSelected = _.filter(listItemSelected, value => value.count > 0)
     const isHasMore = currentPage < totalPage && itemRestaurant && dataMenu.length > 0
     const timeRange = itemRestaurant ? getTimeRange(itemRestaurant.active_time_csv) : []
+
+    const imageMissing = `${baseURL}missing.png`
+    const { detail_image, image } = itemRestaurant || {}
+    let imageSrc = image
+    // if (detail_image === imageMissing) imageSrc = image
+    if (image === imageMissing) imageSrc = detail_image
+
     return (
       <div id="restaurant" className={classes.wrapper}>
         <Header
@@ -331,7 +338,7 @@ class Restaurant extends Component {
                     {itemRestaurant && (
                       <img
                         className={classNames({ [classes.image]: true, image: isBrowser })}
-                        src={itemRestaurant.image}
+                        src={imageSrc}
                         alt={itemRestaurant.name}
                       />
                     )}
