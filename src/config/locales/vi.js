@@ -21,6 +21,7 @@ export default {
     clear: 'Xoá',
     error: {
       name: 'Vui lòng nhập tên của bạn',
+      email: 'Vui lòng nhập email của bạn',
       phone: 'Vui lòng nhập số điện thoại của bạn',
       address: 'Vui lòng nhập địa chỉ của bạn',
       timeFormat: 'Vui lòng nhập đúng định dạng thời gian',
