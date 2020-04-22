@@ -156,6 +156,7 @@ const styles = {
   },
   textBtn: {
     fontSize: 12,
+    color: '#ffffff',
   },
 }
 

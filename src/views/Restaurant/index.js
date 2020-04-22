@@ -308,7 +308,8 @@ class Restaurant extends Component {
     const timeRange = itemRestaurant ? getTimeRange(itemRestaurant.active_time_csv) : []
 
     const imageMissing = `${baseURL}missing.png`
-    const { detail_image, image } = itemRestaurant || {}
+    const { detail_image, image, place_id } = itemRestaurant || {}
+    const disableBtnVideo = place_id === null || place_id === undefined
     let imageSrc = image
     // if (detail_image === imageMissing) imageSrc = image
     if (image === imageMissing) imageSrc = detail_image
@@ -358,9 +359,14 @@ class Restaurant extends Component {
                       </span>
                       <Button
                         variant="contained"
-                        color="primary"
+                        color={disableBtnVideo ? 'primary' : 'default'}
+                        disabled={disableBtnVideo}
                         onClick={this.onOpenApp}
-                        style={styles.buttonJumbStore}
+                        style={
+                          !disableBtnVideo
+                            ? styles.buttonJumbStore
+                            : { backgroundColor: 'rgb(242, 242, 242)', maxWidth: '50%' }
+                        }
                       >
                         <span style={styles.textBtn}>{I18n.t('watchThisStoreVideo')}</span>
                       </Button>
