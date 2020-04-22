@@ -7,6 +7,7 @@ const styles = {
     position: 'fixed',
     width: '100%',
     backgroundColor: '#fff',
+    zIndex: 10,
   },
   headerLabel: {
     fontSize: '18px',
