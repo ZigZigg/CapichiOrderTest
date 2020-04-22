@@ -10,6 +10,7 @@ import styles from '../../assets/jss/material-dashboard-react/views/categoryStyl
 import { getTimeRange } from '../../commons'
 import '../../assets/css/Category/styles.css'
 import { I18n } from '../../config'
+import { baseURL } from '../../api'
 
 class CategoryItem extends Component {
   constructor(props) {
@@ -24,7 +25,11 @@ class CategoryItem extends Component {
 
   render() {
     const { classes, item } = this.props
-
+    const imageMissing = `${baseURL}missing.png`
+    const { detail_image, image } = item
+    let imageSrc = detail_image
+    if (detail_image === imageMissing) imageSrc = image
+    // if (image === imageMissing) imageSrc = detail_image
     // let restaurantTimeRange = []
     // const timeRange = "08:11-10:11,11:00-15:00,16:00-20:00"
     const timeRange = getTimeRange(item.active_time_csv)
@@ -51,7 +56,7 @@ class CategoryItem extends Component {
               [classes.imageContainerDes]: isBrowser,
             })}
           >
-            <img className={classes.image} src={item.image} alt={item.name} />
+            <img className={classes.image} src={imageSrc} alt={item.name} />
           </div>
 
           <div className={classes.righContent}>

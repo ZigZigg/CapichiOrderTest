@@ -247,7 +247,7 @@ class Index extends PureComponent {
         errorName: name.trim().length === 0 ? 'orderText.error.name' : '',
         errorPhone: phone.length === 0 ? 'orderText.error.phone' : '',
         errorAddress: address.trim().length === 0 ? 'orderText.error.address' : '',
-        errorEmail: email.trim().length === 0 ? 'validateEmail' : '',
+        errorEmail: email.trim().length === 0 ? 'orderText.error.email' : '',
         name: name.trim().length === 0 ? '' : name,
         address: address.trim().length === 0 ? '' : address,
         email: email.trim().length === 0 ? '' : email,

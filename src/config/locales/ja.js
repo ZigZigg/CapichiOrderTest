@@ -21,6 +21,7 @@ export default {
     error: {
       name: 'お客様の名前を入力してください',
       phone: '電話番号を入力してください',
+      email: 'メールアドレスを入力してください',
       address: '住所を入力してください',
       timeFormat: '正しい時間を記入してください',
       timeOpen: '営業時間内の時間を記入してください',
@@ -71,4 +72,5 @@ export default {
     HoChiMinh: 'ホーチミン',
     HaiPhong: 'ハイフォン',
   },
+  watchThisStoreVideo: 'Capichiアプリでお店の動画レビューを確認',
 }
