@@ -279,6 +279,9 @@ class Index extends PureComponent {
       isHideShip,
     } = this.state
     try {
+      this.setState({
+        isLoadingSubmit:true
+      })
       const data = await getListMenuByRestaurant({
         page: 1,
         limit: pages * 10,
@@ -315,6 +318,7 @@ class Index extends PureComponent {
             isOpenWarning: true,
           })
         } else {
+
           const dataOrder = await confirmOrder({
             name: name.trim(),
             phone,
@@ -354,9 +358,14 @@ class Index extends PureComponent {
             this.onSetAutoFill(dataFill)
             this.setState({
               isOpenPopup: true,
+              isLoadingSubmit:false
             })
           }
         }
+      }else{
+        this.setState({
+          isLoadingSubmit:false
+        })
       }
     } catch (e) {
       // console.warn(e)
@@ -837,6 +846,7 @@ class Index extends PureComponent {
               <Button
                 variant="contained"
                 color="primary"
+                disabled={isLoadingSubmit}
                 className="btn-login"
                 onClick={this.onSubmitForm}
                 style={{ backgroundColor: '#F7941D' }}
