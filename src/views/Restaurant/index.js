@@ -309,7 +309,7 @@ class Restaurant extends Component {
 
     const imageMissing = `${baseURL}missing.png`
     const { detail_image, image, place_id } = itemRestaurant || {}
-    const disableBtnVideo = place_id === null || place_id === undefined
+    const disableBtnVideo = true || place_id === null || place_id === undefined
     let imageSrc = image
     // if (detail_image === imageMissing) imageSrc = image
     if (image === imageMissing) imageSrc = detail_image
