@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable react/no-unused-state */
 /* eslint-disable radix */
 /* eslint-disable  no-nested-ternary */
@@ -39,9 +41,18 @@ import {
 import '../../assets/css/Order/styles.css'
 import { I18n } from '../../config'
 import AutoFillForm from './AutoFillForm'
-import { getRestaurantDetail, confirmOrder, getListMenuByRestaurant } from '../../api'
+import {
+  getRestaurantDetail,
+  confirmOrder,
+  getListMenuByRestaurant,
+  getTokenAhamove,
+  getDistanceAhamove,
+} from '../../api'
 import Header from '../../components/Header'
 import LanguageBox from '../../components/LanguageBox'
+import DialogConfirm from './DialogConfirm'
+import DialogLocation from './DialogLocation'
+import DialogReview from './DialogReview'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 // const useStyles = makeStyles({
 //   label:{
@@ -79,6 +90,13 @@ class Index extends PureComponent {
       suggestEnable: '',
       dataAutofill: [],
       localeSelect: null,
+      openConfirm: false,
+      openLocation: false,
+      openReview: false,
+      isLoadingPhone: false,
+      token: undefined,
+      location: undefined,
+      shipFee: {},
     }
   }
 
@@ -544,6 +562,56 @@ class Index extends PureComponent {
     })
   }
 
+  onCancelDialogConfirm = () => {
+    this.setState({ openConfirm: false })
+    // this.onBack()
+  }
+
+  onOkDialogConfirm = () => {
+    this.setState({ openConfirm: false })
+  }
+
+  onBack = () => {
+    const { history } = this.props
+    history.goBack()
+  }
+
+  onCloseDialogLocation = () => {
+    this.setState({ openLocation: false })
+  }
+
+  onConfirmPhone = async () => {
+    const { phone } = this.state
+    this.setState({ isLoadingPhone: true })
+    const dataToken = await getTokenAhamove({ phone })
+    const { isSuccess, token, message } = dataToken
+    if (isSuccess) {
+      this.setState({ isLoadingPhone: false, token })
+    } else {
+      this.setState({ errorPhone: message, isLoadingPhone: false })
+    }
+  }
+
+  formatPath = (address, location) => {
+    const { restaurant } = this.state
+    const objectRestaurant = {
+      ...location,
+      address,
+    }
+    console.log({ objectRestaurant, restaurant })
+  }
+
+  onChooseLocation = locationGG => {
+    const { token } = this.state
+    const { geometry, formatted_address } = locationGG.data.result || {}
+    const { location } = geometry
+    this.setState({ address: formatted_address, location })
+    this.formatPath(formatted_address, location)
+    getDistanceAhamove({ token }).then(res => {
+      if (res.isSuccess) this.setState({ shipFee: res.data })
+    })
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -564,11 +632,14 @@ class Index extends PureComponent {
       isOpenPopup,
       isOpenWarning,
       isSuccess,
-      isHideShip,
       typePicker,
       timePicker,
       suggestEnable,
       dataAutofill,
+      openConfirm,
+      openLocation,
+      openReview,
+      isLoadingPhone,
     } = this.state
     // console.log(errorName)
     const total = _.reduce(
@@ -578,10 +649,22 @@ class Index extends PureComponent {
       },
       0
     )
-    const shippingFee = typePicker === 'pick_up' ? 0 : restaurant ? restaurant.fee : 0
+
+    const disablePhone = !!(errorPhone || phone === '')
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} libInstance={moment}>
         <div className={classes.wrapper}>
+          <DialogConfirm
+            open={openConfirm}
+            onCancel={this.onCancelDialogConfirm}
+            onOk={this.onOkDialogConfirm}
+          />
+          <DialogReview open={openReview} onOk={() => this.setState({ openReview: false })} />
+          <DialogLocation
+            open={openLocation}
+            onClose={this.onCloseDialogLocation}
+            onChooseLocation={this.onChooseLocation}
+          />
           <Header
             onGoBack={this.onGoBack}
             headerText={I18n.t('orderText.header')}
@@ -603,24 +686,12 @@ class Index extends PureComponent {
                     return this.renderItem(value)
                   })}
               </Grid>
-              <div className={classes.shippingBox}>
-                <div style={{ width: '95px' }} />
-                <div className={classes.shippingContent}>
-                  <span>{I18n.t('orderText.shippingFee')}</span>
-                  <span>
-                    {isHideShip
-                      ? I18n.t('orderText.freeShip')
-                      : `${this.convertPrice(parseInt(shippingFee))} VND`}
-                  </span>
-                </div>
-              </div>
+              <div className={classes.shippingBox} />
               <div className={classes.totalBox}>
                 <div style={{ width: '40px' }} />
                 <div className={classes.shippingContent} style={{ fontSize: '21px' }}>
                   <span>{I18n.t('orderText.grandTotal')}</span>
-                  <span>{`${this.convertPrice(
-                    total + (isHideShip ? 0 : parseInt(shippingFee))
-                  )} VND`}</span>
+                  <span>{`${this.convertPrice(total)} VND`}</span>
                 </div>
               </div>
               <form
@@ -648,6 +719,82 @@ class Index extends PureComponent {
                 />
                 {/* THIS INPUT */}
                 <div className={classes.inputBox}>
+                  <span className={classes.textItem}>{I18n.t('orderText.labelMethod')}</span>
+                  <div className={classes.inputContainer}>
+                    <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
+                      <FormControlLabel
+                        classes={{ label: 'radio-label' }}
+                        value="delivery"
+                        control={<Radio size="small" />}
+                        label="デリバリー"
+                      />
+                      <FormControlLabel
+                        classes={{ label: 'radio-label' }}
+                        value="pick_up"
+                        control={<Radio size="small" />}
+                        label="お持ち帰り"
+                      />
+                    </RadioGroup>
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
+                  <span className={classes.textItem}>{I18n.t('orderText.labelPhone')}</span>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      width: '60%',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div className={classes.inputContainer}>
+                      <Input
+                        value={phone}
+                        error={!!errorPhone}
+                        onChange={this.onChangeText}
+                        type="text"
+                        name="phone"
+                        onFocus={this.onFocusInput}
+                        className={classes.input}
+                        placeholder={I18n.t('orderText.labelPhone')}
+                        autoComplete="new-password"
+                      />
+                      {suggestEnable === 'phone' && dataAutofill && dataAutofill.length > 0 && (
+                        <AutoFillForm
+                          onClearFormData={this.onClearFormData}
+                          autoFillInput={this.autoFillInput}
+                          dataAutofill={dataAutofill}
+                          onClickOutside={this.onClickOutside}
+                        />
+                      )}
+                      {errorPhone && <span className={classes.error}>{I18n.t(errorPhone)}</span>}
+                    </div>
+                    {typePicker === 'delivery' && (
+                      <div style={{ padding: 16 }}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className="btn-login"
+                          disabled={disablePhone}
+                          onClick={this.onConfirmPhone}
+                          style={
+                            disablePhone
+                              ? { backgroundColor: '#c9c9c9' }
+                              : { backgroundColor: '#F7941D' }
+                          }
+                        >
+                          {isLoadingPhone ? (
+                            <CircularProgress size={30} color="inherit" />
+                          ) : (
+                            I18n.t('orderText.confirm')
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className={classes.inputBox}>
                   <span className={classes.textItem}>{I18n.t('orderText.labelName')}</span>
                   <div className={classes.inputContainer}>
                     <Input
@@ -674,34 +821,18 @@ class Index extends PureComponent {
                   </div>
                 </div>
                 <div className={classes.inputBox}>
-                  <span className={classes.textItem}>{I18n.t('orderText.labelPhone')}</span>
-                  <div className={classes.inputContainer}>
-                    <Input
-                      value={phone}
-                      error={!!errorPhone}
-                      onChange={this.onChangeText}
-                      type="text"
-                      name="phone"
-                      onFocus={this.onFocusInput}
-                      className={classes.input}
-                      placeholder={I18n.t('orderText.labelPhone')}
-                      autoComplete="new-password"
-                    />
-                    {suggestEnable === 'phone' && dataAutofill && dataAutofill.length > 0 && (
-                      <AutoFillForm
-                        onClearFormData={this.onClearFormData}
-                        autoFillInput={this.autoFillInput}
-                        dataAutofill={dataAutofill}
-                        onClickOutside={this.onClickOutside}
-                      />
-                    )}
-                    {errorPhone && <span className={classes.error}>{I18n.t(errorPhone)}</span>}
-                  </div>
-                </div>
-                <div className={classes.inputBox}>
                   <span className={classes.textItem}>{I18n.t('orderText.labelAddress')}</span>
                   <div className={classes.inputContainer}>
-                    <Input
+                    <div
+                      onClick={() => this.setState({ openLocation: true })}
+                      style={{
+                        borderBottom: '0.2px solid #3a3a3a',
+                        width: '100%',
+                      }}
+                    >
+                      <span style={{ fontSize: 12 }}>{address || 'Chọn địa chỉ của bạn'}</span>
+                    </div>
+                    {/* <Input
                       value={address}
                       error={!!errorAddress}
                       onChange={this.onChangeText}
@@ -713,7 +844,7 @@ class Index extends PureComponent {
                       className={classes.input}
                       placeholder={I18n.t('orderText.labelAddress')}
                       autoComplete="new-password"
-                    />
+                    /> */}
                     {suggestEnable === 'address' && dataAutofill && dataAutofill.length > 0 && (
                       <AutoFillForm
                         onClearFormData={this.onClearFormData}
@@ -723,25 +854,6 @@ class Index extends PureComponent {
                       />
                     )}
                     {errorAddress && <span className={classes.error}>{I18n.t(errorAddress)}</span>}
-                  </div>
-                </div>
-                <div className={classes.inputBox}>
-                  <span className={classes.textItem}>{I18n.t('orderText.labelMethod')}</span>
-                  <div className={classes.inputContainer}>
-                    <RadioGroup value={typePicker} onChange={this.handleChangeRadio}>
-                      <FormControlLabel
-                        classes={{ label: 'radio-label' }}
-                        value="delivery"
-                        control={<Radio size="small" />}
-                        label="デリバリー"
-                      />
-                      <FormControlLabel
-                        classes={{ label: 'radio-label' }}
-                        value="pick_up"
-                        control={<Radio size="small" />}
-                        label="お持ち帰り"
-                      />
-                    </RadioGroup>
                   </div>
                 </div>
                 <div className={classes.inputBox}>
@@ -831,6 +943,15 @@ class Index extends PureComponent {
             </Container>
           )}
           <div className={classes.btnContainer}>
+            <Button
+              variant="contained"
+              color="primary"
+              className="btn-login"
+              onClick={() => this.setState({ openReview: true })}
+              style={{ backgroundColor: '#F7941D', marginRight: 16 }}
+            >
+              {I18n.t('orderText.review')}
+            </Button>
             {isSuccess ? (
               <span>{I18n.t('orderText.success')}</span>
             ) : (

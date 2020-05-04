@@ -27,6 +27,8 @@ export default {
       timeOpen: '営業時間内の時間を記入してください',
     },
     submit: '注文',
+    confirm: 'xác nhận',
+    review: 'Xem trước',
     dialogSuccess: {
       header: '注文は完了しました',
       text1: 'あなたの注文情報はレストランに送信されました',
@@ -73,4 +75,5 @@ export default {
     HaiPhong: 'ハイフォン',
   },
   watchThisStoreVideo: 'Capichiアプリでお店の動画レビューを確認',
+  error400: 'コンテンツがありません。もう一度お試しください。',
 }

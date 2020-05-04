@@ -28,6 +28,8 @@ export default {
       timeOpen: 'Vui lòng nhập đúng với thời gian hoạt động của nhà hàng',
     },
     submit: 'Đặt hàng',
+    review: 'Xem trước',
+    confirm: 'xác nhận',
     dialogSuccess: {
       header: 'Đơn hàng đã hoàn tất',
       text1: 'Thông tin đơn hàng của bạn đã được gửi đến nhà hàng',
@@ -74,4 +76,5 @@ export default {
     HaiPhong: 'Hải Phòng',
   },
   watchThisStoreVideo: 'Xem Video Cửa hàng',
+  error400: 'Nội dung không tồn tại. Vui lòng thử lại sau.',
 }
