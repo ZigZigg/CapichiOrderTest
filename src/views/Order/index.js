@@ -20,7 +20,7 @@ import classNames from 'classnames'
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-
+import {GtmID} from '../../constants/config'
 import { Container } from '@material-ui/core'
 import { isBrowser } from 'react-device-detect'
 import TagManager from 'react-gtm-module'
@@ -84,7 +84,7 @@ class Index extends PureComponent {
 
   componentDidMount() {
     const tagManagerArgs = {
-      gtmId: 'GTM-P72P89W',
+      gtmId: GtmID,
     }
     TagManager.initialize(tagManagerArgs)
     if (isDevelopEnvironment()) {

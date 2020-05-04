@@ -22,6 +22,7 @@ import { isDevelopEnvironment } from '../../commons'
 import 'firebase/analytics'
 import { I18n } from '../../config'
 import LanguageBox from '../../components/LanguageBox'
+import {GtmID} from '../../constants/config'
 import TagManager from 'react-gtm-module'
 import '../../assets/css/Category/styles.css'
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
@@ -87,7 +88,7 @@ class Index extends PureComponent {
   componentDidMount() {
     this.onGetListCategory({ page: 1 })
     const tagManagerArgs = {
-      gtmId: 'GTM-P72P89W',
+      gtmId: GtmID,
     }
     TagManager.initialize(tagManagerArgs)
     if (isDevelopEnvironment()) {
