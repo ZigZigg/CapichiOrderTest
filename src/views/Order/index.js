@@ -23,7 +23,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 import { Container } from '@material-ui/core'
 import { isBrowser } from 'react-device-detect'
-
+import TagManager from 'react-gtm-module'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
 import {
@@ -83,6 +83,10 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
+    const tagManagerArgs = {
+      gtmId: 'GTM-P72P89W',
+    }
+    TagManager.initialize(tagManagerArgs)
     if (isDevelopEnvironment()) {
       firebase.analytics().logEvent('order_view_debug')
     } else {
