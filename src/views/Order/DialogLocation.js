@@ -17,6 +17,7 @@ import Slide from '@material-ui/core/Slide'
 import Axios from 'axios'
 import { API_GOOGLE_KEY } from '../../constants/define'
 import { mainColor } from '../../constants/styles'
+import { I18n } from '../../config'
 
 const useStyles = makeStyles(theme => ({
   appBar: {
@@ -53,7 +54,7 @@ export default function LocationDialog(props) {
       `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&fields=name,formatted_address,address_component,geometry&key=${API_GOOGLE_KEY}`,
       { timeout: 30000 }
     )
-    onChooseLocation(response)
+    onChooseLocation(response, item.description)
     onClose()
   }
 
@@ -76,7 +77,7 @@ export default function LocationDialog(props) {
               <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>
-              Địa chỉ giao hàng
+              {I18n.t('addressShip')}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -85,7 +86,7 @@ export default function LocationDialog(props) {
             autoFocus
             margin="dense"
             id="address"
-            placeholder="Địa chỉ"
+            placeholder={I18n.t('address')}
             type="address"
             value={address}
             onChange={onChangeText}

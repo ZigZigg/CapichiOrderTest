@@ -68,7 +68,7 @@ export default {
   validateEmail: 'Vui lòng nhập đúng định dạng email',
   validateName: 'Tên của bạn không được vượt quá 150 kí tự',
   validatePhone: 'Số điện thoại chỉ được phép nhập 10-15 kí tự',
-  validateAddress: 'Địa chỉ không được quá 300 kí tự',
+  validateAddress: 'Hệ thống chỉ hỗ trợ cho Tp.Hồ Chí Minh và Hà Nội',
   validateNote: 'Ghi chú không được quá 1024 kí tự',
   city: {
     HaNoi: 'Hà Nội',
@@ -77,4 +77,12 @@ export default {
   },
   watchThisStoreVideo: 'Xem Video Cửa hàng',
   error400: 'Nội dung không tồn tại. Vui lòng thử lại sau.',
+  errorAhamove: 'Địa chỉ vận chuyển hàng khu vực này không phù hợp.',
+  errorAhamovePhone: 'Số điện thoại không phù hợp.',
+  deliveryType: 'Giao tận nơi',
+  noDeliveryType: 'Tự đến lấy',
+  chooseLocation: 'Chọn địa chỉ giao hàng',
+  confirmPhone: 'Vui lòng xác nhận số điện thoại',
+  addressShip: 'Địa chỉ giao hàng',
+  address: 'Địa chỉ',
 }

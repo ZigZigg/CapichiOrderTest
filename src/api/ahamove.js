@@ -15,7 +15,7 @@ export const getTokenAhamove = async ({ phone = 'hanoi', address }) => {
     if (!token)
       return {
         isSuccess: false,
-        message: 'error400',
+        message: 'errorAhamovePhone',
       }
     return {
       isSuccess: true,
@@ -24,7 +24,7 @@ export const getTokenAhamove = async ({ phone = 'hanoi', address }) => {
   } catch (e) {
     return {
       isSuccess: false,
-      message: 'error400',
+      message: 'errorAhamovePhone',
     }
   }
 }

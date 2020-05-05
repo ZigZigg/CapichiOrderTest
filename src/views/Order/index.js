@@ -73,6 +73,7 @@ class Index extends PureComponent {
       restaurant: null,
       name: '',
       phone: '',
+      textRequestPhone: I18n.t('confirmPhone'),
       address: '',
       email: '',
       note: '',
@@ -89,7 +90,7 @@ class Index extends PureComponent {
       errorAddress: '',
       errorNote: '',
       errorTime: '',
-      errorAhamove: 'Địa chỉ vận chuyển hàng khu vực này không phù hợp.',
+      errorAhamove: I18n.t('errorAhamove'),
       suggestEnable: '',
       dataAutofill: [],
       localeSelect: null,
@@ -174,6 +175,7 @@ class Index extends PureComponent {
         [name]: value.replace(/[\D]/g, ''),
         errorPhone: validatePhone(value.replace(/[\D]/g, '')),
         suggestEnable: '',
+        token: undefined,
       })
     }
     if (name === 'address') {
@@ -299,6 +301,7 @@ class Index extends PureComponent {
       time,
       typePicker,
       isHideShip,
+      location,
     } = this.state
     try {
       const data = await getListMenuByRestaurant({
@@ -349,6 +352,7 @@ class Index extends PureComponent {
             hide_ship: isHideShip,
             time,
             typePicker,
+            location,
           })
           if (dataOrder.isSuccess) {
             if (isDevelopEnvironment()) {
@@ -488,8 +492,8 @@ class Index extends PureComponent {
     const { value } = event.target
     this.setState({
       typePicker: value,
-      address: '',
-      token: undefined,
+      // address: '',
+      // token: undefined,
     })
   }
 
@@ -596,7 +600,7 @@ class Index extends PureComponent {
     if (isSuccess) {
       this.setState({ isLoadingPhone: false, token })
     } else {
-      this.setState({ errorPhone: message, isLoadingPhone: false })
+      this.setState({ errorAhamove: message, isLoadingPhone: false, openWarn: true })
     }
   }
 
@@ -620,25 +624,28 @@ class Index extends PureComponent {
     return arrAddr[arrAddr.length - 2]
   }
 
-  onChooseLocation = locationGG => {
+  onChooseLocation = (locationGG, name) => {
     const { token, typePicker } = this.state
-    const { geometry, formatted_address } = locationGG.data.result || {}
+    // console.log({locationGG})
+    const { geometry } = locationGG.data.result || {}
     const { location } = geometry
-    this.setState({ address: formatted_address, location })
-    if (typePicker === 'delivery') {
-      let path = this.formatPath(formatted_address, location)
-      const city = this.getCity(formatted_address)
-      let service_id = 'HAN-BIKE'
-      if (city === 'Hanoi') service_id = 'HAN-BIKE'
-      if (city === 'Ho Chi Minh City') service_id = 'SGN-BIKE'
-      path = JSON.stringify(path)
-      getDistanceAhamove({ token, path, service_id }).then(res => {
-        if (res.isSuccess) this.setState({ shipFee: res.data })
-        else {
-          this.setState({ address: '', location: undefined, openWarn: true })
-        }
-      })
-    }
+    const city = this.getCity(name)
+    if (city === 'Hanoi' || city === 'Ho Chi Minh City') {
+      this.setState({ address: name, location, errorAddress: '' })
+      if (typePicker === 'delivery' && token) {
+        let path = this.formatPath(name, location)
+        let service_id = 'HAN-BIKE'
+        if (city === 'Hanoi') service_id = 'HAN-BIKE'
+        if (city === 'Ho Chi Minh City') service_id = 'SGN-BIKE'
+        path = JSON.stringify(path)
+        getDistanceAhamove({ token, path, service_id }).then(res => {
+          if (res.isSuccess) this.setState({ shipFee: res.data })
+          else {
+            this.setState({ address: '', location: undefined, openWarn: true })
+          }
+        })
+      }
+    } else this.setState({ errorAddress: 'validateAddress' })
   }
 
   // onCreateOffer = () => {
@@ -702,6 +709,7 @@ class Index extends PureComponent {
       shipFee,
       isLoadingPhone,
       token,
+      textRequestPhone,
     } = this.state
     // console.log(errorName)
     const total = _.reduce(
@@ -712,14 +720,19 @@ class Index extends PureComponent {
       0
     )
 
-    const disabledAddress = (typePicker === 'delivery' && !token) || false
-    // const disabledReview = typePicker !== 'delivery' || !token || address === '' || false
-    const disabledSubmit = typePicker === 'delivery' && (!token || address === '')
+    const disabledAddress = (typePicker === 'delivery' && !token && address === '') || false
+    // const disabledReview = address === '' || false
+    const disabledSubmit =
+      (typePicker === 'delivery' && !token) ||
+      address === '' ||
+      phone === '' ||
+      name === '' ||
+      email === ''
     const dataReview = {
       restaurant,
       shipFee,
     }
-    const disablePhone = !!(errorPhone || phone === '')
+    const disablePhone = !!(errorPhone || phone === '' || token)
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} libInstance={moment}>
         <div className={classes.wrapper}>
@@ -799,13 +812,13 @@ class Index extends PureComponent {
                         classes={{ label: 'radio-label' }}
                         value="delivery"
                         control={<Radio size="small" />}
-                        label="デリバリー"
+                        label={I18n.t('deliveryType')}
                       />
                       <FormControlLabel
                         classes={{ label: 'radio-label' }}
                         value="pick_up"
                         control={<Radio size="small" />}
-                        label="お持ち帰り"
+                        label={I18n.t('noDeliveryType')}
                       />
                     </RadioGroup>
                   </div>
@@ -842,9 +855,12 @@ class Index extends PureComponent {
                         />
                       )}
                       {errorPhone && <span className={classes.error}>{I18n.t(errorPhone)}</span>}
+                      {typePicker === 'delivery' && !token && (
+                        <span className={classes.error}>{textRequestPhone}</span>
+                      )}
                     </div>
                     {typePicker === 'delivery' && (
-                      <div style={{ padding: 16 }}>
+                      <div style={{ padding: 12 }}>
                         <Button
                           variant="contained"
                           color="primary"
@@ -893,21 +909,22 @@ class Index extends PureComponent {
                     {errorName && <span className={classes.error}>{I18n.t(errorName)}</span>}
                   </div>
                 </div>
-                <div className={classes.inputBox}>
-                  <span className={classes.textItem}>{I18n.t('orderText.labelAddress')}</span>
-                  <div className={classes.inputContainer}>
-                    <div
-                      onClick={() => {
-                        if (!disabledAddress) this.setState({ openLocation: true })
-                      }}
-                      style={{
-                        borderBottom: '0.2px solid #3a3a3a',
-                        width: '100%',
-                      }}
-                    >
-                      <span style={{ fontSize: 12 }}>{address || 'Chọn địa chỉ của bạn'}</span>
-                    </div>
-                    {/* <Input
+                {typePicker === 'delivery' && (
+                  <div className={classes.inputBox}>
+                    <span className={classes.textItem}>{I18n.t('orderText.labelAddress')}</span>
+                    <div className={classes.inputContainer}>
+                      <div
+                        onClick={() => {
+                          if (!disabledAddress) this.setState({ openLocation: true })
+                        }}
+                        style={{
+                          borderBottom: '0.2px solid #3a3a3a',
+                          width: '100%',
+                        }}
+                      >
+                        <span style={{ fontSize: 12 }}>{address || I18n.t('chooseLocation')}</span>
+                      </div>
+                      {/* <Input
                       value={address}
                       error={!!errorAddress}
                       onChange={this.onChangeText}
@@ -920,17 +937,20 @@ class Index extends PureComponent {
                       placeholder={I18n.t('orderText.labelAddress')}
                       autoComplete="new-password"
                     /> */}
-                    {suggestEnable === 'address' && dataAutofill && dataAutofill.length > 0 && (
-                      <AutoFillForm
-                        onClearFormData={this.onClearFormData}
-                        autoFillInput={this.autoFillInput}
-                        dataAutofill={dataAutofill}
-                        onClickOutside={this.onClickOutside}
-                      />
-                    )}
-                    {errorAddress && <span className={classes.error}>{I18n.t(errorAddress)}</span>}
+                      {suggestEnable === 'address' && dataAutofill && dataAutofill.length > 0 && (
+                        <AutoFillForm
+                          onClearFormData={this.onClearFormData}
+                          autoFillInput={this.autoFillInput}
+                          dataAutofill={dataAutofill}
+                          onClickOutside={this.onClickOutside}
+                        />
+                      )}
+                      {errorAddress && (
+                        <span className={classes.error}>{I18n.t(errorAddress)}</span>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className={classes.inputBox}>
                   <span style={{ maxWidth: '35%' }} className={classes.textItem}>
                     {I18n.t('orderText.labelTime')}

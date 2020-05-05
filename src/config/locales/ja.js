@@ -67,7 +67,7 @@ export default {
   validateEmail: '正しいフォーマットでメールアドレスを入力してください',
   validateName: '顧客名は最大150文字で入力してください',
   validatePhone: '電話番号は10〜15桁の数字で入力してください',
-  validateAddress: '住所は最大300文字で入力してください',
+  validateAddress: 'Hệ thống chỉ hỗ trợ cho Tp.Hồ Chí Minh và Hà Nội',
   validateNote: '追記事項は最大1024文字で入力してください',
   city: {
     HaNoi: 'ハノイ',
@@ -76,4 +76,12 @@ export default {
   },
   watchThisStoreVideo: 'Capichiアプリでお店の動画レビューを確認',
   error400: 'コンテンツがありません。もう一度お試しください。',
+  confirmPhone: 'Vui lòng xác nhận số điện thoại',
+  errorAhamove: 'Địa chỉ vận chuyển hàng khu vực này không phù hợp.',
+  errorAhamovePhone: 'Số điện thoại không phù hợp.',
+  deliveryType: 'デリバリー',
+  noDeliveryType: 'お持ち帰り',
+  addressShip: 'Địa chỉ giao hàng',
+  chooseLocation: 'Chọn địa chỉ giao hàng',
+  address: 'Địa chỉ',
 }
