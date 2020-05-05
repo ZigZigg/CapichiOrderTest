@@ -77,7 +77,8 @@ export default {
   },
   watchThisStoreVideo: 'Xem Video Cửa hàng',
   error400: 'Nội dung không tồn tại. Vui lòng thử lại sau.',
-  errorAhamove: 'Địa chỉ vận chuyển hàng khu vực này không phù hợp.',
+  errorAhamove:
+    'Địa chỉ vận chuyển hàng khu vực này không phù hợp. Xin vui lòng xem lại địa chỉ nhà hàng',
   errorAhamovePhone: 'Số điện thoại không phù hợp.',
   deliveryType: 'Giao tận nơi',
   noDeliveryType: 'Tự đến lấy',
@@ -85,4 +86,5 @@ export default {
   confirmPhone: 'Vui lòng xác nhận số điện thoại',
   addressShip: 'Địa chỉ giao hàng',
   address: 'Địa chỉ',
+  warn: 'Cảnh báo',
 }

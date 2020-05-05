@@ -30,7 +30,7 @@ import * as firebase from 'firebase/app'
 import 'firebase/analytics'
 import {
   validateEmail,
-  validateAddress,
+  // validateAddress,
   validateName,
   validateNote,
   validatePhone,
@@ -178,13 +178,13 @@ class Index extends PureComponent {
         token: undefined,
       })
     }
-    if (name === 'address') {
-      this.setState({
-        [name]: value,
-        errorAddress: validateAddress(value),
-        suggestEnable: '',
-      })
-    }
+    // if (name === 'address') {
+    //   this.setState({
+    //     [name]: value,
+    //     errorAddress: validateAddress(value),
+    //     suggestEnable: '',
+    //   })
+    // }
     if (name === 'note') {
       this.setState({
         [name]: value,
@@ -262,7 +262,7 @@ class Index extends PureComponent {
       errorTime,
     } = this.state
     if (
-      address.trim().length === 0 ||
+      // address.trim().length === 0 ||
       phone.length === 0 ||
       name.trim().length === 0 ||
       email.trim().length === 0
@@ -270,7 +270,7 @@ class Index extends PureComponent {
       this.setState({
         errorName: name.trim().length === 0 ? 'orderText.error.name' : '',
         errorPhone: phone.length === 0 ? 'orderText.error.phone' : '',
-        errorAddress: address.trim().length === 0 ? 'orderText.error.address' : '',
+        // errorAddress: address.trim().length === 0 ? 'orderText.error.address' : '',
         errorEmail: email.trim().length === 0 ? 'orderText.error.email' : '',
         name: name.trim().length === 0 ? '' : name,
         address: address.trim().length === 0 ? '' : address,
@@ -544,7 +544,7 @@ class Index extends PureComponent {
   }
 
   autoFillInput = value => {
-    const { errorName, errorPhone, errorAddress, errorEmail } = this.state
+    const { errorName, errorPhone, errorEmail } = this.state
     const { name, phone, address, email } = value
     this.setState({
       name,
@@ -553,7 +553,7 @@ class Index extends PureComponent {
       email,
       errorName: name.length > 0 ? validateName(name) : errorName,
       errorPhone: phone.length > 0 ? validatePhone(phone) : errorPhone,
-      errorAddress: address.length > 0 ? validateAddress(address) : errorAddress,
+      // errorAddress: address.length > 0 ? validateAddress(address) : errorAddress,
       errorEmail: email.length > 0 ? validateEmail(email) : errorEmail,
     })
   }
@@ -723,8 +723,7 @@ class Index extends PureComponent {
     const disabledAddress = (typePicker === 'delivery' && !token && address === '') || false
     // const disabledReview = address === '' || false
     const disabledSubmit =
-      (typePicker === 'delivery' && !token) ||
-      address === '' ||
+      (typePicker === 'delivery' && !token && address === '') ||
       phone === '' ||
       name === '' ||
       email === ''

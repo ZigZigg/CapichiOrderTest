@@ -7,7 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-// import { I18n } from '../../config'
+import { I18n } from '../../config'
 
 export default function FormDialog(props) {
   const { open, onCancel, onOk, content } = props
@@ -15,13 +15,13 @@ export default function FormDialog(props) {
   return (
     <div>
       <Dialog open={open} onClose={onCancel} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Cảnh báo</DialogTitle>
+        <DialogTitle id="form-dialog-title">{I18n.t('warn')}</DialogTitle>
         <DialogContent>
           <DialogContentText>{content}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={onOk} color="primary">
-            Đồng ý
+            {I18n.t('restaurantText.ok')}
           </Button>
         </DialogActions>
       </Dialog>

@@ -77,11 +77,13 @@ export default {
   watchThisStoreVideo: 'Capichiアプリでお店の動画レビューを確認',
   error400: 'コンテンツがありません。もう一度お試しください。',
   confirmPhone: 'Vui lòng xác nhận số điện thoại',
-  errorAhamove: 'Địa chỉ vận chuyển hàng khu vực này không phù hợp.',
+  errorAhamove:
+    'Địa chỉ vận chuyển hàng khu vực này không phù hợp. Xin vui lòng xem lại địa chỉ nhà hàng',
   errorAhamovePhone: 'Số điện thoại không phù hợp.',
   deliveryType: 'デリバリー',
   noDeliveryType: 'お持ち帰り',
   addressShip: 'Địa chỉ giao hàng',
   chooseLocation: 'Chọn địa chỉ giao hàng',
   address: 'Địa chỉ',
+  warn: 'Cảnh báo',
 }
