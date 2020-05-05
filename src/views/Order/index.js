@@ -307,7 +307,7 @@ class Index extends PureComponent {
     } = this.state
     try {
       this.setState({
-        isLoadingSubmit:true
+        isLoadingSubmit: true,
       })
       const data = await getListMenuByRestaurant({
         page: 1,
@@ -386,11 +386,11 @@ class Index extends PureComponent {
             this.onSetAutoFill(dataFill)
             this.setState({
               isOpenPopup: true,
-              isLoadingSubmit:false
+              isLoadingSubmit: false,
             })
-          }else{
+          } else {
             this.setState({
-              isLoadingSubmit:false
+              isLoadingSubmit: false,
             })
           }
         }
@@ -559,7 +559,6 @@ class Index extends PureComponent {
     this.setState({
       name,
       phone,
-      address,
       email,
       errorName: name.length > 0 ? validateName(name) : errorName,
       errorPhone: phone.length > 0 ? validatePhone(phone) : errorPhone,
@@ -731,13 +730,14 @@ class Index extends PureComponent {
     )
 
     const disabledAddress = (typePicker === 'delivery' && !token && address === '') || false
-    const disabledReview = address === '' && typePicker === 'delivery' || false
+    const disabledReview = (address === '' && typePicker === 'delivery') || false
     const disabledSubmit =
       (typePicker === 'delivery' && !token) ||
       (typePicker === 'delivery' && address === '') ||
       phone === '' ||
       name === '' ||
-      email === '' || isLoadingSubmit
+      email === '' ||
+      isLoadingSubmit
     const dataReview = {
       restaurant,
       shipFee,
@@ -1053,20 +1053,22 @@ class Index extends PureComponent {
             </Container>
           )}
           <div className={classes.btnContainer}>
-            {!isSuccess && <Button
-              variant="contained"
-              color="primary"
-              className="btn-login"
-              disabled={disabledReview}
-              onClick={() => this.setState({ openReview: true })}
-              style={{
-                backgroundColor: disabledReview ? disabledButton : mainColor,
-                marginRight: 16,
-              }}
-            >
-              {I18n.t('orderText.review')}
-            </Button>}
-            
+            {!isSuccess && (
+              <Button
+                variant="contained"
+                color="primary"
+                className="btn-login"
+                disabled={disabledReview}
+                onClick={() => this.setState({ openReview: true })}
+                style={{
+                  backgroundColor: disabledReview ? disabledButton : mainColor,
+                  marginRight: 16,
+                }}
+              >
+                {I18n.t('orderText.review')}
+              </Button>
+            )}
+
             {isSuccess ? (
               <span>{I18n.t('orderText.success')}</span>
             ) : (
