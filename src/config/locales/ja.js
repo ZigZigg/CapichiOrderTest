@@ -35,8 +35,8 @@ export default {
       timeOpen: '営業時間内の時間を記入してください',
     },
     submit: '注文',
-    confirm: 'xác nhận',
-    review: 'Xem trước',
+    confirm: '確認',
+    review: 'プレビュー',
     dialogSuccess: {
       header: '注文は完了しました',
       text1: 'あなたの注文情報はレストランに送信されました',
@@ -75,7 +75,7 @@ export default {
   validateEmail: '正しいフォーマットでメールアドレスを入力してください',
   validateName: '顧客名は最大150文字で入力してください',
   validatePhone: '電話番号は10〜15桁の数字で入力してください',
-  validateAddress: '住所は最大300文字で入力してください',
+  validateAddress: 'システムはホーチミンとハノイでのみ対応しています',
   validateNote: '追記事項は最大1024文字で入力してください',
   city: {
     HaNoi: 'ハノイ',
@@ -84,4 +84,13 @@ export default {
   },
   watchThisStoreVideo: 'Capichiアプリでお店の動画レビューを確認',
   error400: 'コンテンツがありません。もう一度お試しください。',
+  confirmPhone: '電話番号を確認してください',
+  errorAhamove: 'この地域の配送は対応していません。店舗の住所を再度確認してください。',
+  errorAhamovePhone: '電話番号が正しくありません',
+  deliveryType: 'デリバリー',
+  noDeliveryType: 'お持ち帰り',
+  addressShip: '配送先住所',
+  chooseLocation: '配送先住所を選ぶ',
+  address: '住所',
+  warn: '注意',
 }
