@@ -54,6 +54,7 @@ import LanguageBox from '../../components/LanguageBox'
 import DialogLocation from './DialogLocation'
 import DialogReview from './DialogReview'
 import DialogWarn from './DialogWarn'
+import OrderItem from './OrderItem'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 import { mainColor, disabledButton } from '../../constants/styles'
 // const useStyles = makeStyles({
@@ -193,7 +194,8 @@ class Index extends PureComponent {
   }
 
   convertPrice = price => {
-    const priceFormat = price.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, '$1.')
+    console.log('Index -> price', price)
+    const priceFormat = price ? price.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, '$1.') : 0
     return priceFormat
   }
 
@@ -713,11 +715,12 @@ class Index extends PureComponent {
     )
 
     const disabledAddress = (typePicker === 'delivery' && !token) || false
-    // const disabledReview = typePicker !== 'delivery' || !token || address === '' || false
+    const disabledReview = address === ''
     const disabledSubmit = typePicker === 'delivery' && (!token || address === '')
     const dataReview = {
       restaurant,
       shipFee,
+      itemSelected,
     }
     const disablePhone = !!(errorPhone || phone === '')
     return (
@@ -732,6 +735,10 @@ class Index extends PureComponent {
             open={openReview}
             onOk={() => this.setState({ openReview: false })}
             dataReview={dataReview}
+            classes={classes}
+            convertPrice={this.convertPrice}
+            typePicker={typePicker}
+            deliveryAddress={address}
           />
           <DialogLocation
             open={openLocation}
@@ -756,7 +763,7 @@ class Index extends PureComponent {
                 {itemSelected &&
                   itemSelected.length > 0 &&
                   itemSelected.map(value => {
-                    return this.renderItem(value)
+                    return <OrderItem item={value} classes={classes} />
                   })}
               </Grid>
               <div className={classes.shippingBox} />
@@ -1018,7 +1025,7 @@ class Index extends PureComponent {
             </Container>
           )}
           <div className={classes.btnContainer}>
-            {/* <Button
+            <Button
               variant="contained"
               color="primary"
               className="btn-login"
@@ -1030,7 +1037,7 @@ class Index extends PureComponent {
               }}
             >
               {I18n.t('orderText.review')}
-            </Button> */}
+            </Button>
             {isSuccess ? (
               <span>{I18n.t('orderText.success')}</span>
             ) : (

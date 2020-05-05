@@ -24,6 +24,10 @@
 .suggest-box:hover{
     background-color: #6e737a
 }
+
+#order-container .dialog-review{
+    padding:20px 24px
+}
 @media (min-width: 1200px){
     #order-grid-item .item-order{
         height: 85px;
@@ -40,5 +44,17 @@
     .fluid-pc{
         width: 70% !important;
         margin: auto
+    }
+    #order-container .dialog-review{
+        max-width: 800px
+    }
+    #order-container .footer-order{
+        padding: 0 10px
+    }
+}
+@media (max-width:1024px){
+    #order-container .dialog-review{
+        width: 90%;
+        margin:0;
     }
 }

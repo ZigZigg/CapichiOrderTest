@@ -133,6 +133,30 @@ const styles = {
     maxHeight: '125px',
     overflowY: 'scroll',
   },
+  titleDialog: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    margin: '10px 0',
+  },
+  footerOrder: {
+    // padding:'0 10px',
+    marginTop: '5px',
+  },
+  itemOrderStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  itemOrderRight: {
+    width: '60%',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+    fontSize: '12px',
+    color: '#1E1F21',
+    textAlign: 'right',
+  },
 }
 
 export default styles
