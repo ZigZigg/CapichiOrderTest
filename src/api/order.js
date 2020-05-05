@@ -31,7 +31,10 @@ export const confirmOrder = async ({
     if (location) formData.append('order[long]', location.lng)
     formData.append('order[email]', email)
     formData.append('order[note]', note)
-    formData.append('order[delivery_time]', time)
+    if(time){
+      formData.append('order[delivery_time]', time)
+    }
+    
     formData.append('order[delivery_type]', typePicker)
     if (hide_ship) {
       formData.append('order[fee]', 0)
