@@ -47,13 +47,15 @@ import {
   getListMenuByRestaurant,
   getTokenAhamove,
   getDistanceAhamove,
+  // createOfferAhamove,
 } from '../../api'
 import Header from '../../components/Header'
 import LanguageBox from '../../components/LanguageBox'
-import DialogConfirm from './DialogConfirm'
 import DialogLocation from './DialogLocation'
 import DialogReview from './DialogReview'
+import DialogWarn from './DialogWarn'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
+import { mainColor, disabledButton } from '../../constants/styles'
 // const useStyles = makeStyles({
 //   label:{
 //     fontSize:12
@@ -87,12 +89,14 @@ class Index extends PureComponent {
       errorAddress: '',
       errorNote: '',
       errorTime: '',
+      errorAhamove: 'Địa chỉ vận chuyển hàng khu vực này không phù hợp.',
       suggestEnable: '',
       dataAutofill: [],
       localeSelect: null,
       openConfirm: false,
       openLocation: false,
       openReview: false,
+      openWarn: false,
       isLoadingPhone: false,
       token: undefined,
       location: undefined,
@@ -125,11 +129,11 @@ class Index extends PureComponent {
   }
 
   onSetDefaultData = dataSuggest => {
-    const { name, phone, address, email } = dataSuggest[dataSuggest.length - 1]
+    const { name, phone, email } = dataSuggest[dataSuggest.length - 1]
     this.setState({
       name,
       phone,
-      address,
+      // address,
       email,
     })
   }
@@ -333,6 +337,7 @@ class Index extends PureComponent {
             isOpenWarning: true,
           })
         } else {
+          // this.onCreateOffer()
           const dataOrder = await confirmOrder({
             name: name.trim(),
             phone,
@@ -483,12 +488,15 @@ class Index extends PureComponent {
     const { value } = event.target
     this.setState({
       typePicker: value,
+      address: '',
+      token: undefined,
     })
   }
 
   onChangeTimePicker = date => {
     const { restaurant } = this.state
     const dateFormat = moment(date).format('HH:mm')
+    // const timeShip = date.subtract(5 * 60, 's')
     this.setState({
       timePicker: date,
       time: dateFormat,
@@ -592,25 +600,76 @@ class Index extends PureComponent {
     }
   }
 
-  formatPath = (address, location) => {
+  formatPath = (address, location, totalOffer = 0) => {
     const { restaurant } = this.state
-    const objectRestaurant = {
+    const objectCustomer = {
       ...location,
       address,
+      cod: totalOffer,
     }
-    console.log({ objectRestaurant, restaurant })
+    const objectRestaurant = {
+      lat: restaurant.lat,
+      lng: restaurant.long,
+      address: restaurant.address,
+    }
+    return [objectRestaurant, objectCustomer]
+  }
+
+  getCity = location => {
+    const arrAddr = location.split(', ')
+    return arrAddr[arrAddr.length - 2]
   }
 
   onChooseLocation = locationGG => {
-    const { token } = this.state
+    const { token, typePicker } = this.state
     const { geometry, formatted_address } = locationGG.data.result || {}
     const { location } = geometry
     this.setState({ address: formatted_address, location })
-    this.formatPath(formatted_address, location)
-    getDistanceAhamove({ token }).then(res => {
-      if (res.isSuccess) this.setState({ shipFee: res.data })
-    })
+    if (typePicker === 'delivery') {
+      let path = this.formatPath(formatted_address, location)
+      const city = this.getCity(formatted_address)
+      let service_id = 'HAN-BIKE'
+      if (city === 'Hanoi') service_id = 'HAN-BIKE'
+      if (city === 'Ho Chi Minh City') service_id = 'SGN-BIKE'
+      path = JSON.stringify(path)
+      getDistanceAhamove({ token, path, service_id }).then(res => {
+        if (res.isSuccess) this.setState({ shipFee: res.data })
+        else {
+          this.setState({ address: '', location: undefined, openWarn: true })
+        }
+      })
+    }
   }
+
+  // onCreateOffer = () => {
+  //   const { token, address, location, itemSelected, timePicker, shipFee } = this.state
+  //   const { duration } = shipFee || {}
+
+  //   let idle_until = ''
+  //   if (timePicker) {
+  //     let timeShip = timePicker.subtract(duration + 5 * 60, 's')
+  //     timeShip = timeShip.unix()
+  //     const currentTime = moment().unix()
+  //     idle_until = timeShip > currentTime ? timeShip : ''
+  //   }
+  //   const total = _.reduce(
+  //     itemSelected,
+  //     (sum, item) => {
+  //       return sum + item.price * item.count
+  //     },
+  //     0
+  //   )
+  //   let path = this.formatPath(address, location, total)
+  //   const city = this.getCity(address)
+  //   let service_id = 'HAN-BIKE'
+  //   if (city === 'Hanoi') service_id = 'HAN-BIKE'
+  //   if (city === 'Ho Chi Minh City') service_id = 'SGN-BIKE'
+  //   path = JSON.stringify(path)
+  //   createOfferAhamove({ token, path, service_id, idle_until }).then(res => {
+  //     if (!res.isSuccess)
+  //       this.setState({ openWarn: true, errorAhamove: 'Hệ thông vận chuyển đang gặp vấn đề' })
+  //   })
+  // }
 
   render() {
     const { classes } = this.props
@@ -624,6 +683,7 @@ class Index extends PureComponent {
       errorEmail,
       errorNote,
       errorTime,
+      errorAhamove,
       name,
       phone,
       address,
@@ -636,10 +696,12 @@ class Index extends PureComponent {
       timePicker,
       suggestEnable,
       dataAutofill,
-      openConfirm,
       openLocation,
       openReview,
+      openWarn,
+      shipFee,
       isLoadingPhone,
+      token,
     } = this.state
     // console.log(errorName)
     const total = _.reduce(
@@ -650,16 +712,27 @@ class Index extends PureComponent {
       0
     )
 
+    const disabledAddress = (typePicker === 'delivery' && !token) || false
+    // const disabledReview = typePicker !== 'delivery' || !token || address === '' || false
+    const disabledSubmit = typePicker === 'delivery' && (!token || address === '')
+    const dataReview = {
+      restaurant,
+      shipFee,
+    }
     const disablePhone = !!(errorPhone || phone === '')
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} libInstance={moment}>
         <div className={classes.wrapper}>
-          <DialogConfirm
-            open={openConfirm}
-            onCancel={this.onCancelDialogConfirm}
-            onOk={this.onOkDialogConfirm}
+          <DialogWarn
+            open={openWarn}
+            onOk={() => this.setState({ openWarn: false })}
+            content={errorAhamove}
           />
-          <DialogReview open={openReview} onOk={() => this.setState({ openReview: false })} />
+          <DialogReview
+            open={openReview}
+            onOk={() => this.setState({ openReview: false })}
+            dataReview={dataReview}
+          />
           <DialogLocation
             open={openLocation}
             onClose={this.onCloseDialogLocation}
@@ -824,7 +897,9 @@ class Index extends PureComponent {
                   <span className={classes.textItem}>{I18n.t('orderText.labelAddress')}</span>
                   <div className={classes.inputContainer}>
                     <div
-                      onClick={() => this.setState({ openLocation: true })}
+                      onClick={() => {
+                        if (!disabledAddress) this.setState({ openLocation: true })
+                      }}
                       style={{
                         borderBottom: '0.2px solid #3a3a3a',
                         width: '100%',
@@ -943,24 +1018,29 @@ class Index extends PureComponent {
             </Container>
           )}
           <div className={classes.btnContainer}>
-            <Button
+            {/* <Button
               variant="contained"
               color="primary"
               className="btn-login"
+              disabled={disabledReview}
               onClick={() => this.setState({ openReview: true })}
-              style={{ backgroundColor: '#F7941D', marginRight: 16 }}
+              style={{
+                backgroundColor: disabledReview ? disabledButton : mainColor,
+                marginRight: 16,
+              }}
             >
               {I18n.t('orderText.review')}
-            </Button>
+            </Button> */}
             {isSuccess ? (
               <span>{I18n.t('orderText.success')}</span>
             ) : (
               <Button
                 variant="contained"
                 color="primary"
+                disabled={disabledSubmit}
                 className="btn-login"
                 onClick={this.onSubmitForm}
-                style={{ backgroundColor: '#F7941D' }}
+                style={{ backgroundColor: disabledSubmit ? disabledButton : mainColor }}
               >
                 {isLoadingSubmit ? (
                   <CircularProgress size={30} color="inherit" />
