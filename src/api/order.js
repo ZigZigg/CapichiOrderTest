@@ -38,6 +38,7 @@ export const confirmOrder = async ({
     }
     const result = await request('', null).post(`${categoryApi}/${restaurantId}/orders`, formData)
     const { data, status } = result
+    console.log({result})
     if (status === 200)
       return {
         isSuccess: true,
@@ -48,6 +49,7 @@ export const confirmOrder = async ({
       message: 'a',
     }
   } catch (e) {
+    console.log({e})
     return {
       isSuccess: false,
       message: getMessageErrorFormServer(e),
