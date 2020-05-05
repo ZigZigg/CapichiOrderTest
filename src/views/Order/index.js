@@ -280,7 +280,7 @@ class Index extends PureComponent {
       })
       return
     }
-    if (errorAddress || errorPhone || errorName || errorEmail || errorNote || errorTime) {
+    if (errorPhone || errorName || errorEmail || errorNote || errorTime) {
       return
     }
     this.onConfirmOrder()
@@ -306,6 +306,9 @@ class Index extends PureComponent {
       location,
     } = this.state
     try {
+      this.setState({
+        isLoadingSubmit:true
+      })
       const data = await getListMenuByRestaurant({
         page: 1,
         limit: pages * 10,
@@ -383,6 +386,11 @@ class Index extends PureComponent {
             this.onSetAutoFill(dataFill)
             this.setState({
               isOpenPopup: true,
+              isLoadingSubmit:false
+            })
+          }else{
+            this.setState({
+              isLoadingSubmit:false
             })
           }
         }
@@ -725,10 +733,11 @@ class Index extends PureComponent {
     const disabledAddress = (typePicker === 'delivery' && !token && address === '') || false
     const disabledReview = address === '' && typePicker === 'delivery' || false
     const disabledSubmit =
-      (typePicker === 'delivery' && !token && address === '') ||
+      (typePicker === 'delivery' && !token) ||
+      (typePicker === 'delivery' && address === '') ||
       phone === '' ||
       name === '' ||
-      email === ''
+      email === '' || isLoadingSubmit
     const dataReview = {
       restaurant,
       shipFee,
@@ -1044,7 +1053,7 @@ class Index extends PureComponent {
             </Container>
           )}
           <div className={classes.btnContainer}>
-            <Button
+            {!isSuccess && <Button
               variant="contained"
               color="primary"
               className="btn-login"
@@ -1056,7 +1065,8 @@ class Index extends PureComponent {
               }}
             >
               {I18n.t('orderText.review')}
-            </Button>
+            </Button>}
+            
             {isSuccess ? (
               <span>{I18n.t('orderText.success')}</span>
             ) : (
