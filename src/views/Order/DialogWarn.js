@@ -8,6 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import { I18n } from '../../config'
+import { mainColor } from '../../constants/styles'
 
 export default function FormDialog(props) {
   const { open, onCancel, onOk, content } = props
@@ -20,7 +21,11 @@ export default function FormDialog(props) {
           <DialogContentText>{content}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onOk} color="primary">
+          <Button
+            onClick={onOk}
+            variant="contained"
+            style={{ marginTop: '15px', backgroundColor: mainColor, color: '#ffffff' }}
+          >
             {I18n.t('restaurantText.ok')}
           </Button>
         </DialogActions>

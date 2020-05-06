@@ -643,7 +643,7 @@ class Index extends PureComponent {
     const { location } = geometry
     const city = this.getCity(name)
     if (city === 'hanoi' || city === 'hochiminhcity' || city === 'hochiminh') {
-      this.setState({ address: name, location, errorAddress: '' })
+      // this.setState({ address: name, location, errorAddress: '' })
       if (typePicker === 'delivery' && token) {
         let path = this.formatPath(name, location)
         let service_id = 'HAN-BIKE'
@@ -651,11 +651,10 @@ class Index extends PureComponent {
         if (city === 'Ho Chi Minh City') service_id = 'SGN-BIKE'
         path = JSON.stringify(path)
         getDistanceAhamove({ token, path, service_id }).then(res => {
-          if (res.isSuccess) this.setState({ shipFee: res.data })
+          if (res.isSuccess)
+            this.setState({ shipFee: res.data, address: name, location, errorAddress: '' })
           else {
             this.setState({
-              address: '',
-              location: undefined,
               openWarn: true,
               errorAhamove: I18n.t('errorAhamove'),
             })

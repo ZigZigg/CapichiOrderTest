@@ -1,6 +1,7 @@
 import Axios from 'axios'
 // import { categoryApi } from './config'
 // import { getMessageErrorFormServer } from '../commons'
+import { I18n } from '../config'
 
 // eslint-disable-next-line import/prefer-default-export
 export const urlAhamove = 'https://apistg.ahamove.com/v1'
@@ -15,7 +16,7 @@ export const getTokenAhamove = async ({ phone = 'hanoi', address }) => {
     if (!token)
       return {
         isSuccess: false,
-        message: 'errorAhamovePhone',
+        message: I18n.t('errorAhamovePhone'),
       }
     return {
       isSuccess: true,
@@ -24,7 +25,7 @@ export const getTokenAhamove = async ({ phone = 'hanoi', address }) => {
   } catch (e) {
     return {
       isSuccess: false,
-      message: 'errorAhamovePhone',
+      message: I18n.t('errorAhamovePhone'),
     }
   }
 }
