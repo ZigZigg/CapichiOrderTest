@@ -10,6 +10,7 @@ import '../../assets/css/Order/styles.css'
 import _ from 'lodash'
 import OrderItem from './OrderItem'
 import { I18n } from '../../config'
+import { mainColor } from '../../constants/styles'
 
 export default function DialogReview(props) {
   const {
@@ -151,7 +152,11 @@ export default function DialogReview(props) {
         </Grid>
 
         <DialogActions>
-          <Button onClick={onOk} color="primary" variant="contained" style={{ marginTop: '15px' }}>
+          <Button
+            onClick={onOk}
+            variant="contained"
+            style={{ marginTop: '15px', backgroundColor: mainColor, color: '#ffffff' }}
+          >
             Ok
           </Button>
         </DialogActions>

@@ -197,7 +197,6 @@ class Index extends PureComponent {
   }
 
   convertPrice = price => {
-    console.log('Index -> price', price)
     const priceFormat = price ? price.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, '$1.') : 0
     return priceFormat
   }
@@ -392,6 +391,8 @@ class Index extends PureComponent {
           } else {
             this.setState({
               isLoadingSubmit: false,
+              openWarn: true,
+              errorAhamove: dataOrder.message,
             })
           }
         }
@@ -652,11 +653,21 @@ class Index extends PureComponent {
         getDistanceAhamove({ token, path, service_id }).then(res => {
           if (res.isSuccess) this.setState({ shipFee: res.data })
           else {
-            this.setState({ address: '', location: undefined, openWarn: true })
+            this.setState({
+              address: '',
+              location: undefined,
+              openWarn: true,
+              errorAhamove: I18n.t('errorAhamove'),
+            })
           }
         })
       }
-    } else this.setState({ errorAddress: 'validateAddress' })
+    } else
+      this.setState({
+        // errorAddress: 'validateAddress',
+        openWarn: true,
+        errorAhamove: I18n.t('validateAddress'),
+      })
   }
 
   // onCreateOffer = () => {
