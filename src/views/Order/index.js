@@ -20,12 +20,13 @@ import Input from '@material-ui/core/Input'
 import Dialog from '@material-ui/core/Dialog'
 import classNames from 'classnames'
 import Radio from '@material-ui/core/Radio'
+import TextField from '@material-ui/core/TextField'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 import { Container } from '@material-ui/core'
 import { isBrowser } from 'react-device-detect'
-
+import Axios from 'axios'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
 import {
@@ -56,13 +57,17 @@ import DialogLocation from './DialogLocation'
 import DialogReview from './DialogReview'
 import DialogWarn from './DialogWarn'
 import OrderItem from './OrderItem'
+import PopupAddress from './PopupAddress'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 import { mainColor, disabledButton } from '../../constants/styles'
+import { API_GOOGLE_KEY } from '../../constants/define'
 // const useStyles = makeStyles({
 //   label:{
 //     fontSize:12
 //   },
 // });
+// eslint-disable-next-line no-useless-escape
+const regexSpecial = /[!@#$%^&*(),.?":{}_=`'~|<>\-/\\\[\]\+]/g
 
 class Index extends PureComponent {
   constructor(props) {
@@ -105,6 +110,8 @@ class Index extends PureComponent {
       location: undefined,
       shipFee: {},
     }
+
+    this.popupAddress = React.createRef()
   }
 
   componentDidMount() {
@@ -632,8 +639,77 @@ class Index extends PureComponent {
 
   getCity = location => {
     const arrAddr = location.split(', ')
-    const res = xoaDau(arrAddr[arrAddr.length - 2]).toLowerCase()
+    const res = xoaDau(arrAddr[arrAddr.length - 2] || '').toLowerCase()
     return res
+  }
+
+  onChangeAddress = e => {
+    const { value } = e.nativeEvent.target
+    this.setState(
+      { address: value.replace(regexSpecial, ''), location: undefined, errorAddress: '' },
+      () => {
+        if (this.popupAddress.current) {
+          this.popupAddress.current.setText(value.replace(regexSpecial, ''))
+        }
+      }
+    )
+  }
+
+  onBlurAddress = () => {
+    const { address } = this.state
+    if (!address || address.trim().length <= 0) {
+      this.setState({ openWarn: true, errorAhamove: I18n.t('errorAhamove') })
+    }
+  }
+
+  onClickOutside = () => {
+    const { typePicker, location } = this.state
+    if (typePicker === 'delivery') {
+      if (!location) {
+        this.setState({ address: '', location: undefined })
+      }
+    }
+  }
+
+  onChooseAddress = async item => {
+    const response = await Axios.get(
+      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&fields=name,formatted_address,address_component,geometry&key=${API_GOOGLE_KEY}`,
+      { timeout: 30000 }
+    )
+    // console.log({response, item})
+    this.onChooseLocation(response, item.description)
+  }
+
+  renderAddress = () => {
+    const { classes } = this.props
+    const { address, errorAddress, token, typePicker } = this.state
+    // console.log({ address })
+    if (typePicker !== 'delivery') return null
+    return (
+      <Grid container style={{ marginTop: '15px' }}>
+        <Grid item xs={11} sm={11} md={11} lg={8} style={{ position: 'relative' }}>
+          <TextField
+            error={typeof errorAddress === 'string' && errorAddress.length > 0}
+            variant="standard"
+            InputProps={{ value: address }}
+            className={classes.input}
+            onChange={this.onChangeAddress}
+            placeholder={I18n.t('chooseLocation')}
+            // onBlur={this.onBlurAddress}
+            FormHelperTextProps={{
+              style: { marginLeft: 0 },
+            }}
+            size="small"
+            disabled={(typeof token !== 'string' || token.length <= 0) && typePicker === 'delivery'}
+          />
+          <PopupAddress
+            ref={this.popupAddress}
+            onChooseAddress={this.onChooseAddress}
+            onClickOutside={this.onClickOutside}
+          />
+        </Grid>
+      </Grid>
+    )
   }
 
   onChooseLocation = (locationGG, name) => {
@@ -655,20 +731,34 @@ class Index extends PureComponent {
         getDistanceAhamove({ token, path, service_id, price, restaurantId }).then(res => {
           if (res.isSuccess)
             this.setState({ shipFee: res.data, address: name, location, errorAddress: '' })
-          else {
+          else if (isBrowser)
+            this.setState({
+              address: '',
+              location: undefined,
+              openWarn: true,
+              errorAhamove: I18n.t('errorAhamove'),
+            })
+          else
             this.setState({
               openWarn: true,
               errorAhamove: I18n.t('errorAhamove'),
             })
-          }
         })
       }
-    } else
+    } else if (isBrowser)
+      this.setState({
+        address: '',
+        location: undefined,
+        openWarn: true,
+        errorAhamove: I18n.t('errorAhamove'),
+      })
+    else {
       this.setState({
         // errorAddress: 'validateAddress',
         openWarn: true,
         errorAhamove: I18n.t('validateAddress'),
       })
+    }
   }
 
   // onCreateOffer = () => {
@@ -952,38 +1042,24 @@ class Index extends PureComponent {
                   <div className={classes.inputBox}>
                     <span className={classes.textItem}>{I18n.t('orderText.labelAddress')}</span>
                     <div className={classes.inputContainer}>
-                      <div
-                        onClick={() => {
-                          if (!disabledAddress) this.setState({ openLocation: true })
-                        }}
-                        style={{
-                          borderBottom: '0.2px solid #3a3a3a',
-                          width: '100%',
-                        }}
-                      >
-                        <span style={{ fontSize: 12 }}>{address || I18n.t('chooseLocation')}</span>
-                      </div>
-                      {/* <Input
-                      value={address}
-                      error={!!errorAddress}
-                      onChange={this.onChangeText}
-                      type="text"
-                      name="address"
-                      multiline
-                      rows={2}
-                      onFocus={this.onFocusInput}
-                      className={classes.input}
-                      placeholder={I18n.t('orderText.labelAddress')}
-                      autoComplete="new-password"
-                    /> */}
-                      {suggestEnable === 'address' && dataAutofill && dataAutofill.length > 0 && (
-                        <AutoFillForm
-                          onClearFormData={this.onClearFormData}
-                          autoFillInput={this.autoFillInput}
-                          dataAutofill={dataAutofill}
-                          onClickOutside={this.onClickOutside}
-                        />
+                      {isBrowser ? (
+                        this.renderAddress()
+                      ) : (
+                        <div
+                          onClick={() => {
+                            if (!disabledAddress) this.setState({ openLocation: true })
+                          }}
+                          style={{
+                            borderBottom: '0.2px solid #3a3a3a',
+                            width: '100%',
+                          }}
+                        >
+                          <span style={{ fontSize: 12 }}>
+                            {address || I18n.t('chooseLocation')}
+                          </span>
+                        </div>
                       )}
+
                       {errorAddress && (
                         <span className={classes.error}>{I18n.t(errorAddress)}</span>
                       )}

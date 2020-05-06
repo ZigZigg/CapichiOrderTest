@@ -85,7 +85,8 @@ export default {
   watchThisStoreVideo: 'Capichiアプリでお店の動画レビューを確認',
   error400: 'コンテンツがありません。もう一度お試しください。',
   confirmPhone: '住所を選択する前に電話番号を確認してください',
-  errorAhamove: 'この地域の配送は対応していません。店舗の住所を再度確認してください。',
+  errorAhamove:
+    'インターネット接続が不安定か、配送先住所が間違っています。もう一度確認してください。',
   errorAhamovePhone: '電話番号の確認作業でエラーが発生しました。もう一度ご確認ください。',
   deliveryType: 'デリバリー',
   noDeliveryType: 'お持ち帰り',
