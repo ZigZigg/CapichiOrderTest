@@ -37,6 +37,7 @@ import {
   getTimeRange,
   checkAvailableTime,
   isDevelopEnvironment,
+  xoaDau,
 } from '../../commons'
 import '../../assets/css/Order/styles.css'
 import { I18n } from '../../config'
@@ -257,7 +258,7 @@ class Index extends PureComponent {
       address,
       email,
       errorName,
-      errorAddress,
+      // errorAddress,
       errorPhone,
       errorEmail,
       errorNote,
@@ -555,7 +556,7 @@ class Index extends PureComponent {
 
   autoFillInput = value => {
     const { errorName, errorPhone, errorEmail } = this.state
-    const { name, phone, address, email } = value
+    const { name, phone, email } = value
     this.setState({
       name,
       phone,
@@ -630,7 +631,8 @@ class Index extends PureComponent {
 
   getCity = location => {
     const arrAddr = location.split(', ')
-    return arrAddr[arrAddr.length - 2]
+    const res = xoaDau(arrAddr[arrAddr.length - 2]).toLowerCase()
+    return res
   }
 
   onChooseLocation = (locationGG, name) => {
@@ -639,7 +641,7 @@ class Index extends PureComponent {
     const { geometry } = locationGG.data.result || {}
     const { location } = geometry
     const city = this.getCity(name)
-    if (city === 'Hanoi' || city === 'Ho Chi Minh City') {
+    if (city === 'hanoi' || city === 'hochiminhcity' || city === 'hochiminh') {
       this.setState({ address: name, location, errorAddress: '' })
       if (typePicker === 'delivery' && token) {
         let path = this.formatPath(name, location)
