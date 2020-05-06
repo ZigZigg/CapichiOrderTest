@@ -61,6 +61,7 @@ class PopupAddress extends React.Component {
 
   onGetAutoComplete = keyvalue => {
     getAutoCompleteAddress(keyvalue).then(r => {
+      console.log(r)
       if (r.isSuccess) {
         const { data } = r
         // const { text } = this.state
@@ -80,6 +81,7 @@ class PopupAddress extends React.Component {
   }
 
   onChooseAddress = data => () => {
+    console.log({data});
     this.setState({ isShow: false }, () => {
       const { onChooseAddress } = this.props
 
