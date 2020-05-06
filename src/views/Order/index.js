@@ -637,8 +637,10 @@ class Index extends PureComponent {
   }
 
   onChooseLocation = (locationGG, name) => {
-    const { token, typePicker } = this.state
+    const { token, typePicker, objectRestaurant } = this.state
+    const restaurantId = objectRestaurant.id
     // console.log({locationGG})
+    const price = this.getTotalprice()
     const { geometry } = locationGG.data.result || {}
     const { location } = geometry
     const city = this.getCity(name)
@@ -647,10 +649,10 @@ class Index extends PureComponent {
       if (typePicker === 'delivery' && token) {
         let path = this.formatPath(name, location)
         let service_id = 'HAN-BIKE'
-        if (city === 'Hanoi') service_id = 'HAN-BIKE'
-        if (city === 'Ho Chi Minh City') service_id = 'SGN-BIKE'
+        if (city === 'hanoi') service_id = 'HAN-BIKE'
+        if (city === 'hochiminhcity' || city === 'hochiminh') service_id = 'SGN-BIKE'
         path = JSON.stringify(path)
-        getDistanceAhamove({ token, path, service_id }).then(res => {
+        getDistanceAhamove({ token, path, service_id, price, restaurantId }).then(res => {
           if (res.isSuccess)
             this.setState({ shipFee: res.data, address: name, location, errorAddress: '' })
           else {
@@ -699,6 +701,18 @@ class Index extends PureComponent {
   //   })
   // }
 
+  getTotalprice = () => {
+    const { itemSelected } = this.state
+    const total = _.reduce(
+      itemSelected,
+      (sum, item) => {
+        return sum + item.price * item.count
+      },
+      0
+    )
+    return total
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -733,13 +747,7 @@ class Index extends PureComponent {
       textRequestPhone,
     } = this.state
     // console.log(errorName)
-    const total = _.reduce(
-      itemSelected,
-      (sum, item) => {
-        return sum + item.price * item.count
-      },
-      0
-    )
+    const total = this.getTotalprice()
 
     const disabledAddress = (typePicker === 'delivery' && !token && address === '') || false
     const disabledReview = (address === '' && typePicker === 'delivery') || false
@@ -752,7 +760,11 @@ class Index extends PureComponent {
       isLoadingSubmit
     const dataReview = {
       restaurant,
-      shipFee,
+      shipFee: {
+        ...shipFee,
+        total_fee: shipFee.distance_fee,
+        currency: 'VNĐ',
+      },
       itemSelected,
     }
     const disablePhone = !!(errorPhone || phone === '' || token)

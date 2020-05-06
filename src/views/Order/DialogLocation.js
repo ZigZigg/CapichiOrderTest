@@ -19,14 +19,17 @@ import { API_GOOGLE_KEY } from '../../constants/define'
 import { mainColor } from '../../constants/styles'
 import { I18n } from '../../config'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   appBar: {
     position: 'relative',
     backgroundColor: mainColor,
   },
   title: {
-    marginLeft: theme.spacing(2),
+    // marginLeft: theme.spacing(2),
     flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }))
 

@@ -1,7 +1,9 @@
 import Axios from 'axios'
-// import { categoryApi } from './config'
+import { categoryApi } from './config'
 // import { getMessageErrorFormServer } from '../commons'
 import { I18n } from '../config'
+import request from './request'
+import { getMessageErrorFormServer } from '../commons'
 
 // eslint-disable-next-line import/prefer-default-export
 export const urlAhamove = 'https://apistg.ahamove.com/v1'
@@ -34,58 +36,65 @@ export const getDistanceAhamove = async ({
   token,
   service_id = 'HAN-BIKE',
   path,
-  request = '[]',
-  order_time = '0',
-  idle_until = '',
+  price = 0,
+  restaurantId,
 }) => {
   try {
-    const url = `https://apistg.ahamove.com/v1/order/estimated_fee?token=${token}&service_id=${service_id}&order_time=${order_time}&path=${path}&request=${request}&idle_until=${idle_until}`
-    const result = await Axios.get(url)
-    const { data } = result
-    if (!data)
+    const formData = new FormData()
+    formData.append('ahamove_token', token)
+    formData.append('service_id', service_id)
+    formData.append('path', path)
+    formData.append('foods_money', price)
+
+    const result = await request('', null).post(
+      `${categoryApi}/${restaurantId}/orders/estimate_fee`,
+      formData
+    )
+    const { data, status } = result
+    if (status === 200)
       return {
-        isSuccess: false,
-        message: 'error400',
+        isSuccess: true,
+        data: data.data,
       }
     return {
-      isSuccess: true,
-      data,
+      isSuccess: false,
+      message: 'a',
     }
   } catch (e) {
-    // console.log(e)
+    console.log({ e })
     return {
       isSuccess: false,
-      message: 'error400',
+      message: getMessageErrorFormServer(e),
     }
   }
 }
 
-export const createOfferAhamove = async ({
-  token,
-  service_id = 'HAN-BIKE',
-  path,
-  request = '[]',
-  order_time = '0',
-  idle_until = '',
-}) => {
-  try {
-    const url = `https://apistg.ahamove.com/v1/order/create?token=${token}&service_id=${service_id}&order_time=${order_time}&path=${path}&request=${request}&idle_until=${idle_until}`
-    const result = await Axios.get(url)
-    const { data } = result
-    if (!data)
-      return {
-        isSuccess: false,
-        message: 'error400',
-      }
-    return {
-      isSuccess: true,
-      data,
-    }
-  } catch (e) {
-    // console.log(e)
-    return {
-      isSuccess: false,
-      message: 'error400',
-    }
-  }
-}
+// export const createOfferAhamove = async ({
+//   token,
+//   service_id = 'HAN-BIKE',
+//   path,
+//   request = '[]',
+//   order_time = '0',
+//   idle_until = '',
+// }) => {
+//   try {
+//     const url = `https://apistg.ahamove.com/v1/order/create?token=${token}&service_id=${service_id}&order_time=${order_time}&path=${path}&request=${request}&idle_until=${idle_until}`
+//     const result = await Axios.get(url)
+//     const { data } = result
+//     if (!data)
+//       return {
+//         isSuccess: false,
+//         message: 'error400',
+//       }
+//     return {
+//       isSuccess: true,
+//       data,
+//     }
+//   } catch (e) {
+//     // console.log(e)
+//     return {
+//       isSuccess: false,
+//       message: 'error400',
+//     }
+//   }
+// }
