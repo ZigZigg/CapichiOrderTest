@@ -18,7 +18,7 @@ import Axios from 'axios'
 import { API_GOOGLE_KEY } from '../../constants/define'
 import { mainColor } from '../../constants/styles'
 import { I18n } from '../../config'
-import { getAutoCompleteAddress } from '../../api/apiGoogle'
+import { getAutoCompleteAddress, getLocationInfo } from '../../api/apiGoogle'
 
 const useStyles = makeStyles(() => ({
   appBar: {
@@ -54,20 +54,17 @@ export default function LocationDialog(props) {
 
   const onChooseItem = async item => {
     const { onChooseLocation } = props
-    const response = await Axios.get(
-      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&fields=name,formatted_address,address_component,geometry&key=${API_GOOGLE_KEY}`,
-      { timeout: 30000 }
-    )
+
+    const payload = {
+      placeId: item.place_id,
+    }
+    const response = await getLocationInfo(payload)
     onChooseLocation(response, item.description)
     onClose()
   }
 
   const onChangeText = async event => {
     setAddress(event.target.value)
-    // const response = await Axios.get(
-    //   `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${event.target.value}&key=${API_GOOGLE_KEY}`,
-    //   { timeout: 30000 }
-    // )
 
     const response = await getAutoCompleteAddress(event.target.value)
     if (response.isSuccess) {

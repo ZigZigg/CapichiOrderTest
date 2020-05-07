@@ -718,7 +718,6 @@ class Index extends PureComponent {
   }
 
   onChooseLocation = (locationGG, name) => {
-    console.log('Index -> onChooseLocation -> locationGG', locationGG)
     const { token, typePicker, objectRestaurant } = this.state
     const restaurantId = objectRestaurant.id
     // console.log({locationGG})
