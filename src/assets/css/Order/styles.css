@@ -28,6 +28,11 @@
 #order-container .dialog-review{
     padding:20px 24px
 }
+.text-wrap-input input{
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 @media (min-width: 1200px){
     #order-grid-item .item-order{
         height: 85px;
