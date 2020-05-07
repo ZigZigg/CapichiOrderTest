@@ -1,7 +1,8 @@
 import Axios from 'axios'
 import { API_GOOGLE_KEY } from '../constants/define'
-import {autoAddressApi} from './config'
+import { autoAddressApi } from './config'
 import request from './request'
+
 export const testapiGoogle = () => {}
 
 const url = 'https://maps.googleapis.com/maps/api/place'
@@ -23,7 +24,7 @@ const url = 'https://maps.googleapis.com/maps/api/place'
 export const getAutoCompleteAddress = async keyword => {
   try {
     const result = await request('', null).get(`${autoAddressApi}?keyword=${keyword}`)
-    console.log({result})
+    console.log({ result })
     return {
       isSuccess: true,
       data: result.data,

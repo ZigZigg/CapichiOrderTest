@@ -81,7 +81,7 @@ class PopupAddress extends React.Component {
   }
 
   onChooseAddress = data => () => {
-    console.log({data});
+    console.log({ data })
     this.setState({ isShow: false }, () => {
       const { onChooseAddress } = this.props
 
