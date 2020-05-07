@@ -100,6 +100,9 @@ const styles = {
   input: {
     fontSize: '12px',
     width: '100%',
+    textDecoration: 'none',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
   btnContainer: {
     position: 'fixed',

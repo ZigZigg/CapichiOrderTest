@@ -692,12 +692,12 @@ class Index extends PureComponent {
     if (typePicker !== 'delivery') return null
     return (
       <Grid container style={{ marginTop: '15px' }}>
-        <Grid item xs={11} sm={11} md={11} lg={8} style={{ position: 'relative' }}>
+        <Grid item xs={12} sm={12} md={12} lg={12} style={{ position: 'relative' }}>
           <TextField
             error={typeof errorAddress === 'string' && errorAddress.length > 0}
             variant="standard"
             InputProps={{ value: address }}
-            className={classes.input}
+            className={`${classes.input} text-wrap-input`}
             onChange={this.onChangeAddress}
             placeholder={I18n.t('chooseLocation')}
             // onBlur={this.onBlurAddress}
