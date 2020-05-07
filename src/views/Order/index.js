@@ -80,7 +80,7 @@ class Index extends PureComponent {
       restaurant: null,
       name: '',
       phone: '',
-      textRequestPhone: I18n.t('confirmPhone'),
+      textRequestPhone: 'confirmPhone',
       address: '',
       email: '',
       note: '',
@@ -97,7 +97,7 @@ class Index extends PureComponent {
       errorAddress: '',
       errorNote: '',
       errorTime: '',
-      errorAhamove: I18n.t('errorAhamove'),
+      errorAhamove: 'errorAhamove',
       suggestEnable: '',
       dataAutofill: [],
       localeSelect: null,
@@ -662,7 +662,7 @@ class Index extends PureComponent {
     }
   }
 
-  onClickOutside = () => {
+  onClickOutsideAddress = () => {
     const { typePicker, location } = this.state
     if (typePicker === 'delivery') {
       if (!location) {
@@ -705,7 +705,7 @@ class Index extends PureComponent {
           <PopupAddress
             ref={this.popupAddress}
             onChooseAddress={this.onChooseAddress}
-            onClickOutside={this.onClickOutside}
+            onClickOutside={this.onClickOutsideAddress}
           />
         </Grid>
       </Grid>
@@ -864,7 +864,7 @@ class Index extends PureComponent {
           <DialogWarn
             open={openWarn}
             onOk={() => this.setState({ openWarn: false })}
-            content={errorAhamove}
+            content={I18n.t(errorAhamove)}
           />
           <DialogReview
             open={openReview}
@@ -985,7 +985,7 @@ class Index extends PureComponent {
                       )}
                       {errorPhone && <span className={classes.error}>{I18n.t(errorPhone)}</span>}
                       {typePicker === 'delivery' && !token && (
-                        <span className={classes.error}>{textRequestPhone}</span>
+                        <span className={classes.error}>{I18n.t(textRequestPhone)}</span>
                       )}
                     </div>
                     {typePicker === 'delivery' && (

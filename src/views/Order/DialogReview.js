@@ -172,8 +172,8 @@ DialogReview.propTypes = {
   onOk: PropTypes.func,
   dataReview: PropTypes.any,
   classes: PropTypes.any,
-  typePicker: PropTypes.any,
-  deliveryAddress: PropTypes.any,
+  typePicker: PropTypes.string,
+  deliveryAddress: PropTypes.string,
   // token: PropTypes.any,
   // locationGG: PropTypes.any,
   // getDistanceAhamove:PropTypes.func
