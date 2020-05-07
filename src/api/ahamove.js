@@ -6,9 +6,15 @@ import request from './request'
 import { getMessageErrorFormServer } from '../commons'
 
 // eslint-disable-next-line import/prefer-default-export
-export const urlAhamove = 'https://apistg.ahamove.com/v1'
-export const nameAhamove = 'Ahamove+Test+User'
-export const apiKeyAhamove = '567f7630b9aae8ad80f7a31ed31b6abc'
+/** Product config */
+export const urlAhamove = 'https://api.ahamove.com/v1'
+export const nameAhamove = 'Capichi'
+export const apiKeyAhamove = '7ea358e922b9b0ce278fcbd922ddd9b3'
+
+/** Dev config */
+// export const urlAhamove = 'https://apistg.ahamove.com/v1'
+// export const nameAhamove = 'Ahamove+Test+User'
+// export const apiKeyAhamove = '567f7630b9aae8ad80f7a31ed31b6abc'
 
 export const getTokenAhamove = async ({ phone = 'hanoi', address }) => {
   try {
