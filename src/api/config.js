@@ -13,3 +13,4 @@ export const TIMEOUT = 30000
 /** ************** API CATEGORY  ************** */
 export const categoryApi = 'food_booking_api/restaurants'
 export const autoAddressApi = 'food_booking_api/auto_complete_address'
+export const geometryApi = 'food_booking_api/geometry_locate'

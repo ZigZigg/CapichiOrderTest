@@ -26,7 +26,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 
 import { Container } from '@material-ui/core'
 import { isBrowser } from 'react-device-detect'
-import Axios from 'axios'
 import * as firebase from 'firebase/app'
 import 'firebase/analytics'
 import {
@@ -49,6 +48,7 @@ import {
   getListMenuByRestaurant,
   getTokenAhamove,
   getDistanceAhamove,
+  getLocationInfo,
   // createOfferAhamove,
 } from '../../api'
 import Header from '../../components/Header'
@@ -60,7 +60,6 @@ import OrderItem from './OrderItem'
 import PopupAddress from './PopupAddress'
 import styles from '../../assets/jss/material-dashboard-react/views/orderStyles'
 import { mainColor, disabledButton } from '../../constants/styles'
-import { API_GOOGLE_KEY } from '../../constants/define'
 // const useStyles = makeStyles({
 //   label:{
 //     fontSize:12
@@ -658,7 +657,7 @@ class Index extends PureComponent {
   onBlurAddress = () => {
     const { address } = this.state
     if (!address || address.trim().length <= 0) {
-      this.setState({ openWarn: true, errorAhamove: I18n.t('errorAhamove') })
+      this.setState({ openWarn: true, errorAhamove: 'errorAhamove' })
     }
   }
 
@@ -672,12 +671,18 @@ class Index extends PureComponent {
   }
 
   onChooseAddress = async item => {
-    const response = await Axios.get(
-      `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&fields=name,formatted_address,address_component,geometry&key=${API_GOOGLE_KEY}`,
-      { timeout: 30000 }
-    )
+    const payload = {
+      placeId: item.place_id,
+    }
+    const response = await getLocationInfo(payload)
+    // const response = await Axios.get(
+    //   `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&fields=name,formatted_address,address_component,geometry&key=${API_GOOGLE_KEY}`,
+    //   { timeout: 30000 }
+    // )
     // console.log({response, item})
-    this.onChooseLocation(response, item.description)
+    if (response.isSuccess && response.data.result) {
+      this.onChooseLocation(response, item.description)
+    }
   }
 
   renderAddress = () => {
@@ -713,6 +718,7 @@ class Index extends PureComponent {
   }
 
   onChooseLocation = (locationGG, name) => {
+    console.log('Index -> onChooseLocation -> locationGG', locationGG)
     const { token, typePicker, objectRestaurant } = this.state
     const restaurantId = objectRestaurant.id
     // console.log({locationGG})
@@ -736,12 +742,12 @@ class Index extends PureComponent {
               address: '',
               location: undefined,
               openWarn: true,
-              errorAhamove: I18n.t('errorAhamove'),
+              errorAhamove: 'errorAhamove',
             })
           else
             this.setState({
               openWarn: true,
-              errorAhamove: I18n.t('errorAhamove'),
+              errorAhamove: 'errorAhamove',
             })
         })
       }
@@ -750,13 +756,13 @@ class Index extends PureComponent {
         address: '',
         location: undefined,
         openWarn: true,
-        errorAhamove: I18n.t('errorAhamove'),
+        errorAhamove: 'errorAhamove',
       })
     else {
       this.setState({
         // errorAddress: 'validateAddress',
         openWarn: true,
-        errorAhamove: I18n.t('validateAddress'),
+        errorAhamove: 'validateAddress',
       })
     }
   }
