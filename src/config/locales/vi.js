@@ -84,7 +84,6 @@ export default {
     HaiPhong: 'Hải Phòng',
   },
   watchThisStoreVideo: 'Xem Video Cửa hàng',
-  error400: 'Nội dung không tồn tại. Vui lòng thử lại sau.',
   errorAhamove:
     'Kết nối không ổn định hoặc địa chỉ vận chuyển không phù hợp. Vui lòng kiểm tra lại',
   errorAhamovePhone: 'Đã có lỗi xảy ra trong quá trình xác nhận số điện thoại. Vui lòng thử lại.',
@@ -95,4 +94,9 @@ export default {
   addressShip: 'Địa chỉ giao hàng',
   address: 'Địa chỉ',
   warn: 'Cảnh báo',
+  error300: 'Máy chủ không thể thực hiện yêu cầu của bạn',
+  error500: 'Không thể kết nối đên máy chủ. Vui lòng thử lại sau.',
+  error401: 'Vui lòng đăng nhập để thực hiện chức năng.',
+  error404: 'Nội dung yêu cầu không thể tìm thấy hoặc đã bị xoá. Vui lòng thử lại sau.',
+  error400: 'Nội dung không tồn tại. Vui lòng thử lại sau.',
 }

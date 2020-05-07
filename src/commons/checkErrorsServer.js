@@ -15,24 +15,25 @@ export const getMessageErrorFormServer = error => {
     const errorServer = error
     const { status } = errorServer.response
     if (status >= 300 && status < 400) {
-      errorServer.response.data.message[0] = 'Máy chủ không thể thực hiện yêu cầu của bạn.'
+      errorServer.response.data.message[0] = 'error300'
     }
     if (status >= 400 && status < 500 && status !== 422) {
-      errorServer.response.data.message[0] = 'Nội dung không tồn tại. Vui lòng thử lại sau.'
+      errorServer.response.data.message[0] = 'error400'
     }
     if (status >= 500) {
-      errorServer.response.data.message[0] = 'Không thể kết nối đên máy chủ. Vui lòng thử lại sau.'
+      errorServer.response.data.message[0] = 'error500'
     }
     if (status === 401) {
-      errorServer.response.data.message[0] = 'Vui lòng đăng nhập để thực hiện chức năng.'
+      errorServer.response.data.message[0] = 'error401'
     }
     if (status === 400 || status === 403 || status === 404) {
-      errorServer.response.data.message[0] =
-        'Nội dung yêu cầu không thể tìm thấy hoặc đã bị xoá. Vui lòng thử lại sau.'
+      errorServer.response.data.message[0] = 'error404'
     }
+
+    if (status !== 200) errorServer.response.data.message[0] = 'error300'
     const message = errorServer.response.data.message[0]
     return message
   } catch (e) {
-    return 'Nội dung không tồn tại. Vui lòng thử lại sau.'
+    return 'error400'
   }
 }
