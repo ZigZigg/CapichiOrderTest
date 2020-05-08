@@ -699,7 +699,7 @@ class Index extends PureComponent {
   }
 
   onChooseLocation = (locationGG, name) => {
-    const { typePicker, objectRestaurant } = this.state
+    const { typePicker, objectRestaurant, selfShip } = this.state
     const restaurantId = objectRestaurant.id
     // console.log({locationGG})
     const price = this.getTotalprice()
@@ -708,7 +708,7 @@ class Index extends PureComponent {
     const city = this.getCity(name)
     if (city === 'hanoi' || city === 'hochiminhcity' || city === 'hochiminh') {
       // this.setState({ address: name, location, errorAddress: '' })
-      if (typePicker === 'delivery') {
+      if (typePicker === 'delivery' && !selfShip) {
         let path = this.formatPath(name, location)
         let service_id = 'HAN-BIKE'
         if (city === 'hanoi') service_id = 'HAN-BIKE'
@@ -730,7 +730,7 @@ class Index extends PureComponent {
               errorAhamove: 'errorAhamove',
             })
         })
-      }
+      } else if (selfShip) this.setState({ address: name, location, errorAddress: '' })
     } else if (isBrowser)
       this.setState({
         address: '',
