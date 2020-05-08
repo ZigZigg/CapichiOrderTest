@@ -110,16 +110,20 @@ export default function DialogReview(props) {
                     )}:`}</span>
                     <span className={classes.itemOrderRight}>{deliveryAddress}</span>
                   </div>
-                  <div className={classes.itemOrderStyle}>
-                    <span className={classes.textItem}>{`${I18n.t('orderText.distance')}:`}</span>
-                    <span className={classes.itemOrderRight}>{distance}Km</span>
-                  </div>
-                  <div className={classes.itemOrderStyle}>
-                    <span className={classes.textItem}>{`${I18n.t(
-                      'orderText.deliveryTime'
-                    )}:`}</span>
-                    <span className={classes.itemOrderRight}>{time}</span>
-                  </div>
+                  {!selfShip && (
+                    <div className={classes.itemOrderStyle}>
+                      <span className={classes.textItem}>{`${I18n.t('orderText.distance')}:`}</span>
+                      <span className={classes.itemOrderRight}>{distance}Km</span>
+                    </div>
+                  )}
+                  {!selfShip && (
+                    <div className={classes.itemOrderStyle}>
+                      <span className={classes.textItem}>{`${I18n.t(
+                        'orderText.deliveryTime'
+                      )}:`}</span>
+                      <span className={classes.itemOrderRight}>{time}</span>
+                    </div>
+                  )}
                 </>
               )}
             </div>
