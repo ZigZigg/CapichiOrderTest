@@ -39,7 +39,7 @@ export const getTokenAhamove = async ({ phone = 'hanoi', address }) => {
 }
 
 export const getDistanceAhamove = async ({
-  token,
+  // token,
   service_id = 'HAN-BIKE',
   path,
   price = 0,
@@ -47,7 +47,7 @@ export const getDistanceAhamove = async ({
 }) => {
   try {
     const formData = new FormData()
-    formData.append('ahamove_token', token)
+    // formData.append('ahamove_token', token)
     formData.append('service_id', service_id)
     formData.append('path', path)
     formData.append('foods_money', price)
