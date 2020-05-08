@@ -46,7 +46,6 @@ import {
   getRestaurantDetail,
   confirmOrder,
   getListMenuByRestaurant,
-  getTokenAhamove,
   getDistanceAhamove,
   getLocationInfo,
   // createOfferAhamove,
@@ -105,7 +104,6 @@ class Index extends PureComponent {
       openReview: false,
       openWarn: false,
       isLoadingPhone: false,
-      token: undefined,
       location: undefined,
       shipFee: {},
     }
@@ -183,7 +181,6 @@ class Index extends PureComponent {
         [name]: value.replace(/[\D]/g, ''),
         errorPhone: validatePhone(value.replace(/[\D]/g, '')),
         suggestEnable: '',
-        token: undefined,
       })
     }
     // if (name === 'address') {
@@ -511,7 +508,6 @@ class Index extends PureComponent {
     this.setState({
       typePicker: value,
       // address: '',
-      // token: undefined,
     })
   }
 
@@ -609,18 +605,6 @@ class Index extends PureComponent {
     this.setState({ openLocation: false })
   }
 
-  onConfirmPhone = async () => {
-    const { phone } = this.state
-    this.setState({ isLoadingPhone: true })
-    const dataToken = await getTokenAhamove({ phone })
-    const { isSuccess, token, message } = dataToken
-    if (isSuccess) {
-      this.setState({ isLoadingPhone: false, token })
-    } else {
-      this.setState({ errorAhamove: message, isLoadingPhone: false, openWarn: true })
-    }
-  }
-
   formatPath = (address, location, totalOffer = 0) => {
     const { restaurant } = this.state
     const objectCustomer = {
@@ -675,11 +659,6 @@ class Index extends PureComponent {
       placeId: item.place_id,
     }
     const response = await getLocationInfo(payload)
-    // const response = await Axios.get(
-    //   `https://maps.googleapis.com/maps/api/place/details/json?placeid=${item.place_id}&fields=name,formatted_address,address_component,geometry&key=${API_GOOGLE_KEY}`,
-    //   { timeout: 30000 }
-    // )
-    // console.log({response, item})
     if (response.isSuccess && response.data.result) {
       this.onChooseLocation(response, item.description)
     }
@@ -687,7 +666,7 @@ class Index extends PureComponent {
 
   renderAddress = () => {
     const { classes } = this.props
-    const { address, errorAddress, token, typePicker } = this.state
+    const { address, errorAddress, typePicker } = this.state
     // console.log({ address })
     if (typePicker !== 'delivery') return null
     return (
@@ -705,7 +684,6 @@ class Index extends PureComponent {
               style: { marginLeft: 0 },
             }}
             size="small"
-            disabled={(typeof token !== 'string' || token.length <= 0) && typePicker === 'delivery'}
           />
           <PopupAddress
             ref={this.popupAddress}
@@ -718,7 +696,7 @@ class Index extends PureComponent {
   }
 
   onChooseLocation = (locationGG, name) => {
-    const { token, typePicker, objectRestaurant } = this.state
+    const { typePicker, objectRestaurant } = this.state
     const restaurantId = objectRestaurant.id
     // console.log({locationGG})
     const price = this.getTotalprice()
@@ -727,13 +705,13 @@ class Index extends PureComponent {
     const city = this.getCity(name)
     if (city === 'hanoi' || city === 'hochiminhcity' || city === 'hochiminh') {
       // this.setState({ address: name, location, errorAddress: '' })
-      if (typePicker === 'delivery' && token) {
+      if (typePicker === 'delivery') {
         let path = this.formatPath(name, location)
         let service_id = 'HAN-BIKE'
         if (city === 'hanoi') service_id = 'HAN-BIKE'
         if (city === 'hochiminhcity' || city === 'hochiminh') service_id = 'SGN-BIKE'
         path = JSON.stringify(path)
-        getDistanceAhamove({ token, path, service_id, price, restaurantId }).then(res => {
+        getDistanceAhamove({ path, service_id, price, restaurantId }).then(res => {
           if (res.isSuccess)
             this.setState({ shipFee: res.data, address: name, location, errorAddress: '' })
           else if (isBrowser)
@@ -765,36 +743,6 @@ class Index extends PureComponent {
       })
     }
   }
-
-  // onCreateOffer = () => {
-  //   const { token, address, location, itemSelected, timePicker, shipFee } = this.state
-  //   const { duration } = shipFee || {}
-
-  //   let idle_until = ''
-  //   if (timePicker) {
-  //     let timeShip = timePicker.subtract(duration + 5 * 60, 's')
-  //     timeShip = timeShip.unix()
-  //     const currentTime = moment().unix()
-  //     idle_until = timeShip > currentTime ? timeShip : ''
-  //   }
-  //   const total = _.reduce(
-  //     itemSelected,
-  //     (sum, item) => {
-  //       return sum + item.price * item.count
-  //     },
-  //     0
-  //   )
-  //   let path = this.formatPath(address, location, total)
-  //   const city = this.getCity(address)
-  //   let service_id = 'HAN-BIKE'
-  //   if (city === 'Hanoi') service_id = 'HAN-BIKE'
-  //   if (city === 'Ho Chi Minh City') service_id = 'SGN-BIKE'
-  //   path = JSON.stringify(path)
-  //   createOfferAhamove({ token, path, service_id, idle_until }).then(res => {
-  //     if (!res.isSuccess)
-  //       this.setState({ openWarn: true, errorAhamove: 'Hệ thông vận chuyển đang gặp vấn đề' })
-  //   })
-  // }
 
   getTotalprice = () => {
     const { itemSelected } = this.state
@@ -837,17 +785,12 @@ class Index extends PureComponent {
       openReview,
       openWarn,
       shipFee,
-      isLoadingPhone,
-      token,
-      textRequestPhone,
     } = this.state
     // console.log(errorName)
     const total = this.getTotalprice()
 
-    const disabledAddress = (typePicker === 'delivery' && !token && address === '') || false
     const disabledReview = (address === '' && typePicker === 'delivery') || false
     const disabledSubmit =
-      (typePicker === 'delivery' && !token) ||
       (typePicker === 'delivery' && address === '') ||
       phone === '' ||
       name === '' ||
@@ -862,7 +805,6 @@ class Index extends PureComponent {
       },
       itemSelected,
     }
-    const disablePhone = !!(errorPhone || phone === '' || token)
     return (
       <MuiPickersUtilsProvider utils={MomentUtils} libInstance={moment}>
         <div className={classes.wrapper}>
@@ -989,32 +931,7 @@ class Index extends PureComponent {
                         />
                       )}
                       {errorPhone && <span className={classes.error}>{I18n.t(errorPhone)}</span>}
-                      {typePicker === 'delivery' && !token && (
-                        <span className={classes.error}>{I18n.t(textRequestPhone)}</span>
-                      )}
                     </div>
-                    {typePicker === 'delivery' && (
-                      <div style={{ padding: 12 }}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className="btn-login"
-                          disabled={disablePhone}
-                          onClick={this.onConfirmPhone}
-                          style={
-                            disablePhone
-                              ? { backgroundColor: '#c9c9c9' }
-                              : { backgroundColor: '#F7941D' }
-                          }
-                        >
-                          {isLoadingPhone ? (
-                            <CircularProgress size={30} color="inherit" />
-                          ) : (
-                            I18n.t('orderText.confirm')
-                          )}
-                        </Button>
-                      </div>
-                    )}
                   </div>
                 </div>
                 <div className={classes.inputBox}>
@@ -1052,7 +969,7 @@ class Index extends PureComponent {
                       ) : (
                         <div
                           onClick={() => {
-                            if (!disabledAddress) this.setState({ openLocation: true })
+                            this.setState({ openLocation: true })
                           }}
                           style={{
                             borderBottom: '0.2px solid #3a3a3a',
