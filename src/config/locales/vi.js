@@ -99,4 +99,5 @@ export default {
   error401: 'Vui lòng đăng nhập để thực hiện chức năng.',
   error404: 'Nội dung yêu cầu không thể tìm thấy hoặc đã bị xoá. Vui lòng thử lại sau.',
   error400: 'Nội dung không tồn tại. Vui lòng thử lại sau.',
+  selfShip: 'Tính phí',
 }

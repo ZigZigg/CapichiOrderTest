@@ -22,6 +22,7 @@ export default function DialogReview(props) {
     convertPrice,
     typePicker,
     deliveryAddress,
+    selfShip,
   } = props
   const { shipFee, restaurant, itemSelected } = dataReview
   const { total_fee, distance, currency, duration } = shipFee || {}
@@ -62,6 +63,8 @@ export default function DialogReview(props) {
   //   }
   //   // eslint-disable-next-line
   // }, [open])
+  let orderFee = total
+  if (!selfShip) orderFee = total + total_fee
   return (
     <div>
       <Dialog
@@ -134,16 +137,18 @@ export default function DialogReview(props) {
               </div>
               <div className={classes.itemOrderStyle}>
                 <span className={classes.textItem}>{`${I18n.t('orderText.shippingFee')}:`}</span>
-                <span className={classes.itemOrderRight}>
-                  {typePicker === 'delivery' ? convertPrice(total_fee) : 0} {currentCurrency}
-                </span>
+                {!selfShip ? (
+                  <span className={classes.itemOrderRight}>
+                    {typePicker === 'delivery' ? convertPrice(total_fee) : 0} {currentCurrency}
+                  </span>
+                ) : (
+                  <span className={classes.itemOrderRight}>{I18n.t('selfShip')}</span>
+                )}
               </div>
               <div className={classes.itemOrderStyle}>
                 <span className={classes.textItem}>{`${I18n.t('orderText.grandTotal')}:`}</span>
                 <span className={classes.itemOrderRight}>
-                  {typePicker === 'delivery'
-                    ? convertPrice(total + total_fee)
-                    : convertPrice(total)}{' '}
+                  {typePicker === 'delivery' ? convertPrice(orderFee) : convertPrice(total)}{' '}
                   {currentCurrency}
                 </span>
               </div>
@@ -174,6 +179,7 @@ DialogReview.propTypes = {
   classes: PropTypes.any,
   typePicker: PropTypes.string,
   deliveryAddress: PropTypes.string,
+  selfShip: PropTypes.bool,
   // token: PropTypes.any,
   // locationGG: PropTypes.any,
   // getDistanceAhamove:PropTypes.func

@@ -106,6 +106,7 @@ class Index extends PureComponent {
       isLoadingPhone: false,
       location: undefined,
       shipFee: {},
+      selfShip: false,
     }
 
     this.popupAddress = React.createRef()
@@ -149,10 +150,12 @@ class Index extends PureComponent {
     const { objectRestaurant } = this.state
     try {
       const data = await getRestaurantDetail({ restaurantId: objectRestaurant.id })
+      console.log({ data })
       if (data.isSuccess) {
         this.setState({
           restaurant: data.data,
           isHideShip: data.data.hide_fee,
+          selfShip: data.data.self_ship,
         })
       }
     } catch (e) {
@@ -785,6 +788,7 @@ class Index extends PureComponent {
       openReview,
       openWarn,
       shipFee,
+      selfShip,
     } = this.state
     // console.log(errorName)
     const total = this.getTotalprice()
@@ -803,6 +807,7 @@ class Index extends PureComponent {
         total_fee: shipFee.distance_fee,
         currency: 'VNĐ',
       },
+      selfShip,
       itemSelected,
     }
     return (
@@ -821,6 +826,7 @@ class Index extends PureComponent {
             convertPrice={this.convertPrice}
             typePicker={typePicker}
             deliveryAddress={address}
+            selfShip={selfShip}
           />
           <DialogLocation
             open={openLocation}
