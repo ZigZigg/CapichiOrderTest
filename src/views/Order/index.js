@@ -23,10 +23,11 @@ import Radio from '@material-ui/core/Radio'
 import TextField from '@material-ui/core/TextField'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
-
 import { Container } from '@material-ui/core'
 import { isBrowser } from 'react-device-detect'
+import TagManager from 'react-gtm-module'
 import * as firebase from 'firebase/app'
+import { GtmID } from '../../constants/config'
 import 'firebase/analytics'
 import {
   validateEmail,
@@ -113,6 +114,10 @@ class Index extends PureComponent {
   }
 
   componentDidMount() {
+    const tagManagerArgs = {
+      gtmId: GtmID,
+    }
+    TagManager.initialize(tagManagerArgs)
     if (isDevelopEnvironment()) {
       firebase.analytics().logEvent('order_view_debug')
     } else {
@@ -351,7 +356,6 @@ class Index extends PureComponent {
             isOpenWarning: true,
           })
         } else {
-          // this.onCreateOffer()
           const dataOrder = await confirmOrder({
             name: name.trim(),
             phone,
@@ -402,6 +406,10 @@ class Index extends PureComponent {
             })
           }
         }
+      } else {
+        this.setState({
+          isLoadingSubmit: false,
+        })
       }
     } catch (e) {
       // console.warn(e)

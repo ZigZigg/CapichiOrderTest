@@ -23,18 +23,20 @@ import { isDevelopEnvironment } from '../../commons'
 import 'firebase/analytics'
 import { I18n } from '../../config'
 import LanguageBox from '../../components/LanguageBox'
+import { GtmID } from '../../constants/config'
+import TagManager from 'react-gtm-module'
 import '../../assets/css/Category/styles.css'
 // Hashcode tinh/TP, nếu trong môi trường Dev thì sẽ dùng dataDev, còn nếu trong môi trường product thì sẽ dùng dataProduct
 const dataDev = [
   { id: 190, label: 'city.HaNoi', data: null },
   { id: 192, label: 'city.HoChiMinh', data: null },
-  { id: 191, label: 'city.HaiPhong', data: null },
+  // { id: 191, label: 'city.HaiPhong', data: null },
 ]
 
 const dataProduct = [
   { id: 3, label: 'city.HaNoi', data: null },
   { id: 5, label: 'city.HoChiMinh', data: null },
-  { id: 4, label: 'city.HaiPhong', data: null },
+  // { id: 4, label: 'city.HaiPhong', data: null },
 ]
 
 const CustomInput = withStyles(theme => ({
@@ -86,6 +88,10 @@ class Index extends PureComponent {
 
   componentDidMount() {
     this.onGetListCategory({ page: 1 })
+    const tagManagerArgs = {
+      gtmId: GtmID,
+    }
+    TagManager.initialize(tagManagerArgs)
     if (isDevelopEnvironment()) {
       firebase.analytics().logEvent('category_view_debug')
     } else {
