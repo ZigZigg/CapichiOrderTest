@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-state */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/anchor-is-valid */
@@ -140,7 +141,7 @@ class Index extends PureComponent {
         }
       }
     } catch (e) {
-      console.warn(e)
+      // console.warn(e)
     }
   }
 

@@ -61,10 +61,15 @@ class AutoFillForm extends PureComponent {
       >
         {dataFormat.map(value => {
           return (
-            <a href="#" className="suggest-box" onClick={event => this.selectItem(value, event)}>
-              <span>{value.name}</span>
-              <span>{value.phone}</span>
-              <span>{value.address}</span>
+            <a
+              key={Math.random()}
+              href="#"
+              className="suggest-box"
+              onClick={event => this.selectItem(value, event)}
+            >
+              <span style={{ fontSize: 12 }}>{value.name}</span>
+              <span style={{ fontSize: 12 }}>{value.phone}</span>
+              <span style={{ fontSize: 12 }}>{value.address}</span>
             </a>
           )
         })}
