@@ -322,7 +322,7 @@ class Index extends PureComponent {
       })
       const data = await getListMenuByRestaurant({
         page: 1,
-        limit: pages * 10,
+        limit: pages * (isBrowser ? 12 : 10),
         restaurantId: restaurant.id,
       })
       if (data.isSuccess) {
